@@ -1,0 +1,30 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.31321.278
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Titalyver2", "Titalyver2\Titalyver2.csproj", "{DA6D705F-943E-4E6E-9AF3-8E6CAFC49C47}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{052E34E5-4821-4D7B-8C97-49D2DA7D8979}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{DA6D705F-943E-4E6E-9AF3-8E6CAFC49C47}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DA6D705F-943E-4E6E-9AF3-8E6CAFC49C47}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DA6D705F-943E-4E6E-9AF3-8E6CAFC49C47}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DA6D705F-943E-4E6E-9AF3-8E6CAFC49C47}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {D7ECA7B3-F6D7-4C82-91E2-9C9B385D738C}
+	EndGlobalSection
+EndGlobal

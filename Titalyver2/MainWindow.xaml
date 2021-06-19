@@ -1,0 +1,35 @@
+﻿<Window x:Class="Titalyver2.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Titalyver2"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="450" Width="800" WindowStyle="None" AllowsTransparency="True" Background="#88FFFFFF"
+        ResizeMode="CanResizeWithGrip">
+
+    <Grid>
+
+        <Canvas x:Name="Screen" Margin="0,0,526,378">
+
+        </Canvas>
+
+        <local:OutlineGlyph x:Name="Outline" Text="叱る𨦇" FontSize="100" StrokeThickness="10" Height="113" VerticalAlignment="Top" Margin="98,72,40,0">
+            <local:OutlineGlyph.Stroke>
+                <LinearGradientBrush EndPoint="75.1,0" StartPoint="75,0" MappingMode="Absolute">
+                    <GradientStop Color="#FF2E00FF"/>
+                    <GradientStop Color="Red" Offset="1"/>
+                </LinearGradientBrush>
+            </local:OutlineGlyph.Stroke>
+            <local:OutlineGlyph.Fill>
+                <LinearGradientBrush EndPoint="0.11,0" StartPoint="0.1,0" MappingMode="RelativeToBoundingBox">
+                    <GradientStop Color="White" Offset="0"/>
+                    <GradientStop Color="#FF00FF68" Offset="1"/>
+                </LinearGradientBrush>
+            </local:OutlineGlyph.Fill>
+        </local:OutlineGlyph>
+        <local:KaraokeLine x:Name="TestLine" HorizontalAlignment="Left" Height="100" Margin="120,332,0,0" VerticalAlignment="Top" Width="510" FontSize="71" StrokeThickness="5" Time="5"/>
+    </Grid>
+
+
+</Window>

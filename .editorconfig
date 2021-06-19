@@ -1,0 +1,4 @@
+﻿[*.{cs,vb}]
+
+# IDE0048: わかりやすくするためにかっこを追加
+dotnet_diagnostic.IDE0048.severity = silent
