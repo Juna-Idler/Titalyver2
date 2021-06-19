@@ -58,7 +58,7 @@ namespace Titalyver2
         public double StrokeThickness { get => (double)GetValue(StrokeThicknessProperty); set => SetValue(StrokeThicknessProperty, value); }
         public static readonly DependencyProperty StrokeThicknessProperty = DependencyProperty.Register(
             "StrokeThickness", typeof(double), typeof(KaraokeLine),
-            new FrameworkPropertyMetadata(2.0,FrameworkPropertyMetadataOptions.AffectsRender, OnChangedStrokeParams));
+            new FrameworkPropertyMetadata(2.0,FrameworkPropertyMetadataOptions.AffectsRender, OnChangeStrokeTickness));
 
         [Description("文字の大きさ"), Category("Karaoke Line"), DefaultValue(20)]
         public double FontSize { get => (double)GetValue(FontSizeProperty); set => SetValue(FontSizeProperty, value); }
@@ -73,7 +73,7 @@ namespace Titalyver2
             new FrameworkPropertyMetadata("Lyrics line", FrameworkPropertyMetadataOptions.AffectsRender,
                 (d,e)=> {
                     KaraokeLine _this = (KaraokeLine)d;
-                    _this.SetLyricsLine(new LyricsContainer.Line("[00:00.00]" + _this.TestText + "[00:10.00][00:10.00]"));
+                    _this.SetLyricsLine(new LyricsContainer.Line("[00:00.00]" + _this.TestText + "[00:10.00][00:10.00]", new AtTagContainer("")));
                     OnChangedFont(d,e);
                 }));
 
@@ -87,8 +87,6 @@ namespace Titalyver2
         private static void OnChangedFillColors(DependencyObject dependencyObject, DependencyPropertyChangedEventArgs e)
         {
             KaraokeLine _this = (KaraokeLine)dependencyObject;
-            _this.ActiveFill = _this.ActiveFillColor;
-            _this.StandbyFill = _this.StandbyFillColor;
             _this.SetFillWipe();
 
         }
@@ -96,10 +94,18 @@ namespace Titalyver2
         private static void OnChangedStrokeParams(DependencyObject dependencyObject, DependencyPropertyChangedEventArgs e)
         {
             KaraokeLine _this = (KaraokeLine)dependencyObject;
-            _this.ActiveStroke.Brush = _this.ActiveStrokeColor;
-            _this.StandbyStroke.Brush = _this.StandbyStrokeColor;
-            _this.ActiveStroke.Thickness = _this.StandbyStroke.Thickness = _this.StrokeThickness;
             _this.SetStrokeWipe();
+        }
+        private static void OnChangeStrokeTickness(DependencyObject dependencyObject, DependencyPropertyChangedEventArgs e)
+        {
+            KaraokeLine _this = (KaraokeLine)dependencyObject;
+
+            if (_this.Words == null)
+                return;
+            foreach (KaraokeWord w in _this.Words)
+            {
+                w.WipeDrawResource.Pen.Thickness = _this.StrokeThickness / (w.IsRuby ? 2 : 1);
+            }
         }
         private static void OnChangedFont(DependencyObject dependencyObject, DependencyPropertyChangedEventArgs e)
         {
@@ -110,14 +116,6 @@ namespace Titalyver2
 
 
         private GlyphTypeface GlyphTypeface;
-
-        private LinearGradientBrush FillWipe;
-        private LinearGradientBrush StrokeWipe;
-
-        private Pen ActiveStroke;
-        private Pen StandbyStroke;
-        private SolidColorBrush ActiveFill;
-        private SolidColorBrush StandbyFill;
 
 
         private LyricsContainer.Line Line;
@@ -133,39 +131,27 @@ namespace Titalyver2
 
         private void SetFillWipe()
         {
-            if (FillWipe == null)
+            if (Words == null)
+                return;
+            foreach (KaraokeWord w in Words)
             {
-                GradientStop[] gsf = { new (ActiveFillColor.Color,0),new (ActiveFillColor.Color,0.5),
-                                  new (StandbyFillColor.Color,0.5),new (StandbyFillColor.Color,1)};
-                FillWipe = new(new(gsf), 0);
-                FillWipe.MappingMode = BrushMappingMode.Absolute;
-            }
-            else
-            {
-                FillWipe.GradientStops[0].Color = ActiveFillColor.Color;
-                FillWipe.GradientStops[1].Color = ActiveFillColor.Color;
-                FillWipe.GradientStops[2].Color = StandbyFillColor.Color;
-                FillWipe.GradientStops[3].Color = StandbyFillColor.Color;
-
+                w.WipeDrawResource.WipeStroke.GradientStops[0].Color = ActiveFillColor.Color;
+                w.WipeDrawResource.WipeStroke.GradientStops[1].Color = StandbyFillColor.Color;
+                //                GradientStop[] gss = { new(ActiveFillColor.Color, 0), new(StandbyFillColor.Color, 1) };
+                //                w.WipeDrawResource.WipeStroke.GradientStops = new GradientStopCollection(gss);
             }
         }
         private void SetStrokeWipe()
         {
-            if (StrokeWipe == null)
+            if (Words == null)
+                return;
+            foreach (KaraokeWord w in Words)
             {
-                GradientStop[] gss = { new (ActiveStrokeColor.Color,0),new (ActiveStrokeColor.Color,0.5),
-                                  new (StandbyStrokeColor.Color,0.5),new (StandbyStrokeColor.Color,1)};
-                StrokeWipe = new(new(gss), 0);
-                StrokeWipe.MappingMode = BrushMappingMode.Absolute;
+                w.WipeDrawResource.WipeStroke.GradientStops[0].Color = ActiveStrokeColor.Color;
+                w.WipeDrawResource.WipeStroke.GradientStops[1].Color = StandbyStrokeColor.Color;
+//                GradientStop[] gss = { new(ActiveStrokeColor.Color, 0), new(StandbyStrokeColor.Color, 1) };
+//                w.WipeDrawResource.WipeStroke.GradientStops = new GradientStopCollection(gss);
             }
-            else
-            {
-                StrokeWipe.GradientStops[0].Color = ActiveStrokeColor.Color;
-                StrokeWipe.GradientStops[1].Color = ActiveStrokeColor.Color;
-                StrokeWipe.GradientStops[2].Color = StandbyStrokeColor.Color;
-                StrokeWipe.GradientStops[3].Color = StandbyStrokeColor.Color;
-            }
-
         }
 
 
@@ -175,17 +161,9 @@ namespace Titalyver2
 
 
             SetFillWipe();
-            SetStrokeWipe();
 
-            ActiveStroke = new Pen(ActiveStrokeColor, StrokeThickness);
-            ActiveStroke.LineJoin = PenLineJoin.Round;
-            StandbyStroke = new Pen(StandbyStrokeColor, StrokeThickness);
-            StandbyStroke.LineJoin = PenLineJoin.Round;
 
-            ActiveFill = Brushes.White;
-            StandbyFill = Brushes.LightGray;
-
-            SetLyricsLine(new LyricsContainer.Line("[00:00.00]" + TestText + "[00:10.00][00:10.00]"));
+            SetLyricsLine(new LyricsContainer.Line("[00:00.00]" + TestText + "[00:10.00][00:10.00]",new AtTagContainer("")));
 
             MakeWords();
 
@@ -210,11 +188,16 @@ namespace Titalyver2
             foreach (LyricsContainer.Line.WordWithRuby wwr in Line.Words)
             {
                 KaraokeWord word = new(wwr.Word, GlyphTypeface, FontSize);
+                word.WipeDrawResource = new(ActiveFillColor.Color, StandbyFillColor.Color,
+                                            ActiveStrokeColor.Color, StandbyStrokeColor.Color, StrokeThickness);
                 if (wwr.HasRuby)
                 {
                     KaraokeWord ruby = new(wwr.Ruby, GlyphTypeface, FontSize / 2, true);
+                    ruby.WipeDrawResource = new(ActiveFillColor.Color, StandbyFillColor.Color,
+                                                ActiveStrokeColor.Color, StandbyStrokeColor.Color, StrokeThickness / 2);
 
-                    if (ruby_x + (word.Width - ruby.Width)/2 < 0)
+
+                    if (ruby_x + (word.Width - ruby.Width) / 2 < 0)
                     {
                         x += -ruby_x - ((word.Width - ruby.Width) / 2);
                     }
@@ -246,36 +229,38 @@ namespace Titalyver2
 
             if (StartTime < Time && Time < EndTime)
             {
-                Pen wipePen = new(StrokeWipe, StrokeThickness);
-                wipePen.LineJoin = PenLineJoin.Round;
 
                 foreach (KaraokeWord w in Words)
+//                for (int i = Words.Length -1;i >= 0;i--)
                 {
+                    //                    KaraokeWord w = Words[i];
                     if (w.StarTime > Time)
-                        drawingContext.DrawGeometry(null, StandbyStroke, w.Glyphs);
-                    else if (w.EndTime < Time)
-                        drawingContext.DrawGeometry(null, ActiveStroke, w.Glyphs);
-                    else
                     {
-                        double wipe_x = w.GetWipePointX(Time);
-                        StrokeWipe.StartPoint = new Point(wipe_x, 0);
-                        StrokeWipe.EndPoint = new Point(wipe_x + 0.1, 0);
-                        drawingContext.DrawGeometry(null, wipePen, w.Glyphs);
+                        w.WipeDrawResource.SetPenBrush(StandbyStrokeColor);
                     }
-                }
-                foreach (KaraokeWord w in Words)
-                {
-                    if (w.StarTime > Time)
-                        drawingContext.DrawGeometry(StandbyFill, null, w.Glyphs);
                     else if (w.EndTime < Time)
-                        drawingContext.DrawGeometry(ActiveFill, null, w.Glyphs);
+                    {
+                        w.WipeDrawResource.SetPenBrush(ActiveStrokeColor);
+                    }
                     else
                     {
-                        double wipe_x = w.GetWipePointX();
-                        FillWipe.StartPoint = new Point(wipe_x, 0);
-                        FillWipe.EndPoint = new Point(wipe_x + 0.1, 0);
+                        w.WipeDrawResource.SetPenWipeBrush();
+                        w.WipeDrawResource.SetWipePoint(w.GetWipePointX(Time));
+                    }
+                    drawingContext.DrawGeometry(null, w.WipeDrawResource.Pen, w.Glyphs);
+                }
+//                foreach (KaraokeWord w in Words)
+                for (int i = Words.Length - 1; i >= 0; i--)
 
-                        drawingContext.DrawGeometry(FillWipe, null, w.Glyphs);
+                {
+                    KaraokeWord w = Words[i];
+                    if (w.StarTime > Time)
+                        drawingContext.DrawGeometry(StandbyFillColor, null, w.Glyphs);
+                    else if (w.EndTime < Time)
+                        drawingContext.DrawGeometry(ActiveFillColor, null, w.Glyphs);
+                    else
+                    {
+                        drawingContext.DrawGeometry(w.WipeDrawResource.WipeFill, null, w.Glyphs);
                     }
                 }
                 return;
@@ -291,10 +276,41 @@ namespace Titalyver2
                 return;
             }
 
-            foreach (KaraokeWord w in Words) { drawingContext.DrawGeometry(null, StandbyStroke, w.Glyphs); }
-            foreach (KaraokeWord w in Words) { drawingContext.DrawGeometry(StandbyFill, null, w.Glyphs); }
+            foreach (KaraokeWord w in Words)
+            {
+                w.WipeDrawResource.SetPenBrush(StandbyStrokeColor);
+                drawingContext.DrawGeometry(null, w.WipeDrawResource.Pen, w.Glyphs);
+            }
+            foreach (KaraokeWord w in Words) { drawingContext.DrawGeometry(StandbyFillColor, null, w.Glyphs); }
         }
 
+        private class WipeDrawResource
+        {
+            public Pen Pen { get; }
+            public LinearGradientBrush WipeStroke { get; }
+            public LinearGradientBrush WipeFill { get; }
+
+            public WipeDrawResource(Color activeFill,Color standbyFill,
+                                    Color activeStroke,Color standbyStroke,
+                                    double tickness)
+            {
+                WipeStroke = new LinearGradientBrush(activeStroke, standbyStroke, 0);
+                WipeStroke.MappingMode = BrushMappingMode.Absolute;
+                WipeFill = new LinearGradientBrush(activeFill, standbyFill, 0);
+                WipeFill.MappingMode = BrushMappingMode.Absolute;
+                Pen = new Pen(WipeStroke, tickness);
+                Pen.LineJoin = PenLineJoin.Round;
+            }
+
+            public void SetPenWipeBrush() { Pen.Brush = WipeStroke; }
+            public void SetPenBrush(Brush b) { Pen.Brush = b; }
+
+            public void SetWipePoint(double x)
+            {
+                WipeFill.StartPoint = WipeStroke.StartPoint = new Point(x, 0);
+                WipeFill.EndPoint = WipeStroke.EndPoint = new Point(x + 0.01, 0);
+            }
+        }
 
 
         private class KaraokeWord
@@ -310,9 +326,8 @@ namespace Titalyver2
 
             public bool IsRuby { get; }
 
-            public double OffsetX { get; set; }
 
-            public KaraokeWord(LyricsContainer.Word word, GlyphTypeface glyphTypeface , double fontSize, bool isruby = false)
+            public KaraokeWord(LyricsContainer.Word word, GlyphTypeface glyphTypeface, double fontSize, bool isruby = false)
             {
                 GeometryGroup group = new();
                 double x = 0;
@@ -362,7 +377,7 @@ namespace Titalyver2
                         width = 0;
                     }
                 }
-                times.RemoveAt(0);times.RemoveAt(times.Count - 1);
+                times.RemoveAt(0); times.RemoveAt(times.Count - 1);
                 widths.RemoveAt(0); widths.RemoveAt(widths.Count - 1);
                 StarTime = word.StartTimes[0] / 1000.0;
                 EndTime = word.EndTimes[^1] / 1000.0;
@@ -374,8 +389,13 @@ namespace Titalyver2
                 Height = glyphTypeface.Height * fontSize;
 
                 IsRuby = isruby;
+
             }
 
+            //LinearGradientBrushが使いまわせないので各個に持たせる
+            public WipeDrawResource WipeDrawResource { get; set; }
+
+            public double OffsetX { get; set; }
             private double WipeX;
             public double GetWipePointX(double time)
             {
@@ -398,7 +418,7 @@ namespace Titalyver2
                 }
                 {
                     double rate = (time - last_time) / (EndTime - last_time);
-                    return WipeX = x + ((Width - x - OffsetX) * rate);
+                    return WipeX = x + ((Width - (x - OffsetX)) * rate);
                 }
             }
             public double GetWipePointX() => WipeX;

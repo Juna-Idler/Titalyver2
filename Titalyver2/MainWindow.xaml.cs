@@ -73,7 +73,7 @@ namespace Titalyver2
 //            string text = System.IO.File.ReadAllText(path);
 
             lyrics = new LyricsContainer(lyrics_text);
-            TestLine.Time = 5;
+            TestLine.Time = 1;
 
        }
 

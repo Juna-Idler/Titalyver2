@@ -28,7 +28,7 @@
                 </LinearGradientBrush>
             </local:OutlineGlyph.Fill>
         </local:OutlineGlyph>
-        <local:KaraokeLine x:Name="TestLine" HorizontalAlignment="Left" Height="100" Margin="120,332,0,0" VerticalAlignment="Top" Width="510" FontSize="71" StrokeThickness="5" Time="5"/>
+        <local:KaraokeLine x:Name="TestLine" HorizontalAlignment="Left" Height="186" Margin="98,208,0,0" VerticalAlignment="Top" Width="510" FontSize="100" StrokeThickness="8" TestText="｜親文字《おやもじ》" Time="3"/>
     </Grid>
 
 
