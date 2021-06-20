@@ -25,14 +25,14 @@ namespace Titalyver2
         }
 
         //ワイプ後文字色
-        [Description("ワイプ後文字色"), Category("Karaoke Line"), DefaultValue(typeof(SolidColorBrush),"white")]
+        [Description("ワイプ後文字色"), Category("Karaoke Line")]
         public SolidColorBrush ActiveFillColor { get => (SolidColorBrush)GetValue(ActiveFillColorProperty); set => SetValue(ActiveFillColorProperty, value); }
         public static readonly DependencyProperty ActiveFillColorProperty = DependencyProperty.Register(
             "ActiveFillColor", typeof(SolidColorBrush), typeof(KaraokeLine),
             new FrameworkPropertyMetadata(Brushes.White,
                                           FrameworkPropertyMetadataOptions.AffectsRender, OnChangedFillColors));
         //ワイプ前文字色
-        [Description("ワイプ前文字色"), Category("Karaoke Line"), DefaultValue(typeof(SolidColorBrush), "192, 192, 192")]
+        [Description("ワイプ前文字色"), Category("Karaoke Line")]
         public SolidColorBrush StandbyFillColor { get => (SolidColorBrush)GetValue(StandbyFillColorProperty); set => SetValue(StandbyFillColorProperty, value); }
         public static readonly DependencyProperty StandbyFillColorProperty = DependencyProperty.Register(
             "StandbyFillColor", typeof(SolidColorBrush), typeof(KaraokeLine),
@@ -58,13 +58,15 @@ namespace Titalyver2
         public double StrokeThickness { get => (double)GetValue(StrokeThicknessProperty); set => SetValue(StrokeThicknessProperty, value); }
         public static readonly DependencyProperty StrokeThicknessProperty = DependencyProperty.Register(
             "StrokeThickness", typeof(double), typeof(KaraokeLine),
-            new FrameworkPropertyMetadata(2.0,FrameworkPropertyMetadataOptions.AffectsRender, OnChangeStrokeTickness));
+            new FrameworkPropertyMetadata(2.0, FrameworkPropertyMetadataOptions.AffectsRender, OnChangeStrokeTickness));
+
 
         [Description("文字の大きさ"), Category("Karaoke Line"), DefaultValue(20)]
         public double FontSize { get => (double)GetValue(FontSizeProperty); set => SetValue(FontSizeProperty, value); }
         public static readonly DependencyProperty FontSizeProperty = DependencyProperty.Register(
             "FontSize", typeof(double), typeof(KaraokeLine),
             new FrameworkPropertyMetadata(20.0, FrameworkPropertyMetadataOptions.AffectsRender, OnChangedFont));
+
 
         [Description("テスト表示用"), Category("Karaoke Line"), DefaultValue("Lyrics line")]
         public string TestText { get => (string)GetValue(TestTextProperty); set => SetValue(TestTextProperty, value); }
@@ -128,6 +130,8 @@ namespace Titalyver2
 
         private KaraokeWord[] Words;
 
+        private double LastRenderTime;
+
 
         private void SetFillWipe()
         {
@@ -135,10 +139,8 @@ namespace Titalyver2
                 return;
             foreach (KaraokeWord w in Words)
             {
-                w.WipeDrawResource.WipeStroke.GradientStops[0].Color = ActiveFillColor.Color;
-                w.WipeDrawResource.WipeStroke.GradientStops[1].Color = StandbyFillColor.Color;
-                //                GradientStop[] gss = { new(ActiveFillColor.Color, 0), new(StandbyFillColor.Color, 1) };
-                //                w.WipeDrawResource.WipeStroke.GradientStops = new GradientStopCollection(gss);
+                w.WipeDrawResource.WipeFill.GradientStops[0].Color = ActiveFillColor.Color;
+                w.WipeDrawResource.WipeFill.GradientStops[1].Color = StandbyFillColor.Color;
             }
         }
         private void SetStrokeWipe()
@@ -149,8 +151,6 @@ namespace Titalyver2
             {
                 w.WipeDrawResource.WipeStroke.GradientStops[0].Color = ActiveStrokeColor.Color;
                 w.WipeDrawResource.WipeStroke.GradientStops[1].Color = StandbyStrokeColor.Color;
-//                GradientStop[] gss = { new(ActiveStrokeColor.Color, 0), new(StandbyStrokeColor.Color, 1) };
-//                w.WipeDrawResource.WipeStroke.GradientStops = new GradientStopCollection(gss);
             }
         }
 
@@ -159,28 +159,35 @@ namespace Titalyver2
         {
             GlyphTypeface = system_gtf;
 
-
-            SetFillWipe();
-
-
             SetLyricsLine(new LyricsContainer.Line("[00:00.00]" + TestText + "[00:10.00][00:10.00]",new AtTagContainer("")));
-
             MakeWords();
-
-
         }
+
+        public KaraokeLine(GlyphTypeface glyphTypeface, double fontSize, SolidColorBrush activeFill,SolidColorBrush activeStroke,
+            SolidColorBrush standbyFill, SolidColorBrush standbyStroke, double strokeTickness, LyricsContainer.Line line)
+        {
+            GlyphTypeface = glyphTypeface;
+            FontSize = fontSize;
+            ActiveFillColor = activeFill;
+            ActiveStrokeColor = activeStroke;
+            StandbyFillColor = standbyFill;
+            StandbyStrokeColor = standbyStroke;
+            StrokeThickness = strokeTickness;
+
+            SetLyricsLine(line);
+        }
+
 
         public void SetLyricsLine(LyricsContainer.Line line)
         {
             Line = line;
-            StartTime = line.StartTime;
-            EndTime = line.EndTime;
-
             _ = Line.Complement();
             MakeWords();
         }
         private void MakeWords()
         {
+            if (Line == null || GlyphTypeface == null || FontSize == 0)
+                return;
             double x = 0;
             double ruby_x = 100;
             double y = Line.HasRuby ? GlyphTypeface.Baseline * FontSize / 2 : 0;
@@ -195,7 +202,6 @@ namespace Titalyver2
                     KaraokeWord ruby = new(wwr.Ruby, GlyphTypeface, FontSize / 2, true);
                     ruby.WipeDrawResource = new(ActiveFillColor.Color, StandbyFillColor.Color,
                                                 ActiveStrokeColor.Color, StandbyStrokeColor.Color, StrokeThickness / 2);
-
 
                     if (ruby_x + (word.Width - ruby.Width) / 2 < 0)
                     {
@@ -217,15 +223,26 @@ namespace Titalyver2
                 x += word.Width;
             }
             Words = words.ToArray();
-            StartTime = Line.StartTime;
-            EndTime = Line.EndTime;
+            StartTime = Line.StartTime / 1000.0;
+            EndTime = Line.EndTime / 1000.0;
+            Height = y + GlyphTypeface.Height * FontSize;
+
+            SetFillWipe();
+            SetStrokeWipe();
         }
 
+        public bool NeedRender(double time) => ((StartTime < time && time < EndTime) ||
+                (time < StartTime && time > StartTime - FadeInTime) ||
+                (time > EndTime && time < EndTime + FadeOutTime) ||
+                (StartTime < LastRenderTime && LastRenderTime < EndTime) ||
+                (LastRenderTime < StartTime && LastRenderTime > StartTime - FadeInTime) ||
+                (LastRenderTime > EndTime && LastRenderTime < EndTime + FadeOutTime));
 
         protected override void OnRender(DrawingContext drawingContext)
         {
             if (Words == null)
                 return;
+            LastRenderTime = Time;
 
             if (StartTime < Time && Time < EndTime)
             {

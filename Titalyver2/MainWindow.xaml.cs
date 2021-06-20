@@ -13,6 +13,8 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
+using System.Diagnostics;
+
 namespace Titalyver2
 {
     /// <summary>
@@ -22,13 +24,18 @@ namespace Titalyver2
     {
 
         private LyricsContainer lyrics;
+
+        private List<KaraokeLine> Lines = new();
+
+        private Stopwatch Stopwatch;
         public MainWindow()
         {
             InitializeComponent();
 
             MouseLeftButtonDown += (_, __) => { DragMove(); };
+            MouseWheel += MainWindow_MouseWheel;
 
-//            CompositionTarget.Rendering += CompositionTarget_Rendering;
+            CompositionTarget.Rendering += CompositionTarget_Rendering;
 
 
             GlyphTypeface system_gtf = null;
@@ -41,19 +48,11 @@ namespace Titalyver2
 
             }
 
-            Color start = Color.FromRgb(255, 0, 0);
-            Color end = Color.FromRgb(0, 0, 255);
-            LinearGradientBrush lgb = new(start, end, new Point(0, 0), new Point(300, 0));
-            lgb.MappingMode = BrushMappingMode.Absolute;
-            lgb.GradientStops.Insert(1, new GradientStop(start, 0.1));
-            lgb.GradientStops.Insert(2, new GradientStop(end, 0.1));
-            Outline.Fill = lgb;
-            Outline.Stroke = lgb;
-
             IEnumerable<FontFamily> FontList;
 
             FontList = Fonts.SystemFontFamilies;
-            foreach(FontFamily font in FontList)
+            GlyphTypeface glyph = null;
+            foreach (FontFamily font in FontList)
             {
                 GlyphTypeface gtf = null;
                 foreach (Typeface typeface in font.GetTypefaces())
@@ -65,6 +64,7 @@ namespace Titalyver2
                 }
                 if (gtf != null)
                 {
+                    glyph = gtf;
                     Uri uri = gtf.FontUri;
                 }
 
@@ -75,19 +75,37 @@ namespace Titalyver2
             lyrics = new LyricsContainer(lyrics_text);
             TestLine.Time = 1;
 
+            foreach (var l in lyrics.Lines)
+            {
+                KaraokeLine kl = new(system_gtf,30,Brushes.White,Brushes.Red,Brushes.White,Brushes.Blue,5,l);
+                LineList.Children.Add(kl);
+                Lines.Add(kl);
+            }
+
+            Stopwatch = new Stopwatch();
+            Stopwatch.Start();
+
+
+
        }
 
-        bool skip;
+        private void MainWindow_MouseWheel(object sender, MouseWheelEventArgs e)
+        {
+            double top = Canvas.GetTop(LineList);
+            Canvas.SetTop(LineList, top + e.Delta);
+//            throw new NotImplementedException();
+        }
+
 
         void CompositionTarget_Rendering(object sender, EventArgs e)
         {
-                return;
-            skip = !skip;
-            if (skip)
+            double time = Stopwatch.Elapsed.TotalSeconds;
+
+            foreach (var kl in Lines)
             {
+               if (kl.NeedRender(time))
+                    kl.Time = time;
             }
-
-
         }
 
         private const string lyrics_text = @"
@@ -151,6 +169,9 @@ namespace Titalyver2
 @ruby_end=》
 ";
 
-            
+        private void CloseButton_Click(object sender, RoutedEventArgs e)
+        {
+            Close();
+        }
     }
 }

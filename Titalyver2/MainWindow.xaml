@@ -5,31 +5,13 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Titalyver2"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800" WindowStyle="None" AllowsTransparency="True" Background="#88FFFFFF"
+        Title="MainWindow" Height="450" Width="800" WindowStyle="None" AllowsTransparency="True" Background="#7F000000"
         ResizeMode="CanResizeWithGrip">
+    <Canvas x:Name="Screen" ClipToBounds="True">
+        <StackPanel x:Name="LineList" Orientation="Vertical" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Canvas.Left="0" Canvas.Top="0">
+            <local:KaraokeLine x:Name="TestLine" TestText="｜親《おや》｜文字《もじ》" Time="7" FontSize="30" StrokeThickness="2"/>
 
-    <Grid>
-
-        <Canvas x:Name="Screen" Margin="0,0,526,378">
-
-        </Canvas>
-
-        <local:OutlineGlyph x:Name="Outline" Text="叱る𨦇" FontSize="100" StrokeThickness="10" Height="113" VerticalAlignment="Top" Margin="98,72,40,0">
-            <local:OutlineGlyph.Stroke>
-                <LinearGradientBrush EndPoint="75.1,0" StartPoint="75,0" MappingMode="Absolute">
-                    <GradientStop Color="#FF2E00FF"/>
-                    <GradientStop Color="Red" Offset="1"/>
-                </LinearGradientBrush>
-            </local:OutlineGlyph.Stroke>
-            <local:OutlineGlyph.Fill>
-                <LinearGradientBrush EndPoint="0.11,0" StartPoint="0.1,0" MappingMode="RelativeToBoundingBox">
-                    <GradientStop Color="White" Offset="0"/>
-                    <GradientStop Color="#FF00FF68" Offset="1"/>
-                </LinearGradientBrush>
-            </local:OutlineGlyph.Fill>
-        </local:OutlineGlyph>
-        <local:KaraokeLine x:Name="TestLine" HorizontalAlignment="Left" Height="186" Margin="98,208,0,0" VerticalAlignment="Top" Width="510" FontSize="100" StrokeThickness="8" TestText="｜親文字《おやもじ》" Time="3"/>
-    </Grid>
-
-
+        </StackPanel>
+        <Button x:Name="CloseButton" Content="×" Canvas.Right="0" Canvas.Top="0" Width="32" Height="32" FontSize="20" FontFamily="MS UI Gothic" FontWeight="Bold" FontStyle="Normal" Background="{x:Null}" Click="CloseButton_Click"/>
+    </Canvas>
 </Window>

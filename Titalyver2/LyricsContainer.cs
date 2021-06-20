@@ -46,10 +46,19 @@ namespace Titalyver2
         }
 
 
-        public struct Line
+        public class Line
         {
             public int StartTime { get; set; }
             public int EndTime { get; set; }
+
+            public WordWithRuby[] Words { get; }
+
+            public SyncMode Sync { get; }
+
+            public string Text => string.Join("", Words.Select(w => w.Word.Text));
+            public string PhoneticText => string.Join("", Words.Select(w => w.HasRuby ? w.Ruby.Text : w.Word.Text));
+
+            public bool HasRuby => Words.Sum(w => Convert.ToInt32(w.HasRuby)) != 0;
 
             public struct WordWithRuby
             {
@@ -59,15 +68,23 @@ namespace Titalyver2
                 {
                     Word = w;
                     Ruby = r;
+                    if (HasRuby)
+                    {
+                        if (Word.StartTimes[0] < 0)
+                            Word.StartTimes[0] = Ruby.StartTimes[0];
+                        else if (Ruby.StartTimes[0] < 0)
+                            Ruby.StartTimes[0] = Word.StartTimes[0];
+                        if (Word.EndTimes[0] < 0)
+                            Word.EndTimes[0] = Ruby.EndTimes[0];
+                        else if (Ruby.EndTimes[0] < 0)
+                            Ruby.EndTimes[0] = Word.EndTimes[0];
+                    }
                 }
                 public bool HasRuby => Ruby != null;
                 public bool NoRuby => Ruby == null;
                 public int StartTime
                 {
-                    get => NoRuby ? Word.StartTimes[0]
-                          : (Word.StartTimes[0] >= 0 && Ruby.StartTimes[0] >= 0)
-                              ? Math.Min(Word.StartTimes[0], Ruby.StartTimes[0])
-                              : Math.Max(Word.StartTimes[0], Ruby.StartTimes[0]);
+                    get => NoRuby ? Word.StartTimes[0] : Math.Min(Word.StartTimes[0], Ruby.StartTimes[0]);
                     set
                     {
                         Word.StartTimes[0] = value;
@@ -90,13 +107,7 @@ namespace Titalyver2
                 {
                     Word.Complement();
                     if (HasRuby)
-                    {
                         Ruby.Complement();
-                        if ((Ruby.StartTimes[0] < 0) ^ (Word.StartTimes[0] < 0))
-                            StartTime = StartTime;
-                        if ((Ruby.EndTimes[0] < 0) ^ (Word.EndTimes[0] < 0))
-                            EndTime = EndTime;
-                    }
                 }
                 public void GetFirstTime(out int count, out int time)
                 {
@@ -113,15 +124,6 @@ namespace Titalyver2
                         Word.GetLastTime(out count, out time);
                 }
             }
-
-            public WordWithRuby[] Words { get; }
-
-            public SyncMode Sync { get; }
-
-            public string Text => string.Join("", Words.Select(w => w.Word.Text));
-            public string PhoneticText => string.Join("", Words.Select(w => w.HasRuby ? w.Ruby.Text : w.Word.Text));
-
-            public bool HasRuby => Words.Sum(w => Convert.ToInt32(w.HasRuby)) != 0;
 
 
             public Line(string textline, AtTagContainer atTag = null)
@@ -197,19 +199,19 @@ namespace Titalyver2
                     if (Words[i].EndTime < 0 && Words[i + 1].StartTime < 0)
                     {
                         Words[i].GetLastTime(out int prev_count, out int prev_time);
-                        int nc = 0;
-                        int nt = 0;
+                        int next_count = 0;
+                        int next_time = 0;
                         for (int j = i + 1; j < Words.Length; j++)
                         {
-                            Words[j].GetFirstTime(out int next_count, out int next_time);
-                            nc += next_count;
-                            if (next_time >= 0)
+                            Words[j].GetFirstTime(out int nc, out int nt);
+                            next_count += nc;
+                            if (nt >= 0)
                             {
-                                nt = next_time;
+                                next_time = nt;
                                 break;
                             }
                         }
-                        int divtime = (prev_time * nc + nt * prev_count) / (prev_count + nt);
+                        int divtime = (prev_time * next_count + next_time * prev_count) / (prev_count + next_count);
                         Words[i].EndTime = Words[i + 1].StartTime = divtime;
                     }
                     else
