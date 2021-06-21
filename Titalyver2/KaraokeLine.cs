@@ -24,35 +24,50 @@ namespace Titalyver2
             }
         }
 
-        //ワイプ後文字色
+        //背景色とパディングも欲しい　あとルビと本文間の微調整
+
         [Description("ワイプ後文字色"), Category("Karaoke Line")]
         public SolidColorBrush ActiveFillColor { get => (SolidColorBrush)GetValue(ActiveFillColorProperty); set => SetValue(ActiveFillColorProperty, value); }
         public static readonly DependencyProperty ActiveFillColorProperty = DependencyProperty.Register(
             "ActiveFillColor", typeof(SolidColorBrush), typeof(KaraokeLine),
             new FrameworkPropertyMetadata(Brushes.White,
                                           FrameworkPropertyMetadataOptions.AffectsRender, OnChangedFillColors));
-        //ワイプ前文字色
-        [Description("ワイプ前文字色"), Category("Karaoke Line")]
-        public SolidColorBrush StandbyFillColor { get => (SolidColorBrush)GetValue(StandbyFillColorProperty); set => SetValue(StandbyFillColorProperty, value); }
-        public static readonly DependencyProperty StandbyFillColorProperty = DependencyProperty.Register(
-            "StandbyFillColor", typeof(SolidColorBrush), typeof(KaraokeLine),
-            new FrameworkPropertyMetadata(Brushes.LightGray,
-                                          FrameworkPropertyMetadataOptions.AffectsRender, OnChangedFillColors));
 
-        //ワイプ後縁色
         [Description("ワイプ後縁色"), Category("Karaoke Line")]
         public SolidColorBrush ActiveStrokeColor { get => (SolidColorBrush)GetValue(ActiveStrokeColorProperty); set => SetValue(ActiveStrokeColorProperty, value); }
         public static readonly DependencyProperty ActiveStrokeColorProperty = DependencyProperty.Register(
             "ActiveStrokeColor", typeof(SolidColorBrush), typeof(KaraokeLine),
             new FrameworkPropertyMetadata(Brushes.Red,
-                                          FrameworkPropertyMetadataOptions.AffectsRender, OnChangedStrokeParams));
-        //ワイプ前縁色
+                                          FrameworkPropertyMetadataOptions.AffectsRender, OnChangedStrokeColor));
+
+        [Description("ワイプ前文字色"), Category("Karaoke Line")]
+        public SolidColorBrush StandbyFillColor { get => (SolidColorBrush)GetValue(StandbyFillColorProperty); set => SetValue(StandbyFillColorProperty, value); }
+        public static readonly DependencyProperty StandbyFillColorProperty = DependencyProperty.Register(
+            "StandbyFillColor", typeof(SolidColorBrush), typeof(KaraokeLine),
+            new FrameworkPropertyMetadata(Brushes.White,
+                                          FrameworkPropertyMetadataOptions.AffectsRender, OnChangedFillColors));
+
         [Description("ワイプ前縁色"), Category("Karaoke Line")]
         public SolidColorBrush StandbyStrokeColor { get => (SolidColorBrush)GetValue(StandbyStrokeColorProperty); set => SetValue(StandbyStrokeColorProperty, value); }
         public static readonly DependencyProperty StandbyStrokeColorProperty = DependencyProperty.Register(
             "StandbyStrokeColor", typeof(SolidColorBrush), typeof(KaraokeLine),
             new FrameworkPropertyMetadata(Brushes.Blue,
-                                          FrameworkPropertyMetadataOptions.AffectsRender, OnChangedStrokeParams));
+                                          FrameworkPropertyMetadataOptions.AffectsRender, OnChangedStrokeColor));
+
+        [Description("休眠文字色"), Category("Karaoke Line")]
+        public SolidColorBrush SleepFillColor { get => (SolidColorBrush)GetValue(SleepFillColorProperty); set => SetValue(SleepFillColorProperty, value); }
+        public static readonly DependencyProperty SleepFillColorProperty = DependencyProperty.Register(
+            "SleepFillColor", typeof(SolidColorBrush), typeof(KaraokeLine),
+            new FrameworkPropertyMetadata(Brushes.LightGray,
+                                          FrameworkPropertyMetadataOptions.AffectsRender));
+
+        [Description("休眠縁色"), Category("Karaoke Line")]
+        public SolidColorBrush SleepStrokeColor { get => (SolidColorBrush)GetValue(SleepStrokeColorProperty); set => SetValue(SleepStrokeColorProperty, value); }
+        public static readonly DependencyProperty SleepStrokeColorProperty = DependencyProperty.Register(
+            "SleepStrokeColor", typeof(SolidColorBrush), typeof(KaraokeLine),
+            new FrameworkPropertyMetadata(Brushes.DarkBlue,
+                                          FrameworkPropertyMetadataOptions.AffectsRender));
+
         //縁の太さ
         [Description("縁の太さ"), Category("Karaoke Line"), DefaultValue(2)]
         public double StrokeThickness { get => (double)GetValue(StrokeThicknessProperty); set => SetValue(StrokeThicknessProperty, value); }
@@ -68,11 +83,11 @@ namespace Titalyver2
             new FrameworkPropertyMetadata(20.0, FrameworkPropertyMetadataOptions.AffectsRender, OnChangedFont));
 
 
-        [Description("テスト表示用"), Category("Karaoke Line"), DefaultValue("Lyrics line")]
+        [Description("テスト表示用"), Category("Karaoke Line"), DefaultValue("テスト｜表示《ひょうじ》")]
         public string TestText { get => (string)GetValue(TestTextProperty); set => SetValue(TestTextProperty, value); }
         public static readonly DependencyProperty TestTextProperty = DependencyProperty.Register(
             "TestText", typeof(string), typeof(KaraokeLine),
-            new FrameworkPropertyMetadata("Lyrics line", FrameworkPropertyMetadataOptions.AffectsRender,
+            new FrameworkPropertyMetadata("テスト｜表示《ひょうじ》", FrameworkPropertyMetadataOptions.AffectsRender,
                 (d,e)=> {
                     KaraokeLine _this = (KaraokeLine)d;
                     _this.SetLyricsLine(new LyricsContainer.Line("[00:00.00]" + _this.TestText + "[00:10.00][00:10.00]", new AtTagContainer("")));
@@ -93,7 +108,7 @@ namespace Titalyver2
 
         }
 
-        private static void OnChangedStrokeParams(DependencyObject dependencyObject, DependencyPropertyChangedEventArgs e)
+        private static void OnChangedStrokeColor(DependencyObject dependencyObject, DependencyPropertyChangedEventArgs e)
         {
             KaraokeLine _this = (KaraokeLine)dependencyObject;
             _this.SetStrokeWipe();
@@ -116,21 +131,23 @@ namespace Titalyver2
         }
 
 
+        public double FadeInTime { get; set; } = 0.5;
+        public double FadeOutTime { get; set; } = 1.0;
+
+        public double StartTime { get; private set; }
+        public double EndTime { get; private set; }
+
 
         private GlyphTypeface GlyphTypeface;
 
-
         private LyricsContainer.Line Line;
-        private double StartTime;
-        private double EndTime;
-
-        private double FadeInTime = 0;
-        private double FadeOutTime = 0;
+        private readonly SolidColorBrush FadeFillBrush = new();
+        private readonly SolidColorBrush FadeStrokeBrush = new();
 
 
         private KaraokeWord[] Words;
 
-        private double LastRenderTime;
+        private bool IsLastRenderOnSleep;
 
 
         private void SetFillWipe()
@@ -231,18 +248,19 @@ namespace Titalyver2
             SetStrokeWipe();
         }
 
-        public bool NeedRender(double time) => ((StartTime < time && time < EndTime) ||
-                (time < StartTime && time > StartTime - FadeInTime) ||
-                (time > EndTime && time < EndTime + FadeOutTime) ||
-                (StartTime < LastRenderTime && LastRenderTime < EndTime) ||
-                (LastRenderTime < StartTime && LastRenderTime > StartTime - FadeInTime) ||
-                (LastRenderTime > EndTime && LastRenderTime < EndTime + FadeOutTime));
+        public bool NeedRender(double time)
+        {
+            return (StartTime < time && time < EndTime) ||
+                    (time < StartTime && time > StartTime - FadeInTime) ||
+                    (time > EndTime && time < EndTime + FadeOutTime) ||
+                    !IsLastRenderOnSleep;
+        }
 
         protected override void OnRender(DrawingContext drawingContext)
         {
             if (Words == null)
                 return;
-            LastRenderTime = Time;
+            IsLastRenderOnSleep = false;
 
             if (StartTime < Time && Time < EndTime)
             {
@@ -283,22 +301,32 @@ namespace Titalyver2
                 return;
             }
 
+            SolidColorBrush fill = FadeFillBrush, stroke = FadeStrokeBrush;
+
             if (Time < StartTime && Time > StartTime - FadeInTime)
             {
-
-                return;
+                double rate = (Time - (StartTime - FadeInTime)) / FadeInTime;
+                FadeFillBrush.Color = (StandbyFillColor.Color * (float)rate) + (SleepFillColor.Color * (float)(1 - rate));
+                FadeStrokeBrush.Color = (StandbyStrokeColor.Color * (float)rate) + (SleepStrokeColor.Color * (float)(1 - rate));
             }
-            if (Time > EndTime && Time < EndTime + FadeOutTime)
+            else if (Time > EndTime && Time < EndTime + FadeOutTime)
             {
-                return;
+                double rate = (Time - EndTime) / FadeOutTime;
+                FadeFillBrush.Color = (SleepFillColor.Color * (float)rate) + (ActiveFillColor.Color * (float)(1 - rate));
+                FadeStrokeBrush.Color = (SleepStrokeColor.Color * (float)rate) + (ActiveStrokeColor.Color * (float)(1 - rate));
             }
-
+            else
+            {
+                fill = SleepFillColor;
+                stroke = SleepStrokeColor;
+                IsLastRenderOnSleep = true;
+            }
             foreach (KaraokeWord w in Words)
             {
-                w.WipeDrawResource.SetPenBrush(StandbyStrokeColor);
+                w.WipeDrawResource.SetPenBrush(stroke);
                 drawingContext.DrawGeometry(null, w.WipeDrawResource.Pen, w.Glyphs);
             }
-            foreach (KaraokeWord w in Words) { drawingContext.DrawGeometry(StandbyFillColor, null, w.Glyphs); }
+            foreach (KaraokeWord w in Words) { drawingContext.DrawGeometry(fill, null, w.Glyphs); }
         }
 
         private class WipeDrawResource
