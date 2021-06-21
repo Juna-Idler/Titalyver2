@@ -74,10 +74,10 @@ namespace Titalyver2
                             Word.StartTimes[0] = Ruby.StartTimes[0];
                         else if (Ruby.StartTimes[0] < 0)
                             Ruby.StartTimes[0] = Word.StartTimes[0];
-                        if (Word.EndTimes[0] < 0)
-                            Word.EndTimes[0] = Ruby.EndTimes[0];
-                        else if (Ruby.EndTimes[0] < 0)
-                            Ruby.EndTimes[0] = Word.EndTimes[0];
+                        if (Word.EndTimes[^1] < 0)
+                            Word.EndTimes[^1] = Ruby.EndTimes[^1];
+                        else if (Ruby.EndTimes[^1] < 0)
+                            Ruby.EndTimes[^1] = Word.EndTimes[^1];
                     }
                 }
                 public bool HasRuby => Ruby != null;
