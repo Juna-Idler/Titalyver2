@@ -5,13 +5,43 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Titalyver2"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800" WindowStyle="None" AllowsTransparency="True" Background="#7F000000"
-        ResizeMode="CanResizeWithGrip">
+        Title="Titalyver" Height="450" Width="800" WindowStyle="None" AllowsTransparency="True" Background="#7F000000"
+        ResizeMode="CanResizeWithGrip" MouseWheel="Window_MouseWheel" MouseLeftButtonDown="Window_MouseLeftButtonDown" MouseDown="Window_MouseDown">
     <Canvas x:Name="Screen" ClipToBounds="True">
         <StackPanel x:Name="LineList" Orientation="Vertical" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Canvas.Left="0" Canvas.Top="0">
-            <local:KaraokeLine x:Name="TestLine" TestText="｜親《おや》｜文字《もじ》" Time="7" FontSize="30" StrokeThickness="2"/>
-
+            <local:KaraokeLine x:Name="TestLine" Time="4" FontSize="30" StandbyStrokeColor="Black" ActiveStrokeColor="Black" StandbyFillColor="White" StrokeThickness="0"/>
         </StackPanel>
-        <Button x:Name="CloseButton" Content="×" Canvas.Right="0" Canvas.Top="0" Width="32" Height="32" FontSize="20" FontFamily="MS UI Gothic" FontWeight="Bold" FontStyle="Normal" Background="{x:Null}" Click="CloseButton_Click"/>
+        <Button x:Name="CloseButton" Canvas.Right="0" Canvas.Top="0" Width="32" Height="32" FontSize="20" FontFamily="MS UI Gothic" FontWeight="Bold" FontStyle="Normal" Click="CloseButton_Click" BorderBrush="{x:Null}">
+            <Button.Content>
+                <Canvas>
+                    <Path Stroke="white" StrokeThickness="1" Data="M-10,-10 l20,20 M10,-10 l-20,20">
+                        <Path.Effect>
+                            <BlurEffect Radius="10"/>
+                        </Path.Effect>
+                    </Path>
+                    <Path Stroke="Black" StrokeThickness="1" Data="M-10,-10 l20,20 M10,-10 l-20,20"/>
+                </Canvas>
+            </Button.Content>
+            <!-- ちょっとマウスーオーバー時の背景色を変えたいだけなのに、どんだけ面倒なんだ？ -->
+            <Button.Style>
+                <Style TargetType="Button">
+                    <Setter Property="Template">
+                        <Setter.Value>
+                            <ControlTemplate TargetType="Button">
+                                <Border Name="HoverButtonBorder" Background="Transparent">
+                                    <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                </Border>
+                                <ControlTemplate.Triggers>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter TargetName="HoverButtonBorder" Property="Background" Value="Red" />
+                                    </Trigger>
+                                </ControlTemplate.Triggers>
+                            </ControlTemplate>
+                        </Setter.Value>
+                    </Setter>
+                </Style>
+            </Button.Style>
+        </Button>
+
     </Canvas>
 </Window>

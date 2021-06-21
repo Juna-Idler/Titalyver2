@@ -14,6 +14,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 
 using System.Diagnostics;
+using System.Windows.Media.Animation;
 
 namespace Titalyver2
 {
@@ -28,12 +29,22 @@ namespace Titalyver2
         private List<KaraokeLine> Lines = new();
 
         private Stopwatch Stopwatch;
+
+        private double ManualScrollY = 0;
+        private double AutoScrollTargetY = 0;
+
+        public double AutoScrollY { get => (double)GetValue(AutoScrollYProperty); set => SetValue(AutoScrollYProperty, value); }
+        public static readonly DependencyProperty AutoScrollYProperty = DependencyProperty.Register(
+            "AutoScrollY", typeof(double), typeof(MainWindow),
+            new FrameworkPropertyMetadata(0.0));
+
+
+
         public MainWindow()
         {
             InitializeComponent();
 
-            MouseLeftButtonDown += (_, __) => { DragMove(); };
-            MouseWheel += MainWindow_MouseWheel;
+            RegisterName(LineList.Name, LineList);
 
             CompositionTarget.Rendering += CompositionTarget_Rendering;
 
@@ -74,10 +85,12 @@ namespace Titalyver2
 
             lyrics = new LyricsContainer(lyrics_text);
             TestLine.Time = 1;
-
+            GlyphTypeface bold_gtf = new GlyphTypeface(system_gtf.FontUri, StyleSimulations.BoldSimulation);
+            LineList.Children.Clear();
             foreach (var l in lyrics.Lines)
             {
-                KaraokeLine kl = new(system_gtf,30,Brushes.White,Brushes.Red,Brushes.White,Brushes.Blue,5,l);
+                KaraokeLine kl = new(bold_gtf, 30, Brushes.White, Brushes.Red, Brushes.White, Brushes.Blue, 5, l);
+                kl.Margin = new Thickness(30,0,0,0);
                 LineList.Children.Add(kl);
                 Lines.Add(kl);
             }
@@ -87,14 +100,9 @@ namespace Titalyver2
 
 
 
-       }
-
-        private void MainWindow_MouseWheel(object sender, MouseWheelEventArgs e)
-        {
-            double top = Canvas.GetTop(LineList);
-            Canvas.SetTop(LineList, top + e.Delta);
-//            throw new NotImplementedException();
         }
+
+        private DoubleAnimation  Animation = null;
 
 
         void CompositionTarget_Rendering(object sender, EventArgs e)
@@ -103,9 +111,19 @@ namespace Titalyver2
 
             foreach (var kl in Lines)
             {
-               if (kl.NeedRender(time))
+                if (Animation == null && time < kl.StartTime && kl.StartTime - kl.FadeInTime < time)
+                {
+                    Point p = kl.TranslatePoint(new Point(0, 0), LineList);
+
+                    Animation = new(-p.Y, new Duration(TimeSpan.FromSeconds(kl.StartTime - time)));
+                    Animation.Completed += (s,e) => { Animation = null; };
+                    BeginAnimation(AutoScrollYProperty, Animation);
+                }
+
+                if (kl.NeedRender(time))
                     kl.Time = time;
             }
+            Canvas.SetTop(LineList, AutoScrollY + ManualScrollY);
         }
 
         private const string lyrics_text = @"
@@ -172,6 +190,26 @@ namespace Titalyver2
         private void CloseButton_Click(object sender, RoutedEventArgs e)
         {
             Close();
+        }
+
+        private void Window_MouseWheel(object sender, MouseWheelEventArgs e)
+        {
+            ManualScrollY += e.Delta;
+            Canvas.SetTop(LineList, AutoScrollY + ManualScrollY );
+        }
+
+        private void Window_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            DragMove();
+        }
+
+        private void Window_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            if (e.MiddleButton == MouseButtonState.Pressed)
+            {
+                ManualScrollY = 0;
+                Canvas.SetTop(LineList, AutoScrollY);
+            }
         }
     }
 }
