@@ -10,7 +10,7 @@ using System.Text.Json;
 
 namespace Titalyver2
 {
-    public class MessageDemander
+    public class MessageReceiver
     {
         public enum EnumPlaybackEvent
         {
@@ -24,7 +24,8 @@ namespace Titalyver2
         };
 
         public EnumPlaybackEvent PlaybackEvent { get; private set; }
-        public float Time { get; private set; }
+        public float SeekTime { get; private set; }
+        public float TimeOfDay { get; private set; }
 
         public List<KeyValuePair<string, string>> Data { get; private set; } = new();
 
@@ -41,7 +42,7 @@ namespace Titalyver2
         }
         public bool GetData(bool all = false)
         {
-            string json;
+            byte[] buffer;
             try
             {
                 using MemoryMappedFile mmf = MemoryMappedFile.OpenExisting(MMF_Name, MemoryMappedFileRights.Read);
@@ -49,24 +50,26 @@ namespace Titalyver2
                 if (!ml.Result)
                     return false;
                 using MemoryMappedViewStream stream = mmf.CreateViewStream(0, 0, MemoryMappedFileAccess.Read);
-                byte[] bytes = new byte[8];
-                int read = stream.Read(bytes, 0, 8);
+                byte[] bytes = new byte[16];
+                int read = stream.Read(bytes, 0, 16);
                 PlaybackEvent = (EnumPlaybackEvent)BitConverter.ToUInt32(bytes, 0);
-                Time = BitConverter.ToSingle(bytes, 4);
+                SeekTime = BitConverter.ToSingle(bytes, 4);
+                TimeOfDay = BitConverter.ToSingle(bytes, 8);
+                Int32 json_size = BitConverter.ToInt32(bytes, 12);
 
                 if (all == false && PlaybackEvent != EnumPlaybackEvent.PlayNew)
                 {
                     return true;
                 }
-                using StreamReader reader = new(stream, Encoding.Unicode);
-                json = reader.ReadToEnd();
+                buffer = new byte[json_size];
+                stream.Read(buffer, 0, (int)json_size);
             }
             catch (Exception)
             { return false; }
 
             try
             {
-                using JsonDocument document = JsonDocument.Parse(json);
+                using JsonDocument document = JsonDocument.Parse(buffer);
                 Data.Clear();
                 if (document.RootElement.ValueKind != JsonValueKind.Object)
                     return false;
@@ -81,12 +84,12 @@ namespace Titalyver2
             return true;
         }
 
-        public MessageDemander()
+        public MessageReceiver()
         {
             EventWaitHandle = new EventWaitHandle(false, EventResetMode.AutoReset, WriteEvent_Name);
             Mutex = new Mutex(false, Mutex_Name);
         }
-        ~MessageDemander()
+        ~MessageReceiver()
         {
             if (Mutex != null)
             {

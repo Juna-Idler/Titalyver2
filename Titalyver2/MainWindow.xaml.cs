@@ -26,12 +26,11 @@ namespace Titalyver2
 
         private LyricsContainer lyrics;
 
-        private List<KaraokeLine> Lines = new();
+        private readonly List<KaraokeLine> Lines = new();
 
-        private Stopwatch Stopwatch;
+        private readonly Stopwatch Stopwatch = new();
 
-        private double ManualScrollY = 0;
-        private double AutoScrollTargetY = 0;
+        private double ManualScrollY;
 
         public double AutoScrollY { get => (double)GetValue(AutoScrollYProperty); set => SetValue(AutoScrollYProperty, value); }
         public static readonly DependencyProperty AutoScrollYProperty = DependencyProperty.Register(
@@ -80,6 +79,10 @@ namespace Titalyver2
                 }
 
             }
+
+            MessageReceiver demander = new MessageReceiver();
+            _ = demander.GetData();
+
 //            string path = "C:/Users/junai/source/repos/Titalyver2/02 サンキュ！ (fullsize).kra";
 //            string text = System.IO.File.ReadAllText(path);
 
@@ -95,14 +98,10 @@ namespace Titalyver2
                 Lines.Add(kl);
             }
 
-            Stopwatch = new Stopwatch();
             Stopwatch.Start();
-
-
-
         }
 
-        private DoubleAnimation  Animation = null;
+        private DoubleAnimation Animation;
 
 
         void CompositionTarget_Rendering(object sender, EventArgs e)

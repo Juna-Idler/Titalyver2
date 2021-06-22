@@ -25,7 +25,7 @@ namespace Titalyver2
 
             SyncMode sync = SyncMode.None;
             List<Line> lines = new();
-            StringReader sr = new(lyrics);
+            using StringReader sr = new(lyrics);
             for (string line = sr.ReadLine(); line != null; line = sr.ReadLine())
             {
                 if (line.Length == 0 || line[0] == '@')
@@ -38,7 +38,7 @@ namespace Titalyver2
             Sync = sync;
             lines.Add(new("[99:59.99]"));
             Lines = lines.ToArray();
-            for (int i = 0; i < Lines.Length -1;i++)
+            for (int i = 0; i < Lines.Length - 1; i++)
             {
                 if (Lines[i].EndTime < 0)
                     Lines[i].EndTime = Lines[i + 1].StartTime;
