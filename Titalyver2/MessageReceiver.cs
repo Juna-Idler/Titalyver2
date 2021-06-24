@@ -5,8 +5,10 @@ using System.Text;
 using System.IO;
 using System.IO.MemoryMappedFiles;
 using System.Threading;
+using System.Diagnostics;
 
 using System.Text.Json;
+
 
 namespace Titalyver2
 {
@@ -17,30 +19,35 @@ namespace Titalyver2
             NULL = 0,
             PlayNew = 1,
             Stop = 2,
-            Pause = 3,
-            PauseCancel = 4,
+            PauseCancel = 3,
+            Pause = 4,
             SeekPlaying = 5,
             SeekPause = 6,
         };
 
-        public EnumPlaybackEvent PlaybackEvent { get; private set; }
-        public float SeekTime { get; private set; }
-        public float TimeOfDay { get; private set; }
-
-        public List<KeyValuePair<string, string>> Data { get; private set; } = new();
-
-        private RegisteredWaitHandle WaitHandle;
-        public void SetUpdateCallback(WaitOrTimerCallback callback)
+        public struct Data
         {
-            if (callback == null)
-            {
-                _ = WaitHandle?.Unregister(EventWaitHandle);
-                WaitHandle = null;
-                return;
-            }
-            WaitHandle = ThreadPool.RegisterWaitForSingleObject(EventWaitHandle, callback, null, -1, false);
+            public EnumPlaybackEvent PlaybackEvent; //イベント内容
+            public double SeekTime;  //イベントが発生した時の再生位置
+            public Int32 TimeOfDay; //イベントが発生した24時間周期の秒単位の時刻
+
+            //メタデータ keyは小文字 複数の同一keyの可能性あり（なのでList<Pair>）
+            //文字列はstring それ以外はRawTextなstring
+            public List<KeyValuePair<string, string>> MetaData;
+
+            //おそらく音楽ファイルの多分フルパス
+            public string FilePath;
         }
-        public bool GetData(bool all = false)
+
+        public delegate void PlaybackEventHandler(Data data);
+
+        public event PlaybackEventHandler OnPlaybackEventChanged;
+
+
+        public Data GetData() { return data; }
+
+        private Data data;
+       private bool ReadData()
         {
             byte[] buffer;
             try
@@ -50,32 +57,57 @@ namespace Titalyver2
                 if (!ml.Result)
                     return false;
                 using MemoryMappedViewStream stream = mmf.CreateViewStream(0, 0, MemoryMappedFileAccess.Read);
-                byte[] bytes = new byte[16];
-                int read = stream.Read(bytes, 0, 16);
-                PlaybackEvent = (EnumPlaybackEvent)BitConverter.ToUInt32(bytes, 0);
-                SeekTime = BitConverter.ToSingle(bytes, 4);
-                TimeOfDay = BitConverter.ToSingle(bytes, 8);
-                Int32 json_size = BitConverter.ToInt32(bytes, 12);
+                byte[] bytes = new byte[20];
+                int read = stream.Read(bytes, 0, 20);
+                data.PlaybackEvent = (EnumPlaybackEvent)BitConverter.ToUInt32(bytes, 0);
+                data.SeekTime = BitConverter.ToDouble(bytes, 4);
+                data.TimeOfDay = BitConverter.ToInt32(bytes, 12);
+                Int32 json_size = BitConverter.ToInt32(bytes, 16);
 
-                if (all == false && PlaybackEvent != EnumPlaybackEvent.PlayNew)
+                if (data.MetaData != null && data.PlaybackEvent != EnumPlaybackEvent.PlayNew)
                 {
                     return true;
                 }
                 buffer = new byte[json_size];
-                stream.Read(buffer, 0, (int)json_size);
+                _ = stream.Read(buffer, 0, (int)json_size);
             }
-            catch (Exception)
-            { return false; }
+            catch (Exception e)
+            {
+                Debug.WriteLine(e.Message);
+                return false;
+            }
 
+            if (data.MetaData == null)
+                data.MetaData = new List<KeyValuePair<string, string>>();
+            else
+                data.MetaData.Clear();
             try
             {
                 using JsonDocument document = JsonDocument.Parse(buffer);
-                Data.Clear();
                 if (document.RootElement.ValueKind != JsonValueKind.Object)
                     return false;
-                foreach (var e in document.RootElement.EnumerateObject())
+                data.FilePath = document.RootElement.GetProperty("path").GetString();
+                JsonElement meta = document.RootElement.GetProperty("meta");
+                foreach (JsonProperty e in meta.EnumerateObject())
                 {
-                    Data.Add(new KeyValuePair<string, string>(e.Name, e.Value.GetRawText()));
+                    switch (e.Value.ValueKind)
+                    {
+                        case JsonValueKind.String:
+                            data.MetaData.Add(new KeyValuePair<string, string>(e.Name.ToLower(null), e.Value.GetString()));
+                            break;
+                        case JsonValueKind.Array:
+                            foreach (JsonElement a in e.Value.EnumerateArray())
+                            {
+                                if (a.ValueKind == JsonValueKind.String)
+                                    data.MetaData.Add(new KeyValuePair<string, string>(e.Name.ToLower(null), a.GetString()));
+                                else
+                                    data.MetaData.Add(new KeyValuePair<string, string>(e.Name.ToLower(null), a.GetRawText()));
+                            }
+                            break;
+                        default:
+                            data.MetaData.Add(new KeyValuePair<string, string>(e.Name.ToLower(null), e.Value.GetRawText()));
+                            break;
+                    }
                 }
             }
             catch (Exception)
@@ -84,24 +116,36 @@ namespace Titalyver2
             return true;
         }
 
-        public MessageReceiver()
+
+        //read イベントの発生を待たずにとりあえず一回MMFを読みに行く
+        public MessageReceiver(bool read = false)
         {
-            EventWaitHandle = new EventWaitHandle(false, EventResetMode.AutoReset, WriteEvent_Name);
             Mutex = new Mutex(false, Mutex_Name);
+            EventWaitHandle = new EventWaitHandle(false, EventResetMode.AutoReset, WriteEvent_Name);
+            RegisteredWaitHandle = ThreadPool.RegisterWaitForSingleObject(EventWaitHandle, WaitOrTimerCallback, null, -1, false);
+            if (read)
+                _ = ReadData();
         }
         ~MessageReceiver()
         {
-            if (Mutex != null)
+            _ = RegisteredWaitHandle?.Unregister(EventWaitHandle);
+            RegisteredWaitHandle = null;
+
+            EventWaitHandle?.Dispose();
+            EventWaitHandle = null;
+
+            Mutex?.Dispose();
+            Mutex = null;
+        }
+        private void WaitOrTimerCallback(object state, bool timedOut)
+        {
+            if (!timedOut)
             {
-                Mutex.Dispose();
-                Mutex = null;
-            }
-            if (EventWaitHandle != null)
-            {
-                EventWaitHandle.Dispose();
-                EventWaitHandle = null;
+                if (ReadData())
+                    OnPlaybackEventChanged?.Invoke(data);
             }
         }
+
 
 
         private class MutexLock : IDisposable
@@ -149,6 +193,7 @@ namespace Titalyver2
 
         private Mutex Mutex;
         private EventWaitHandle EventWaitHandle;
+        private RegisteredWaitHandle RegisteredWaitHandle;
 
 
     }

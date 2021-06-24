@@ -34,7 +34,7 @@ namespace Titalyver2
                         {
                             Ruby.Add(new(m.Groups[1].Value, m.Groups[5].Value,
                                 m.Groups[3].Success ? int.Parse(m.Groups[3].Value) : 0,
-                                m.Groups[4].Success ? int.Parse(m.Groups[4].Value) : 0));
+                                m.Groups[4].Success ? int.Parse(m.Groups[4].Value) : -1));
                         }
                     }
                     else if (name == "ruby_parent")

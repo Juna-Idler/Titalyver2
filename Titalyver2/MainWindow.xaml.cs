@@ -11,7 +11,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
-using System.Windows.Shapes;
+using System.IO;
 
 using System.Diagnostics;
 using System.Windows.Media.Animation;
@@ -25,10 +25,16 @@ namespace Titalyver2
     {
 
         private LyricsContainer lyrics;
+        private double AtTagTimeOffset;
 
         private readonly List<KaraokeLine> Lines = new();
 
+        private readonly MessageReceiver Receiver = new(true);
+
+
         private readonly Stopwatch Stopwatch = new();
+
+        private double TimeOffset;
 
         private double ManualScrollY;
 
@@ -36,6 +42,7 @@ namespace Titalyver2
         public static readonly DependencyProperty AutoScrollYProperty = DependencyProperty.Register(
             "AutoScrollY", typeof(double), typeof(MainWindow),
             new FrameworkPropertyMetadata(0.0));
+
 
 
 
@@ -75,18 +82,127 @@ namespace Titalyver2
                 if (gtf != null)
                 {
                     glyph = gtf;
-                    Uri uri = gtf.FontUri;
                 }
 
             }
 
-            MessageReceiver demander = new MessageReceiver();
-            _ = demander.GetData();
+            MessageReceiver.Data data = Receiver.GetData();
 
-//            string path = "C:/Users/junai/source/repos/Titalyver2/02 サンキュ！ (fullsize).kra";
-//            string text = System.IO.File.ReadAllText(path);
+            Uri uri = new Uri(data.FilePath);
+            string lp = uri.LocalPath;
+            string lyricspath_base = Path.Join(Path.GetDirectoryName(lp),
+                                          Path.GetFileNameWithoutExtension(lp));
+            string text = lyrics_text;
 
-            lyrics = new LyricsContainer(lyrics_text);
+            string lyrics_path;
+            lyrics_path = lyricspath_base + ".kra";
+            if (!File.Exists(lyrics_path))
+            {
+                lyrics_path = lyricspath_base + ".lrc";
+                if (!File.Exists(lyrics_path))
+                {
+                    lyrics_path = lyricspath_base + ".txt";
+                }
+            }
+            try
+            {
+                text = File.ReadAllText(lyrics_path);
+            }
+            catch (Exception e)
+            {
+                Debug.WriteLine(e.Message);
+            }
+            Receiver.OnPlaybackEventChanged += (data) => {
+                DateTime now = DateTime.Now;
+                double delay = (((now.Hour * 60 + now.Minute) * 60 + now.Second) * 1000 + now.Millisecond - data.TimeOfDay) / 1000.0;
+                
+                switch (data.PlaybackEvent)
+                {
+                    case MessageReceiver.EnumPlaybackEvent.PlayNew:
+                        {
+                            Uri uri = new(data.FilePath);
+                            string lp = uri.LocalPath;
+                            string path_base = Path.Join(Path.GetDirectoryName(lp), Path.GetFileNameWithoutExtension(lp));
+                            string text = lyrics_text;
+
+                            string lyrics_path;
+                            lyrics_path = path_base + ".kra";
+                            if (!File.Exists(lyrics_path))
+                            {
+                                lyrics_path = path_base + ".lrc";
+                                if (!File.Exists(lyrics_path))
+                                {
+                                    lyrics_path = path_base + ".txt";
+                                }
+                            }
+                            try
+                            {
+                                text = File.ReadAllText(lyrics_path);
+                            }
+                            catch (Exception e)
+                            {
+                                Debug.WriteLine(e.Message);
+                                return;
+                            }
+                            lyrics = new LyricsContainer(text);
+                            AtTagTimeOffset = lyrics.AtTagContainer.Offset;
+
+                            Stopwatch.Restart();
+                            TimeOffset = 0 + delay;
+                            _ = Dispatcher.InvokeAsync(() =>
+                            {
+                                LineList.Children.Clear();
+                                Lines.Clear();
+                                AutoScrollY = 0;
+                                ForceMove(TimeOffset,0);
+
+                                GlyphTypeface bold_gtf = new(system_gtf.FontUri, StyleSimulations.BoldSimulation);
+                                foreach (var l in lyrics.Lines)
+                                {
+                                    KaraokeLine kl = new(bold_gtf, 30, Brushes.White, Brushes.Red, Brushes.White, Brushes.Blue, 5, l);
+                                    kl.Margin = new Thickness(30, 0, 0, 0);
+                                    _ = LineList.Children.Add(kl);
+                                    Lines.Add(kl);
+                                }
+                            });
+                            break;
+                        }
+                    case MessageReceiver.EnumPlaybackEvent.Stop:
+                        {
+                            Stopwatch.Stop();
+                            break;
+                        }
+                    case MessageReceiver.EnumPlaybackEvent.PauseCancel:
+                        {
+                            Stopwatch.Restart();
+                            TimeOffset = data.SeekTime + delay;
+                            break;
+                        }
+                    case MessageReceiver.EnumPlaybackEvent.Pause:
+                        {
+                            Stopwatch.Reset();
+                            TimeOffset = data.SeekTime;
+                            break;
+                        }
+                    case MessageReceiver.EnumPlaybackEvent.SeekPlaying:
+                        {
+                            Stopwatch.Restart();
+                            TimeOffset = data.SeekTime + delay;
+                            _ = Dispatcher.InvokeAsync(() => { ForceMove(TimeOffset); });
+                            break;
+                        }
+                    case MessageReceiver.EnumPlaybackEvent.SeekPause:
+                        {
+                            Stopwatch.Reset();
+                            TimeOffset = data.SeekTime;
+                            _ = Dispatcher.InvokeAsync(() => { ForceMove(data.SeekTime); });
+                            break;
+                        }
+                }
+
+            };
+
+            lyrics = new LyricsContainer(text);
             TestLine.Time = 1;
             GlyphTypeface bold_gtf = new GlyphTypeface(system_gtf.FontUri, StyleSimulations.BoldSimulation);
             LineList.Children.Clear();
@@ -97,16 +213,41 @@ namespace Titalyver2
                 LineList.Children.Add(kl);
                 Lines.Add(kl);
             }
-
-            Stopwatch.Start();
         }
 
         private DoubleAnimation Animation;
 
-
-        void CompositionTarget_Rendering(object sender, EventArgs e)
+        private void ForceMove(double time, double duration = 0.5)
         {
-            double time = Stopwatch.Elapsed.TotalSeconds;
+            time -= AtTagTimeOffset;
+            if (Animation != null)
+            {
+                BeginAnimation(AutoScrollYProperty, new DoubleAnimation() { BeginTime = null });
+                Animation = null;
+            }
+            foreach (var kl in Lines)
+            {
+                if (kl.StartTime <= time && time <= kl.EndTime)
+                {
+                    Point p = kl.TranslatePoint(new Point(0, 0), LineList);
+                    Animation = new(-p.Y, new Duration(TimeSpan.FromSeconds(duration)));
+                    Animation.Completed += (s, e) => { Animation = null; };
+                    BeginAnimation(AutoScrollYProperty, Animation);
+                    break;
+                }
+            }
+            if (Animation == null)
+            {
+                Animation = new(0, new Duration(TimeSpan.FromSeconds(duration)));
+                Animation.Completed += (s, e) => { Animation = null; };
+                BeginAnimation(AutoScrollYProperty, Animation);
+            }
+//            Canvas.SetTop(LineList, AutoScrollY + ManualScrollY);
+        }
+
+        private void CompositionTarget_Rendering(object sender, EventArgs e)
+        {
+            double time = Stopwatch.Elapsed.TotalSeconds + TimeOffset - AtTagTimeOffset;
 
             foreach (var kl in Lines)
             {
@@ -115,12 +256,23 @@ namespace Titalyver2
                     Point p = kl.TranslatePoint(new Point(0, 0), LineList);
 
                     Animation = new(-p.Y, new Duration(TimeSpan.FromSeconds(kl.StartTime - time)));
-                    Animation.Completed += (s,e) => { Animation = null; };
+                    Animation.Completed += (s, e) => { Animation = null; };
                     BeginAnimation(AutoScrollYProperty, Animation);
                 }
 
                 if (kl.NeedRender(time))
+                {
                     kl.Time = time;
+/*
+                    if (time < kl.StartTime || kl.EndTime < time)
+                        Panel.SetZIndex(kl, 5);
+                    else if (kl.StartTime <= time && time <= kl.EndTime)
+                        Panel.SetZIndex(kl, 10);
+                    else
+                        Panel.SetZIndex(kl, 1);
+*/
+
+                }
             }
             Canvas.SetTop(LineList, AutoScrollY + ManualScrollY);
         }
