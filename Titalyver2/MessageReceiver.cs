@@ -29,9 +29,9 @@ namespace Titalyver2
         {
             public EnumPlaybackEvent PlaybackEvent; //イベント内容
             public double SeekTime;  //イベントが発生した時の再生位置
-            public Int32 TimeOfDay; //イベントが発生した24時間周期の秒単位の時刻
+            public Int32 TimeOfDay; //イベントが発生した24時間周期のミリ秒単位の時刻
 
-            //メタデータ keyは小文字 複数の同一keyの可能性あり（なのでList<Pair>）
+            //メタデータ keyは小文字 複数の同一keyの可能性あり（なのでList<Pair>） Dic<string,string[]>とどっちがいいのか？
             //文字列はstring それ以外はRawTextなstring
             public List<KeyValuePair<string, string>> MetaData;
 
@@ -52,10 +52,10 @@ namespace Titalyver2
             byte[] buffer;
             try
             {
-                using MemoryMappedFile mmf = MemoryMappedFile.OpenExisting(MMF_Name, MemoryMappedFileRights.Read);
                 using MutexLock ml = new(Mutex, 100);
                 if (!ml.Result)
                     return false;
+                using MemoryMappedFile mmf = MemoryMappedFile.OpenExisting(MMF_Name, MemoryMappedFileRights.Read);
                 using MemoryMappedViewStream stream = mmf.CreateViewStream(0, 0, MemoryMappedFileAccess.Read);
                 byte[] bytes = new byte[20];
                 int read = stream.Read(bytes, 0, 20);
@@ -110,8 +110,11 @@ namespace Titalyver2
                     }
                 }
             }
-            catch (Exception)
-            { return false; }
+            catch (Exception e)
+            {
+                Debug.WriteLine(e.Message);
+                return false;
+            }
 
             return true;
         }

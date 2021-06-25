@@ -24,24 +24,8 @@ namespace Titalyver2
     public partial class MainWindow : Window
     {
 
-        private LyricsContainer lyrics;
-        private double AtTagTimeOffset;
-
-        private readonly List<KaraokeLine> Lines = new();
 
         private readonly MessageReceiver Receiver = new(true);
-
-
-        private readonly Stopwatch Stopwatch = new();
-
-        private double TimeOffset;
-
-        private double ManualScrollY;
-
-        public double AutoScrollY { get => (double)GetValue(AutoScrollYProperty); set => SetValue(AutoScrollYProperty, value); }
-        public static readonly DependencyProperty AutoScrollYProperty = DependencyProperty.Register(
-            "AutoScrollY", typeof(double), typeof(MainWindow),
-            new FrameworkPropertyMetadata(0.0));
 
 
 
@@ -49,42 +33,6 @@ namespace Titalyver2
         public MainWindow()
         {
             InitializeComponent();
-
-            RegisterName(LineList.Name, LineList);
-
-            CompositionTarget.Rendering += CompositionTarget_Rendering;
-
-
-            GlyphTypeface system_gtf = null;
-            foreach (Typeface typeface in SystemFonts.MessageFontFamily.GetTypefaces())
-            {
-                if (typeface.TryGetGlyphTypeface(out system_gtf))
-                {
-                    break;
-                }
-
-            }
-
-            IEnumerable<FontFamily> FontList;
-
-            FontList = Fonts.SystemFontFamilies;
-            GlyphTypeface glyph = null;
-            foreach (FontFamily font in FontList)
-            {
-                GlyphTypeface gtf = null;
-                foreach (Typeface typeface in font.GetTypefaces())
-                {
-                    if (typeface.TryGetGlyphTypeface(out gtf))
-                    {
-                        break;
-                    }
-                }
-                if (gtf != null)
-                {
-                    glyph = gtf;
-                }
-
-            }
 
             MessageReceiver.Data data = Receiver.GetData();
 
@@ -115,7 +63,7 @@ namespace Titalyver2
             Receiver.OnPlaybackEventChanged += (data) => {
                 DateTime now = DateTime.Now;
                 double delay = (((now.Hour * 60 + now.Minute) * 60 + now.Second) * 1000 + now.Millisecond - data.TimeOfDay) / 1000.0;
-                
+
                 switch (data.PlaybackEvent)
                 {
                     case MessageReceiver.EnumPlaybackEvent.PlayNew:
@@ -144,138 +92,58 @@ namespace Titalyver2
                                 Debug.WriteLine(e.Message);
                                 return;
                             }
-                            lyrics = new LyricsContainer(text);
-                            AtTagTimeOffset = lyrics.AtTagContainer.Offset;
-
-                            Stopwatch.Restart();
-                            TimeOffset = 0 + delay;
                             _ = Dispatcher.InvokeAsync(() =>
                             {
-                                LineList.Children.Clear();
-                                Lines.Clear();
-                                AutoScrollY = 0;
-                                ForceMove(TimeOffset,0);
-
-                                GlyphTypeface bold_gtf = new(system_gtf.FontUri, StyleSimulations.BoldSimulation);
-                                foreach (var l in lyrics.Lines)
-                                {
-                                    KaraokeLine kl = new(bold_gtf, 30, Brushes.White, Brushes.Red, Brushes.White, Brushes.Blue, 5, l);
-                                    kl.Margin = new Thickness(30, 0, 0, 0);
-                                    _ = LineList.Children.Add(kl);
-                                    Lines.Add(kl);
-                                }
+                                KaraokeDisplay.Lyrics = text;
+                                KaraokeDisplay.ForceMove(delay, 0.5);
+                                KaraokeDisplay.Time = delay;
+                                KaraokeDisplay.Start();
                             });
                             break;
                         }
                     case MessageReceiver.EnumPlaybackEvent.Stop:
+                        _ = Dispatcher.InvokeAsync(() =>
                         {
-                            Stopwatch.Stop();
-                            break;
-                        }
+                            KaraokeDisplay.Stop();
+                        });
+                        break;
                     case MessageReceiver.EnumPlaybackEvent.PauseCancel:
+                        _ = Dispatcher.InvokeAsync(() =>
                         {
-                            Stopwatch.Restart();
-                            TimeOffset = data.SeekTime + delay;
-                            break;
-                        }
+                            KaraokeDisplay.Time = data.SeekTime + delay;
+                            KaraokeDisplay.Start();
+                        });
+                        break;
                     case MessageReceiver.EnumPlaybackEvent.Pause:
+                        _ = Dispatcher.InvokeAsync(() =>
                         {
-                            Stopwatch.Reset();
-                            TimeOffset = data.SeekTime;
-                            break;
-                        }
+                            KaraokeDisplay.Stop();
+                            KaraokeDisplay.Time = data.SeekTime;
+                        });
+                        break;
                     case MessageReceiver.EnumPlaybackEvent.SeekPlaying:
+                        _ = Dispatcher.InvokeAsync(() =>
                         {
-                            Stopwatch.Restart();
-                            TimeOffset = data.SeekTime + delay;
-                            _ = Dispatcher.InvokeAsync(() => { ForceMove(TimeOffset); });
-                            break;
-                        }
+                            KaraokeDisplay.ForceMove(data.SeekTime + delay, 0.5);
+                            KaraokeDisplay.Time = data.SeekTime + delay;
+                            KaraokeDisplay.Start();
+                        });
+                        break;
                     case MessageReceiver.EnumPlaybackEvent.SeekPause:
+                        _ = Dispatcher.InvokeAsync(() =>
+
                         {
-                            Stopwatch.Reset();
-                            TimeOffset = data.SeekTime;
-                            _ = Dispatcher.InvokeAsync(() => { ForceMove(data.SeekTime); });
-                            break;
-                        }
+                            KaraokeDisplay.ForceMove(data.SeekTime, 0.5);
+                            KaraokeDisplay.Stop();
+                            KaraokeDisplay.Time = data.SeekTime;
+                        });
+                        break;
                 }
 
             };
-
-            lyrics = new LyricsContainer(text);
-            TestLine.Time = 1;
-            GlyphTypeface bold_gtf = new GlyphTypeface(system_gtf.FontUri, StyleSimulations.BoldSimulation);
-            LineList.Children.Clear();
-            foreach (var l in lyrics.Lines)
-            {
-                KaraokeLine kl = new(bold_gtf, 30, Brushes.White, Brushes.Red, Brushes.White, Brushes.Blue, 5, l);
-                kl.Margin = new Thickness(30,0,0,0);
-                LineList.Children.Add(kl);
-                Lines.Add(kl);
-            }
         }
 
-        private DoubleAnimation Animation;
 
-        private void ForceMove(double time, double duration = 0.5)
-        {
-            time -= AtTagTimeOffset;
-            if (Animation != null)
-            {
-                BeginAnimation(AutoScrollYProperty, new DoubleAnimation() { BeginTime = null });
-                Animation = null;
-            }
-            foreach (var kl in Lines)
-            {
-                if (kl.StartTime <= time && time <= kl.EndTime)
-                {
-                    Point p = kl.TranslatePoint(new Point(0, 0), LineList);
-                    Animation = new(-p.Y, new Duration(TimeSpan.FromSeconds(duration)));
-                    Animation.Completed += (s, e) => { Animation = null; };
-                    BeginAnimation(AutoScrollYProperty, Animation);
-                    break;
-                }
-            }
-            if (Animation == null)
-            {
-                Animation = new(0, new Duration(TimeSpan.FromSeconds(duration)));
-                Animation.Completed += (s, e) => { Animation = null; };
-                BeginAnimation(AutoScrollYProperty, Animation);
-            }
-//            Canvas.SetTop(LineList, AutoScrollY + ManualScrollY);
-        }
-
-        private void CompositionTarget_Rendering(object sender, EventArgs e)
-        {
-            double time = Stopwatch.Elapsed.TotalSeconds + TimeOffset - AtTagTimeOffset;
-
-            foreach (var kl in Lines)
-            {
-                if (Animation == null && time < kl.StartTime && kl.StartTime - kl.FadeInTime < time)
-                {
-                    Point p = kl.TranslatePoint(new Point(0, 0), LineList);
-
-                    Animation = new(-p.Y, new Duration(TimeSpan.FromSeconds(kl.StartTime - time)));
-                    Animation.Completed += (s, e) => { Animation = null; };
-                    BeginAnimation(AutoScrollYProperty, Animation);
-                }
-
-                if (kl.NeedRender(time))
-                {
-                    kl.Time = time;
-/*
-                    if (time < kl.StartTime || kl.EndTime < time)
-                        Panel.SetZIndex(kl, 5);
-                    else if (kl.StartTime <= time && time <= kl.EndTime)
-                        Panel.SetZIndex(kl, 10);
-                    else
-                        Panel.SetZIndex(kl, 1);
-*/
-
-                }
-            }
-            Canvas.SetTop(LineList, AutoScrollY + ManualScrollY);
-        }
 
         private const string lyrics_text = @"
 @offset=-0.3
@@ -345,8 +213,7 @@ namespace Titalyver2
 
         private void Window_MouseWheel(object sender, MouseWheelEventArgs e)
         {
-            ManualScrollY += e.Delta;
-            Canvas.SetTop(LineList, AutoScrollY + ManualScrollY );
+            KaraokeDisplay.ManualScrollY += e.Delta;
         }
 
         private void Window_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
@@ -358,8 +225,7 @@ namespace Titalyver2
         {
             if (e.MiddleButton == MouseButtonState.Pressed)
             {
-                ManualScrollY = 0;
-                Canvas.SetTop(LineList, AutoScrollY);
+                KaraokeDisplay.ManualScrollY = 0;
             }
         }
     }
