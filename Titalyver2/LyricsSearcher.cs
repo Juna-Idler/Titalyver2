@@ -21,6 +21,10 @@ namespace Titalyver2
                                             "file:%directoryname%/%filename%.txt" };
         }
 
+        private string command;
+        private string path;
+        private string text;
+
         public string Search(string filepath, Dictionary<string, string[]> metaData)
         {
             string directoryname = Path.GetDirectoryName(filepath);
@@ -38,17 +42,36 @@ namespace Titalyver2
                 s = Regex.Replace(s, "%filename_ext%", filename_ext);
                 s = Regex.Replace(s, "%path%", filepath);
 
-                foreach (KeyValuePair<string, string[]> d in metaData)
+                string r = "";
+
+
+                Regex regex = new(@"<(.+?)(|([^>]*))?>");
+                Match m;
+                for (m = regex.Match(s); m.Success; m = regex.Match(s))
                 {
-                    string pattern = "<" + Regex.Escape(d.Key) + "(|([^>]*))?>";
-                    s = Regex.Replace(s, pattern, (m) => {
-                        return d.Value.Length == 1 ? d.Value[0]
-                        : string.Join(m.Groups[2].Success ? m.Groups[2].Value : default_separator, d.Value);
-                    });
+                    r += s[..m.Index];
+                    s = s[(m.Index + m.Value.Length)..];
+
+                    foreach (KeyValuePair<string, string[]> d in metaData)
+                    {
+                        if (d.Key == m.Groups[1].Value)
+                        {
+                            if (d.Value.Length == 1)
+                                r += d.Value[0];
+                            else
+                            {
+                                string separator = m.Groups[3].Success ? m.Groups[3].Value : default_separator;
+                                r += string.Join(separator, d.Value);
+
+                            }
+                        }
+                    }
                 }
-                if (s.IndexOf("file:") == 0)
+                r += s;
+
+                if (r.IndexOf("file:", StringComparison.OrdinalIgnoreCase) == 0)
                 {
-                    string path = s[5..];
+                    string path = r[5..];
                     if (!File.Exists(path))
                         continue;
                     try
@@ -60,12 +83,16 @@ namespace Titalyver2
                         Debug.WriteLine(e.Message);
                     }
                 }
+                else if (r.IndexOf("string:", StringComparison.OrdinalIgnoreCase) == 0)
+                {
+                    return r[7..];
+                }
             }
 
             return "";
         }
 
 
-        private List<string> SearchList;
+        private readonly List<string> SearchList;
     }
 }
