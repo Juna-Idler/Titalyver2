@@ -33,7 +33,7 @@ namespace Titalyver2
 
             //メタデータ keyは小文字 複数の同一keyの可能性あり（なのでList<Pair>） Dic<string,string[]>とどっちがいいのか？
             //文字列はstring それ以外はRawTextなstring
-            public List<KeyValuePair<string, string>> MetaData;
+            public Dictionary<string, string[]> MetaData;
 
             //おそらく音楽ファイルの多分フルパス
             public string FilePath;
@@ -69,7 +69,7 @@ namespace Titalyver2
                     return true;
                 }
                 buffer = new byte[json_size];
-                _ = stream.Read(buffer, 0, (int)json_size);
+                _ = stream.Read(buffer, 0, json_size);
             }
             catch (Exception e)
             {
@@ -78,7 +78,7 @@ namespace Titalyver2
             }
 
             if (data.MetaData == null)
-                data.MetaData = new List<KeyValuePair<string, string>>();
+                data.MetaData = new Dictionary<string, string[]>();
             else
                 data.MetaData.Clear();
             try
@@ -93,19 +93,19 @@ namespace Titalyver2
                     switch (e.Value.ValueKind)
                     {
                         case JsonValueKind.String:
-                            data.MetaData.Add(new KeyValuePair<string, string>(e.Name.ToLower(null), e.Value.GetString()));
+                            data.MetaData.Add(e.Name.ToLower(null), new string[] { e.Value.GetString() });
                             break;
                         case JsonValueKind.Array:
+                            string[] array = new string[e.Value.GetArrayLength()];
+                            int i = 0;
                             foreach (JsonElement a in e.Value.EnumerateArray())
                             {
-                                if (a.ValueKind == JsonValueKind.String)
-                                    data.MetaData.Add(new KeyValuePair<string, string>(e.Name.ToLower(null), a.GetString()));
-                                else
-                                    data.MetaData.Add(new KeyValuePair<string, string>(e.Name.ToLower(null), a.GetRawText()));
+                                array[i++] = a.ValueKind == JsonValueKind.String ? a.GetString() : a.GetRawText();
                             }
+                            data.MetaData.Add(e.Name.ToLower(null), array);
                             break;
                         default:
-                            data.MetaData.Add(new KeyValuePair<string, string>(e.Name.ToLower(null), e.Value.GetRawText()));
+                            data.MetaData.Add(e.Name.ToLower(null), new string[] { e.Value.GetRawText() });
                             break;
                     }
                 }
@@ -121,13 +121,12 @@ namespace Titalyver2
 
 
         //read イベントの発生を待たずにとりあえず一回MMFを読みに行く
-        public MessageReceiver(bool read = false)
+        public MessageReceiver(PlaybackEventHandler playbackEventHandler)
         {
+            OnPlaybackEventChanged += playbackEventHandler;
             Mutex = new Mutex(false, Mutex_Name);
             EventWaitHandle = new EventWaitHandle(false, EventResetMode.AutoReset, WriteEvent_Name);
             RegisteredWaitHandle = ThreadPool.RegisterWaitForSingleObject(EventWaitHandle, WaitOrTimerCallback, null, -1, false);
-            if (read)
-                _ = ReadData();
         }
         ~MessageReceiver()
         {

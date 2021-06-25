@@ -25,42 +25,18 @@ namespace Titalyver2
     {
 
 
-        private readonly MessageReceiver Receiver = new(true);
+        private readonly MessageReceiver Receiver;
 
-
+        private readonly LyricsSearcher LyricsSearcher;
 
 
         public MainWindow()
         {
             InitializeComponent();
 
-            MessageReceiver.Data data = Receiver.GetData();
+            LyricsSearcher = new LyricsSearcher();
 
-            Uri uri = new Uri(data.FilePath);
-            string lp = uri.LocalPath;
-            string lyricspath_base = Path.Join(Path.GetDirectoryName(lp),
-                                          Path.GetFileNameWithoutExtension(lp));
-            string text = lyrics_text;
-
-            string lyrics_path;
-            lyrics_path = lyricspath_base + ".kra";
-            if (!File.Exists(lyrics_path))
-            {
-                lyrics_path = lyricspath_base + ".lrc";
-                if (!File.Exists(lyrics_path))
-                {
-                    lyrics_path = lyricspath_base + ".txt";
-                }
-            }
-            try
-            {
-                text = File.ReadAllText(lyrics_path);
-            }
-            catch (Exception e)
-            {
-                Debug.WriteLine(e.Message);
-            }
-            Receiver.OnPlaybackEventChanged += (data) => {
+            Receiver = new MessageReceiver((data) => {
                 DateTime now = DateTime.Now;
                 double delay = (((now.Hour * 60 + now.Minute) * 60 + now.Second) * 1000 + now.Millisecond - data.TimeOfDay) / 1000.0;
 
@@ -70,28 +46,10 @@ namespace Titalyver2
                         {
                             Uri uri = new(data.FilePath);
                             string lp = uri.LocalPath;
-                            string path_base = Path.Join(Path.GetDirectoryName(lp), Path.GetFileNameWithoutExtension(lp));
-                            string text = lyrics_text;
 
-                            string lyrics_path;
-                            lyrics_path = path_base + ".kra";
-                            if (!File.Exists(lyrics_path))
-                            {
-                                lyrics_path = path_base + ".lrc";
-                                if (!File.Exists(lyrics_path))
-                                {
-                                    lyrics_path = path_base + ".txt";
-                                }
-                            }
-                            try
-                            {
-                                text = File.ReadAllText(lyrics_path);
-                            }
-                            catch (Exception e)
-                            {
-                                Debug.WriteLine(e.Message);
-                                return;
-                            }
+                            string text = LyricsSearcher.Search(lp, data.MetaData);
+                            if (text == "")
+                                break;
                             _ = Dispatcher.InvokeAsync(() =>
                             {
                                 KaraokeDisplay.Lyrics = text;
@@ -140,7 +98,7 @@ namespace Titalyver2
                         break;
                 }
 
-            };
+            });
         }
 
 
