@@ -1,4 +1,4 @@
-﻿<Window x:Class="Titalyver2.MainWindow"
+﻿<Window x:Name="window" x:Class="Titalyver2.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -8,7 +8,7 @@
         Title="Titalyver" Height="450" Width="800" WindowStyle="None" AllowsTransparency="True" Background="#7F000000"
         ResizeMode="CanResizeWithGrip" MouseWheel="Window_MouseWheel" MouseLeftButtonDown="Window_MouseLeftButtonDown" MouseDown="Window_MouseDown">
     <Canvas x:Name="Screen" ClipToBounds="True">
-        <local:KaraokeDisplay x:Name="KaraokeDisplay" FontSize="48" />        
+        <local:KaraokeDisplay x:Name="KaraokeDisplay" FontSize="48" Width="{Binding ActualWidth, ElementName=window, Mode=OneWay}" />
         <Button x:Name="CloseButton" Canvas.Right="0" Canvas.Top="0" Width="32" Height="32" FontSize="20" FontFamily="MS UI Gothic" FontWeight="Bold" FontStyle="Normal" Click="CloseButton_Click" BorderBrush="{x:Null}">
             <Button.Content>
                 <Canvas>
@@ -40,7 +40,7 @@
                 </Style>
             </Button.Style>
         </Button>
-<local:KaraokeLineGlyph TestText=" [00:15.65]｜[00:15.65]風《[00:15.65]か[00:15.86]ぜ》[00:16.07]が｜[00:16.31]渡《[00:16.31]わ[00:16.52]た》[00:17.03]る[00:17.66]｜[00:18.12]広《[00:18.12]ひ[00:18.42]ろ》[00:18.78]い｜[00:18.97]空《[00:18.97]そ[00:19.43]ら》[00:19.65]は[00:20.78]" FontSize="80" SleepStrokeColor="DarkRed" Margin="20,0,0,0" />        
-        <local:KaraokeLine TestText=" [00:15.65]｜[00:15.65]風《[00:15.65]か[00:15.86]ぜ》[00:16.07]が｜[00:16.31]渡《[00:16.31]わ[00:16.52]た》[00:17.03]る[00:17.66]｜[00:18.12]広《[00:18.12]ひ[00:18.42]ろ》[00:18.78]い｜[00:18.97]空《[00:18.97]そ[00:19.43]ら》[00:19.65]は[00:20.78]" FontSize="80" />
+        <local:KaraokeLine TestText="[00:15.65]｜[00:15.65]風《[00:15.65]か[00:15.86]ぜ》[00:16.07]が｜[00:16.31]渡《[00:16.31]わ[00:16.52]た》[00:17.03]る[00:17.66]｜[00:18.12]広《[00:18.12]ひ[00:18.42]ろ》[00:18.78]い｜[00:18.97]空《[00:18.97]そ[00:19.43]ら》[00:19.65]は[00:20.78]" FontSize="80" TextAlignment="Center" Width="800" />
+        <local:OutlineText Text="風が渡る広い空は" FontSize="80" FontFamily="MS Gothic" Width="666" TextAlignment="Left" Canvas.Top="121" Canvas.Left="43" Margin="1,1,1,1" />
     </Canvas>
 </Window>

@@ -1,4 +1,4 @@
-﻿<UserControl x:Class="Titalyver2.KaraokeDisplay"
+﻿<UserControl x:Name="userControl" x:Class="Titalyver2.KaraokeDisplay"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
@@ -9,7 +9,6 @@
     <Canvas>
         <StackPanel x:Name="List">
             <local:KaraokeLine TestText="テスト｜表示《ひょうじ》？" />
-            
         </StackPanel>
     </Canvas>
 </UserControl>

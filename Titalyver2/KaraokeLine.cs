@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Shapes;
@@ -81,6 +82,20 @@ namespace Titalyver2
             "FontSize", typeof(double), typeof(KaraokeLine),
             new FrameworkPropertyMetadata(20.0, FrameworkPropertyMetadataOptions.AffectsRender, OnChangedFont));
 
+        [Description("文字の配置"), Category("Karaoke Line"), DefaultValue(TextAlignment.Left)]
+        public TextAlignment TextAlignment { get => (TextAlignment)GetValue(TextAlignmentProperty); set => SetValue(TextAlignmentProperty, value); }
+        public static readonly DependencyProperty TextAlignmentProperty = DependencyProperty.Register(
+            "TextAlignment", typeof(TextAlignment), typeof(KaraokeLine),
+            new FrameworkPropertyMetadata( TextAlignment.Left,FrameworkPropertyMetadataOptions.AffectsRender ));
+
+        [Description("文字の余白"), Category("Karaoke Line")]
+        public Thickness Padding { get => (Thickness)GetValue(PaddingProperty); set => SetValue(PaddingProperty, value); }
+        public static readonly DependencyProperty PaddingProperty = DependencyProperty.Register(
+            "PaddingProperty", typeof(Thickness), typeof(KaraokeLine),
+            new FrameworkPropertyMetadata(new Thickness(), FrameworkPropertyMetadataOptions.AffectsRender));
+
+
+
 
         [Description("テスト表示用"), Category("Karaoke Line"), DefaultValue("テスト｜表示《ひょうじ》")]
         public string TestText { get => (string)GetValue(TestTextProperty); set => SetValue(TestTextProperty, value); }
@@ -98,6 +113,8 @@ namespace Titalyver2
         public static readonly DependencyProperty TimeProperty = DependencyProperty.Register(
             "Time", typeof(double), typeof(KaraokeLine),
             new FrameworkPropertyMetadata(0.0, FrameworkPropertyMetadataOptions.AffectsRender));
+
+
 
 
         private static void OnChangedFillColors(DependencyObject dependencyObject, DependencyPropertyChangedEventArgs e)
@@ -145,6 +162,8 @@ namespace Titalyver2
 
 
         private KaraokeWord[] Words;
+        private double WordsWidth;
+        private double WordsHeight;
 
         private bool IsLastRenderOnSleep;
 
@@ -200,12 +219,27 @@ namespace Titalyver2
             _ = Line.Complement();
             MakeWords();
         }
+
+        protected override Size MeasureOverride(Size availableSize)
+        {
+            double ww = WordsWidth + Padding.Left + Padding.Right;
+            double width = double.IsNaN(Width) ? ww : Math.Max(Width, ww);
+            return new Size(width, WordsHeight + Padding.Top + Padding.Bottom);
+        }
+
+        protected override Size ArrangeOverride(Size finalSize)
+        {
+            return finalSize;
+        }
+
+
+
         private void MakeWords()
         {
             if (Line == null || Typeface == null || FontSize == 0)
                 return;
             double x = 0;
-            double ruby_x = 100;
+            double ruby_x = 100;//ルビパディング（初期化値は一文字目の）
             double y = Line.HasRuby ? Typeface.CapsHeight * FontSize / 2 : 0;
             List <KaraokeWord> words = new(Line.Words.Length);
             foreach (LyricsContainer.Line.WordWithRuby wwr in Line.Words)
@@ -241,7 +275,8 @@ namespace Titalyver2
             Words = words.ToArray();
             StartTime = Line.StartTime / 1000.0;
             EndTime = Line.EndTime / 1000.0;
-            Height = y + 1.25 * FontSize;//何故かTypefaceから行の高さを求められないので適当な固定倍率値
+            WordsWidth = x;
+            WordsHeight = y + 1.25 * FontSize;//何故かTypefaceから行の高さを求められないので適当な固定倍率値
 
             SetFillWipe();
             SetStrokeWipe();
@@ -261,6 +296,22 @@ namespace Titalyver2
                 return;
             IsLastRenderOnSleep = false;
 
+            double alignment_x = 0;
+            double width = double.IsNaN(Width) ? WordsWidth : Math.Max(Width, WordsWidth);
+            switch (TextAlignment)
+            {
+                case TextAlignment.Left:
+                    alignment_x = Padding.Left;
+                    break;
+                case TextAlignment.Right:
+                    alignment_x = width - WordsWidth - Padding.Right;
+                    break;
+                case TextAlignment.Center:
+                case TextAlignment.Justify:
+                    alignment_x = (width - WordsWidth) / 2;
+                    break;
+            }
+            drawingContext.PushTransform(new TranslateTransform(alignment_x, Padding.Top));
 
             if (StartTime < Time && Time < EndTime)
             {
@@ -310,6 +361,7 @@ namespace Titalyver2
                     }
                     foreach (KaraokeWord w in Words) { drawingContext.DrawGeometry(ActiveFillColor, null, w.Glyphs); }
                 }
+                drawingContext.Pop();
                 return;
             }
 
@@ -347,6 +399,7 @@ namespace Titalyver2
                 drawingContext.DrawGeometry(null, w.WipeDrawResource.Pen, w.Glyphs);
             }
             foreach (KaraokeWord w in Words) { drawingContext.DrawGeometry(fill, null, w.Glyphs); }
+            drawingContext.Pop();
         }
 
         private class WipeDrawResource

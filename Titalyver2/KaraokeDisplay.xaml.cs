@@ -144,6 +144,17 @@ namespace Titalyver2
                 this.typeface = typeface;
                 break;
             }
+
+            SizeChanged += (s,e) =>
+            {
+                if (e.WidthChanged)
+                {
+                    foreach (KaraokeLine kl in List.Children)
+                    {
+                        kl.Width = ActualWidth;
+                    }
+                }
+            };
         }
 
 
@@ -186,6 +197,9 @@ namespace Titalyver2
                                          ActiveFillColor, ActiveStrokeColor,
                                          StandbyFillColor, StandbyStrokeColor,
                                          StrokeThickness, l);
+                    kl.TextAlignment = TextAlignment.Right;
+                    kl.Padding = new Thickness(10, 5, 10, 5);
+                    kl.Width = this.ActualWidth;
                     _ = List.Children.Add(kl);
                 }
             }
