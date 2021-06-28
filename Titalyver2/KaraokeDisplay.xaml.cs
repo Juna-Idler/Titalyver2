@@ -57,6 +57,32 @@ namespace Titalyver2
             "StrokeThickness", typeof(double), typeof(KaraokeDisplay),
             new FrameworkPropertyMetadata(2.0));
 
+
+        [Description("文字の配置"), Category("Karaoke Display"), DefaultValue(TextAlignment.Left)]
+        public TextAlignment TextAlignment { get => (TextAlignment)GetValue(TextAlignmentProperty); set => SetValue(TextAlignmentProperty, value); }
+        public static readonly DependencyProperty TextAlignmentProperty = DependencyProperty.Register(
+            "TextAlignment", typeof(TextAlignment), typeof(KaraokeDisplay),
+            new FrameworkPropertyMetadata(TextAlignment.Center, FrameworkPropertyMetadataOptions.AffectsRender, OnChangeTextAlignment));
+        private static void OnChangeTextAlignment(DependencyObject dependencyObject, DependencyPropertyChangedEventArgs e)
+        {
+            KaraokeDisplay _this = (KaraokeDisplay)dependencyObject;
+            _this.OnChangeTextAlignment();
+        }
+
+            [Description("行の余白"), Category("Karaoke Display")]
+        public Thickness LinePadding { get => (Thickness)GetValue(LinePaddingProperty); set => SetValue(LinePaddingProperty, value); }
+        public static readonly DependencyProperty LinePaddingProperty = DependencyProperty.Register(
+            "LinePadding", typeof(Thickness), typeof(KaraokeDisplay),
+            new FrameworkPropertyMetadata(new Thickness(), FrameworkPropertyMetadataOptions.AffectsRender,OnChangePadding));
+        private static void OnChangePadding(DependencyObject dependencyObject, DependencyPropertyChangedEventArgs e)
+        {
+            KaraokeDisplay _this = (KaraokeDisplay)dependencyObject;
+            _this.OnChangePadding();
+        }
+
+
+
+
         [Description("タイムタグ同期歌詞"), Category("Karaoke Display"), DefaultValue("[00:00.00]テスト｜表示《ひょうじ》[00:10.00]")]
         public string Lyrics { get => (string)GetValue(LyricsProperty); set => SetValue(LyricsProperty, value); }
         public static readonly DependencyProperty LyricsProperty = DependencyProperty.Register(
@@ -168,8 +194,9 @@ namespace Titalyver2
         {
             KaraokeDisplay _this = (KaraokeDisplay)dependencyObject;
             _this.OnChangeTime();
-
         }
+
+
 
         private void SetLyrics()
         {
@@ -193,18 +220,14 @@ namespace Titalyver2
             {
                 ;
                 SolidColorBrush b = new SolidColorBrush(Color.FromArgb(63, 0, 128, 0));
-                SolidColorBrush sb = new SolidColorBrush(Color.FromArgb(0, 0, 0, 0));
                 foreach (LyricsContainer.Line l in lyrics.Lines)
                 {
                     KaraokeLine kl = new(typeface, FontSize,
                                          ActiveFillColor, ActiveStrokeColor,
                                          StandbyFillColor, StandbyStrokeColor,
-                                         StrokeThickness, l);
-                    kl.TextAlignment = TextAlignment.Center;
-                    kl.Padding = new Thickness(10, 5, 10, 5);
-                    kl.Width = ActualWidth;
-                    kl.ActiveBackColor = b;
-                    kl.SleepBackColor = sb;
+                                         StrokeThickness, b, l, ActualWidth);
+                    kl.TextAlignment = TextAlignment;
+                    kl.Padding = LinePadding;
                     _ = List.Children.Add(kl);
                 }
             }
@@ -246,7 +269,39 @@ namespace Titalyver2
             OnChangeTime();
         }
 
+        private void OnChangeTextAlignment()
+        {
+            if (lyrics == null)
+                return;
+            if (lyrics.Sync == LyricsContainer.SyncMode.None)
+            {
+                foreach (TextBlock tb in List.Children)
+                    tb.TextAlignment = TextAlignment;
+                return;
+            }
+            foreach (KaraokeLine kl in List.Children)
+            {
+                kl.TextAlignment = TextAlignment;
+            }
 
+        }
+
+        private void OnChangePadding()
+        {
+            if (lyrics == null)
+                return;
+            if (lyrics.Sync == LyricsContainer.SyncMode.None)
+            {
+                foreach (TextBlock tb in List.Children)
+                    tb.Padding = LinePadding;
+                return;
+            }
+            foreach (KaraokeLine kl in List.Children)
+            {
+                kl.Padding = LinePadding;
+            }
+
+        }
 
 
 

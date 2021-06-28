@@ -102,14 +102,6 @@ namespace Titalyver2
             new FrameworkPropertyMetadata(Brushes.Transparent,
                                           FrameworkPropertyMetadataOptions.AffectsRender));
 
-        [Description("休眠行背景色"), Category("Karaoke Line")]
-        public SolidColorBrush SleepBackColor { get => (SolidColorBrush)GetValue(SleepBackColorProperty); set => SetValue(SleepBackColorProperty, value); }
-        public static readonly DependencyProperty SleepBackColorProperty = DependencyProperty.Register(
-            "SleepBackColor", typeof(SolidColorBrush), typeof(KaraokeLine),
-            new FrameworkPropertyMetadata(Brushes.Transparent,
-                                          FrameworkPropertyMetadataOptions.AffectsRender));
-
-
 
 
         [Description("テスト表示用"), Category("Karaoke Line"), DefaultValue("テスト｜表示《ひょうじ》")]
@@ -165,6 +157,8 @@ namespace Titalyver2
         public double FadeInTime { get; set; } = 0.5;
         public double FadeOutTime { get; set; } = 0.75;
 
+        public bool BackColorFade { get; set; } = false;
+
         public double StartTime { get; private set; }
         public double EndTime { get; private set; }
 
@@ -208,6 +202,7 @@ namespace Titalyver2
 
         public KaraokeLine()
         {
+            Width = 0;
             Typeface = system_typeface;
 
             SetLyricsLine(new LyricsContainer.Line("[00:00.00]" + TestText + "[00:10.00][00:10.00]",new AtTagContainer("")));
@@ -215,8 +210,11 @@ namespace Titalyver2
         }
 
         public KaraokeLine(Typeface typeface, double fontSize, SolidColorBrush activeFill,SolidColorBrush activeStroke,
-            SolidColorBrush standbyFill, SolidColorBrush standbyStroke, double strokeTickness, LyricsContainer.Line line)
+            SolidColorBrush standbyFill, SolidColorBrush standbyStroke, double strokeTickness,
+            SolidColorBrush activeBackColor,
+            LyricsContainer.Line line,double width)
         {
+            Width = width;
             Typeface = typeface;
             FontSize = fontSize;
             ActiveFillColor = activeFill;
@@ -224,6 +222,7 @@ namespace Titalyver2
             StandbyFillColor = standbyFill;
             StandbyStrokeColor = standbyStroke;
             StrokeThickness = strokeTickness;
+            ActiveBackColor = activeBackColor;
 
             SetLyricsLine(line);
         }
@@ -238,9 +237,9 @@ namespace Titalyver2
 
         protected override Size MeasureOverride(Size availableSize)
         {
-            double ww = WordsWidth + Padding.Left + Padding.Right;
-            double width = double.IsNaN(Width) ? ww : Width;
-            return new Size(width, WordsHeight + Padding.Top + Padding.Bottom);
+//            double ww = WordsWidth + Padding.Left + Padding.Right;
+//            double width = double.IsNaN(Width) ? ww : Width;
+            return new Size(Width, WordsHeight + Padding.Top + Padding.Bottom);
         }
 
         protected override Size ArrangeOverride(Size finalSize)
@@ -327,28 +326,53 @@ namespace Titalyver2
                     alignment_x = (width - WordsWidth) / 2;
                     break;
             }
+            if (ActiveBackColor.Color.A > 0)
             {
                 width += double.IsNaN(Width) ? Padding.Left + Padding.Right : 0;
                 Rect rect = new(0, 0, width, WordsHeight + Padding.Top + Padding.Bottom);
-                if (StartTime < Time && Time < EndTime - FadeInTime)
+                if (BackColorFade)
                 {
-                    FadeBackBrush.Color = ActiveBackColor.Color;
-                }
-                else if (Time < StartTime && Time > StartTime - FadeInTime)
-                {
-                    double rate = (Time - (StartTime - FadeInTime)) / FadeInTime;
-                    FadeBackBrush.Color = (ActiveBackColor.Color * (float)rate) + (SleepBackColor.Color * (float)(1 - rate));
-                }
-                else if (Time < EndTime && Time > EndTime - FadeInTime)
-                {
-                    double rate = (Time - (EndTime - FadeInTime)) / FadeInTime;
-                    FadeBackBrush.Color = (SleepBackColor.Color * (float)rate) + (ActiveBackColor.Color * (float)(1 - rate));
+                    if (StartTime < Time && Time < EndTime - FadeInTime)
+                    {
+                        drawingContext.DrawRectangle(ActiveBackColor, null, rect);
+                    }
+                    else if (Time < StartTime && Time > StartTime - FadeInTime)
+                    {
+                        double rate = (Time - (StartTime - FadeInTime)) / FadeInTime;
+                        FadeBackBrush.Color = (ActiveBackColor.Color * (float)rate);
+                        drawingContext.DrawRectangle(FadeBackBrush, null, rect);
+
+                    }
+                    else if (Time < EndTime && Time > EndTime - FadeInTime)
+                    {
+                        double rate = (Time - (EndTime - FadeInTime)) / FadeInTime;
+                        FadeBackBrush.Color = (ActiveBackColor.Color * (float)(1 - rate));
+                        drawingContext.DrawRectangle(FadeBackBrush, null, rect);
+                    }
                 }
                 else
                 {
-                    FadeBackBrush.Color = SleepBackColor.Color;
+
+                    if (StartTime < Time && Time < EndTime - FadeInTime)
+                    {
+                        drawingContext.DrawRectangle(ActiveBackColor, null, rect);
+                    }
+                    else if (Time < StartTime && Time > StartTime - FadeInTime)
+                    {
+                        double rate = (Time - (StartTime - FadeInTime)) / FadeInTime;
+                        double y = rect.Height * rate;
+                        rect.Height = y;
+                        drawingContext.DrawRectangle(ActiveBackColor, null, rect);
+                    }
+                    else if (Time < EndTime && Time > EndTime - FadeInTime)
+                    {
+                        double rate = (Time - (EndTime - FadeInTime)) / FadeInTime;
+                        double y = rect.Height * rate;
+                        rect.Height -= y;
+                        rect.Y = y;
+                        drawingContext.DrawRectangle(ActiveBackColor, null, rect);
+                    }
                 }
-                drawingContext.DrawRectangle(FadeBackBrush, null, rect);
             }
 
 
