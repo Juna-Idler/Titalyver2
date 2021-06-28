@@ -18,7 +18,8 @@ namespace Titalyver2
         {
             SearchList = new List<string> { "file:%directoryname%/%filename%.kra",
                                             "file:%directoryname%/%filename%.lrc",
-                                            "file:%directoryname%/%filename%.txt" };
+                                            "file:%directoryname%/%filename%.txt",
+                                            "string:<lyrics>"};
         }
 
         private string command;
@@ -45,7 +46,7 @@ namespace Titalyver2
                 string r = "";
 
 
-                Regex regex = new(@"<(.+?)(|([^>]*))?>");
+                Regex regex = new(@"<(.+?)(\|([^>]*))?>");
                 Match m;
                 for (m = regex.Match(s); m.Success; m = regex.Match(s))
                 {

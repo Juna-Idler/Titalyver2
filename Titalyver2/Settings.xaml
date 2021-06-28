@@ -1,0 +1,29 @@
+﻿<Window x:Class="Titalyver2.Settings"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Titalyver2"
+        mc:Ignorable="d"
+        Title="Settings" Height="450" Width="800">
+    <TabControl >
+        <TabItem Header="Display">
+            <StackPanel >
+                <GroupBox Header="Font">
+                    <StackPanel Orientation="Vertical">
+                        <Grid >
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="auto"/>
+                            </Grid.ColumnDefinitions>
+                        <TextBox Grid.Column="0" />
+                        <Button Grid.Column="1">select</Button>
+                        </Grid>
+                    </StackPanel>
+                    
+                </GroupBox>
+
+            </StackPanel>
+        </TabItem>
+    </TabControl>
+</Window>

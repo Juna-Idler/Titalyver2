@@ -113,15 +113,18 @@ namespace Titalyver2
                 BeginAnimation(AutoScrollYProperty, new DoubleAnimation() { BeginTime = null });
                 Animation = null;
             }
-            foreach (KaraokeLine kl in List.Children)
+            if (lyrics.Sync != LyricsContainer.SyncMode.None)
             {
-                if (kl.StartTime <= time && time <= kl.EndTime)
+                foreach (KaraokeLine kl in List.Children)
                 {
-                    Point p = kl.TranslatePoint(new Point(0, 0), List);
-                    Animation = new(-p.Y, new Duration(TimeSpan.FromSeconds(duration)));
-                    Animation.Completed += (s, e) => { Animation = null; };
-                    BeginAnimation(AutoScrollYProperty, Animation);
-                    break;
+                    if (kl.StartTime <= time && time <= kl.EndTime)
+                    {
+                        Point p = kl.TranslatePoint(new Point(0, 0), List);
+                        Animation = new(-p.Y, new Duration(TimeSpan.FromSeconds(duration)));
+                        Animation.Completed += (s, e) => { Animation = null; };
+                        BeginAnimation(AutoScrollYProperty, Animation);
+                        break;
+                    }
                 }
             }
             if (Animation == null)
@@ -138,10 +141,8 @@ namespace Titalyver2
             InitializeComponent();
             foreach (Typeface typeface in FontFamily.GetTypefaces())
             {
-                if (typeface.TryGetGlyphTypeface(out glyphTypeface))
-                {
-                    break;
-                }
+                this.typeface = typeface;
+                break;
             }
         }
 
@@ -165,18 +166,38 @@ namespace Titalyver2
             AtTagTimeOffset = lyrics.AtTagContainer.Offset;
 
             List.Children.Clear();
-            foreach (LyricsContainer.Line l in lyrics.Lines)
+            if (lyrics.Sync == LyricsContainer.SyncMode.None)
             {
-                KaraokeLine kl = new(glyphTypeface, FontSize,
-                                     ActiveFillColor, ActiveStrokeColor,
-                                     StandbyFillColor, StandbyStrokeColor,
-                                     StrokeThickness, l);
-                _ = List.Children.Add(kl);
+                using System.IO.StringReader sr = new(Lyrics);
+                for (string line = sr.ReadLine(); line != null; line = sr.ReadLine())
+                {
+                    TextBlock tb = new TextBlock();
+                    tb.FontSize = FontSize;
+                    tb.Foreground = SleepFillColor;
+                    tb.Text = line;
+                    _ = List.Children.Add(tb);
+                }
+            }
+            else
+            {
+                foreach (LyricsContainer.Line l in lyrics.Lines)
+                {
+                    KaraokeLine kl = new(typeface, FontSize,
+                                         ActiveFillColor, ActiveStrokeColor,
+                                         StandbyFillColor, StandbyStrokeColor,
+                                         StrokeThickness, l);
+                    _ = List.Children.Add(kl);
+                }
             }
             AutoScrollY = 0;
         }
-        private void OnChangeTime()
+        private void OnChangeTime() //名前変えたい
         {
+            if (lyrics.Sync == LyricsContainer.SyncMode.None)
+            {
+                Canvas.SetTop(List, ManualScrollY);
+                return;
+            }
             double time = Time - AtTagTimeOffset;
 
             foreach (KaraokeLine kl in List.Children)
@@ -210,7 +231,7 @@ namespace Titalyver2
 
 
 
-        private GlyphTypeface glyphTypeface;
+        private Typeface typeface;
 
         private LyricsContainer lyrics;
         private double AtTagTimeOffset;

@@ -35,6 +35,7 @@ namespace Titalyver2
             InitializeComponent();
 
             LyricsSearcher = new LyricsSearcher();
+            KaraokeDisplay.Lyrics = "";
 
             Receiver = new MessageReceiver((data) => {
                 DateTime now = DateTime.Now;
