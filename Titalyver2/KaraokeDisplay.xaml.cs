@@ -191,15 +191,20 @@ namespace Titalyver2
             }
             else
             {
+                ;
+                SolidColorBrush b = new SolidColorBrush(Color.FromArgb(63, 0, 128, 0));
+                SolidColorBrush sb = new SolidColorBrush(Color.FromArgb(0, 0, 0, 0));
                 foreach (LyricsContainer.Line l in lyrics.Lines)
                 {
                     KaraokeLine kl = new(typeface, FontSize,
                                          ActiveFillColor, ActiveStrokeColor,
                                          StandbyFillColor, StandbyStrokeColor,
                                          StrokeThickness, l);
-                    kl.TextAlignment = TextAlignment.Right;
+                    kl.TextAlignment = TextAlignment.Center;
                     kl.Padding = new Thickness(10, 5, 10, 5);
-                    kl.Width = this.ActualWidth;
+                    kl.Width = ActualWidth;
+                    kl.ActiveBackColor = b;
+                    kl.SleepBackColor = sb;
                     _ = List.Children.Add(kl);
                 }
             }

@@ -95,6 +95,21 @@ namespace Titalyver2
             new FrameworkPropertyMetadata(new Thickness(), FrameworkPropertyMetadataOptions.AffectsRender));
 
 
+        [Description("アクティブ行背景色"), Category("Karaoke Line")]
+        public SolidColorBrush ActiveBackColor { get => (SolidColorBrush)GetValue(ActiveBackColorProperty); set => SetValue(ActiveBackColorProperty, value); }
+        public static readonly DependencyProperty ActiveBackColorProperty = DependencyProperty.Register(
+            "ActiveBackColor", typeof(SolidColorBrush), typeof(KaraokeLine),
+            new FrameworkPropertyMetadata(Brushes.Transparent,
+                                          FrameworkPropertyMetadataOptions.AffectsRender));
+
+        [Description("休眠行背景色"), Category("Karaoke Line")]
+        public SolidColorBrush SleepBackColor { get => (SolidColorBrush)GetValue(SleepBackColorProperty); set => SetValue(SleepBackColorProperty, value); }
+        public static readonly DependencyProperty SleepBackColorProperty = DependencyProperty.Register(
+            "SleepBackColor", typeof(SolidColorBrush), typeof(KaraokeLine),
+            new FrameworkPropertyMetadata(Brushes.Transparent,
+                                          FrameworkPropertyMetadataOptions.AffectsRender));
+
+
 
 
         [Description("テスト表示用"), Category("Karaoke Line"), DefaultValue("テスト｜表示《ひょうじ》")]
@@ -148,7 +163,7 @@ namespace Titalyver2
 
 
         public double FadeInTime { get; set; } = 0.5;
-        public double FadeOutTime { get; set; } = 1.0;
+        public double FadeOutTime { get; set; } = 0.75;
 
         public double StartTime { get; private set; }
         public double EndTime { get; private set; }
@@ -159,6 +174,7 @@ namespace Titalyver2
         private LyricsContainer.Line Line;
         private readonly SolidColorBrush FadeFillBrush = new();
         private readonly SolidColorBrush FadeStrokeBrush = new();
+        private readonly SolidColorBrush FadeBackBrush = new();
 
 
         private KaraokeWord[] Words;
@@ -223,7 +239,7 @@ namespace Titalyver2
         protected override Size MeasureOverride(Size availableSize)
         {
             double ww = WordsWidth + Padding.Left + Padding.Right;
-            double width = double.IsNaN(Width) ? ww : Math.Max(Width, ww);
+            double width = double.IsNaN(Width) ? ww : Width;
             return new Size(width, WordsHeight + Padding.Top + Padding.Bottom);
         }
 
@@ -297,7 +313,7 @@ namespace Titalyver2
             IsLastRenderOnSleep = false;
 
             double alignment_x = 0;
-            double width = double.IsNaN(Width) ? WordsWidth : Math.Max(Width, WordsWidth);
+            double width = double.IsNaN(Width) ? WordsWidth : Width;
             switch (TextAlignment)
             {
                 case TextAlignment.Left:
@@ -311,6 +327,31 @@ namespace Titalyver2
                     alignment_x = (width - WordsWidth) / 2;
                     break;
             }
+            {
+                width += double.IsNaN(Width) ? Padding.Left + Padding.Right : 0;
+                Rect rect = new(0, 0, width, WordsHeight + Padding.Top + Padding.Bottom);
+                if (StartTime < Time && Time < EndTime - FadeInTime)
+                {
+                    FadeBackBrush.Color = ActiveBackColor.Color;
+                }
+                else if (Time < StartTime && Time > StartTime - FadeInTime)
+                {
+                    double rate = (Time - (StartTime - FadeInTime)) / FadeInTime;
+                    FadeBackBrush.Color = (ActiveBackColor.Color * (float)rate) + (SleepBackColor.Color * (float)(1 - rate));
+                }
+                else if (Time < EndTime && Time > EndTime - FadeInTime)
+                {
+                    double rate = (Time - (EndTime - FadeInTime)) / FadeInTime;
+                    FadeBackBrush.Color = (SleepBackColor.Color * (float)rate) + (ActiveBackColor.Color * (float)(1 - rate));
+                }
+                else
+                {
+                    FadeBackBrush.Color = SleepBackColor.Color;
+                }
+                drawingContext.DrawRectangle(FadeBackBrush, null, rect);
+            }
+
+
             drawingContext.PushTransform(new TranslateTransform(alignment_x, Padding.Top));
 
             if (StartTime < Time && Time < EndTime)
