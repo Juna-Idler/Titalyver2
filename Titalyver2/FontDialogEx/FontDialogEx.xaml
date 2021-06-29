@@ -1,77 +1,116 @@
 ﻿<Window x:Class="emanual.Wpf.Dialogs.FontDialogEx"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    Title="フォントの選択" SizeToContent="WidthAndHeight" WindowStyle="None" ShowInTaskbar="False" FontFamily="Meiryo"
- 		Background="Transparent" AllowsTransparency="True" ResizeMode="NoResize" Loaded="Window_Loaded">
+    Title="フォントの選択" ShowInTaskbar="False"
+ 		Background="Transparent" ResizeMode="CanResizeWithGrip" Loaded="Window_Loaded" WindowStyle="None" AllowsTransparency="True" Width="640" Height="480">
 
-  <Border CornerRadius="6" BorderBrush="RoyalBlue" BorderThickness="1">
-    <Border.Background>
-      <LinearGradientBrush StartPoint="0.5,0" EndPoint="0.5,1">
-        <GradientStop Offset="0" Color="LightSteelBlue"/>
-        <GradientStop Offset="0.1" Color="AliceBlue"/>
-        <GradientStop Offset="0.5" Color="GhostWhite"/>
-        <GradientStop Offset="1" Color="LightSteelBlue"/>
-      </LinearGradientBrush>
-    </Border.Background>
-
-    <StackPanel Orientation="Vertical">
-      <Border BorderBrush="DarkGray" BorderThickness="0,0,0,1">
-        <TextBlock Text="フォントの選択" Foreground="Firebrick" FontWeight="Bold" Margin="10,10,0,6" />
-      </Border>
-      <StackPanel Orientation="Horizontal" Margin="10,10,10,0">
-        <StackPanel Orientation="Vertical" Width="230">
-          <Label Height="25" Target="{Binding ElementName=txtFamilyName}" Content="フォント(_F)" />
-          <TextBox Name="txtFamilyName" Height="25" FontWeight="Bold" />
-          <ListBox Name="lstFamilyName" Height="310" SelectionChanged="lstFamilyName_SelectionChanged">
-            <ListBox.ItemsPanel>
-              <ItemsPanelTemplate>
-                <VirtualizingStackPanel />
-              </ItemsPanelTemplate>
-            </ListBox.ItemsPanel>
-
-            <ListBox.ItemTemplate>
-              <DataTemplate>
-              <StackPanel Orientation="Horizontal">
-                <TextBlock Width="130" VerticalAlignment="Center" Margin="3" Text="{Binding}" FontSize="11" />
-                <TextBlock VerticalAlignment="Center" Text="Sample" FontFamily="{Binding}" FontSize="14" />
-              </StackPanel>
-              </DataTemplate>
-            </ListBox.ItemTemplate>
-          </ListBox>
-        </StackPanel>
-        
-        <StackPanel Orientation="Vertical" Margin="6,0,0,0">
-          <StackPanel Orientation="Horizontal">
-            <StackPanel Orientation="Vertical" Width="240">
-              <Label Height="25" Target="{Binding ElementName=txtTypeface}" Content="タイプフェース(_Y)" />
-              <TextBox Name="txtTypeface" Height="25" FontWeight="Bold" />
-              <ListBox Name="lstTypeface" Height="150" SelectionChanged="lstTypeface_SelectionChanged" />
-            </StackPanel>  
+    <Border CornerRadius="6" BorderBrush="RoyalBlue" BorderThickness="1">
+        <Border.Background>
+            <LinearGradientBrush StartPoint="0.5,0" EndPoint="0.5,1">
+                <GradientStop Offset="0" Color="LightSteelBlue"/>
+                <GradientStop Offset="0.1" Color="AliceBlue"/>
+                <GradientStop Offset="0.5" Color="GhostWhite"/>
+                <GradientStop Offset="1" Color="LightSteelBlue"/>
+            </LinearGradientBrush>
+        </Border.Background>
+        <Grid >
+            <Grid.RowDefinitions>
+                <RowDefinition Height="auto"></RowDefinition>
+                <RowDefinition Height="*"></RowDefinition>
+                <RowDefinition Height="auto"></RowDefinition>
+            </Grid.RowDefinitions>
             
-            <StackPanel Orientation="Vertical" Margin="6,0,0,0">
-              <Label Height="25" Target="{Binding ElementName=txtFontSize}" Content="サイズ(_S)" />
-              <TextBox Name="txtFontSize" Width="90" Height="25" HorizontalAlignment="Left" FontWeight="Bold" />
-              <ListBox Name="lstFontSize" Width="90" Height="160" HorizontalAlignment="Left" SelectionChanged="lstFontSize_SelectionChanged" />
-            </StackPanel>
-          </StackPanel>
-          
-          <StackPanel Name="PART_SamplePanel" Orientation="Vertical">
-            <Label Content="サンプル(_M)" Target="{Binding ElementName=txtSample}" Margin="0,4,0,0" />
-            <TextBox Name="txtSample" Width="{Binding ElementName=PART_SamplePanel, Path=ActualWidth}" Height="70"
-                     HorizontalAlignment="Left" AcceptsReturn="True" TextWrapping="Wrap" ToolTip="テキストの編集可能"/>
-            <Label Height="25" Content="言語(_L)" Target="{Binding ElementName=cmbLanguage}" />
-            <ComboBox Name="cmbLanguage" Width="{Binding ElementName=PART_SamplePanel, Path=ActualWidth}"
-                      Height="25" Margin="0,0,0,4" HorizontalAlignment="Left" SelectionChanged="cmbLanguage_SelectionChanged" />
-          </StackPanel>
-        </StackPanel>
-      </StackPanel>
-      
-      <Border BorderBrush="DarkGray" BorderThickness="0,1,0,0">
-        <StackPanel Orientation="Horizontal" Height="40" HorizontalAlignment="Right" VerticalAlignment="Center">
-          <Button Name="btnOK" Width="80" Height="25" Margin="0" IsDefault="True" Content="OK" Click="btnOK_Click" TabIndex="0" />
-          <Button Name="btnCancel" Width="80" Height="25" Margin="4,0,20,0" IsCancel="True" Content="キャンセル" TabIndex="1" />
-        </StackPanel>
-      </Border>
-    </StackPanel>
-  </Border>
+            <Border BorderBrush="DarkGray" BorderThickness="0,0,0,1">
+                <TextBlock Text="フォントの選択" Foreground="Firebrick" FontWeight="Bold" Margin="10,10,0,6" />
+            </Border>
+            <Grid Grid.Row="1" Margin="10,0,10,0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <Grid Grid.Column="0" MinWidth="200" Margin="0,0,2,0">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="auto" />
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <Label Height="25" Target="{Binding ElementName=txtFamilyName}" Content="フォント(_F)" Grid.Row="0" />
+                    <TextBox Name="txtFamilyName" Height="25" FontWeight="Bold" Grid.Row="1" FontSize="16" />
+                    <ListBox Name="lstFamilyName" SelectionChanged="lstFamilyName_SelectionChanged" FontSize="16" Grid.Row="2">
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock Margin="3" Text="{Binding LocalFontName}" FontFamily="{Binding FontFamily}" FontSize="20" />
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                </Grid>
+
+                <Grid Grid.Column="1" Margin="2,0,0,0">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <Grid Grid.Row="0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="auto"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid Grid.Column="0" Margin="0,0,2,0">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="auto"/>
+                                <RowDefinition Height="auto"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+                            <Label Height="25" Target="{Binding ElementName=txtTypeface}" Content="タイプフェイス(_Y)" Grid.Row="0" />
+                            <TextBox Name="txtTypeface" Height="25" FontWeight="Bold" FontSize="16" Grid.Row="1" />
+                            <ListBox Name="lstTypeface" SelectionChanged="lstTypeface_SelectionChanged" Grid.Row="2" >
+                                <ListBox.ItemTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Margin="3" Text="{Binding Name}" FontSize="16" />
+                                    </DataTemplate>
+                                </ListBox.ItemTemplate>
+                            </ListBox>
+                        </Grid>
+
+                        <Grid Grid.Column="1" Margin="2,0,0,0">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="auto"/>
+                                <RowDefinition Height="auto"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+                            <Label Height="25" Target="{Binding ElementName=txtFontSize}" Content="サイズ(_S)" Grid.Row="0" Width="90" />
+                            <TextBox Name="txtFontSize" Width="90" Height="25" HorizontalAlignment="Left" FontWeight="Bold" Grid.Row="1" FontSize="16" HorizontalContentAlignment="Center" />
+                            <ListBox Name="lstFontSize" Width="90" HorizontalAlignment="Left" SelectionChanged="lstFontSize_SelectionChanged" Grid.Row="2" FontSize="16" HorizontalContentAlignment="Right" />
+                        </Grid>
+                    </Grid>
+
+
+                    <StackPanel Orientation="Vertical" Grid.Row="1">
+                        <Label Height="25" Content="言語(_L)" Target="{Binding ElementName=cmbLanguage}" />
+                        <ComboBox Name="cmbLanguage"
+                      Height="25" HorizontalAlignment="Stretch" SelectionChanged="cmbLanguage_SelectionChanged">
+                            <ComboBox.ItemTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding Name}" />
+                                </DataTemplate>
+                            </ComboBox.ItemTemplate>
+                        </ComboBox>
+                    </StackPanel>
+                    <Label Content="サンプル(_M)" Target="{Binding ElementName=txtSample}" Grid.Row="2" />
+                    <TextBox Name="txtSample"
+                     HorizontalAlignment="Stretch" AcceptsReturn="True" TextWrapping="Wrap" ToolTip="テキストの編集可能" Grid.Row="3"/>
+                </Grid>
+
+            </Grid>
+
+            <Border BorderBrush="DarkGray" BorderThickness="0,1,0,0" Height="40" Grid.Row="2" VerticalAlignment="Stretch">
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
+                    <Button Name="btnOK" Width="80" Height="25" Margin="0" IsDefault="True" Content="OK" Click="btnOK_Click" TabIndex="0" />
+                    <Button Name="btnCancel" Width="80" Height="25" Margin="4,0,20,0" IsCancel="True" Content="キャンセル" TabIndex="1" />
+                </StackPanel>
+            </Border>
+        </Grid>
+    </Border>
 </Window>
