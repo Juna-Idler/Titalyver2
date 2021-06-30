@@ -79,6 +79,8 @@ namespace emanual.Wpf.Dialogs
 			cmbLanguage.SelectedIndex = Array.FindIndex(LanguageList, m => XmlLanguage.GetLanguage(m.Code) == this.Language);
 
 			txtSample.Text = SampleText;
+
+			txtFamilyName.Text = SelectedFontFamily.Source;
 		}
 
 

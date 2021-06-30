@@ -8,8 +8,6 @@
              d:DesignHeight="450" d:DesignWidth="800">
     <Canvas>
         <StackPanel x:Name="List">
-            <local:KaraokeLine TestText="テスト｜表示《ひょうじ》？" />
         </StackPanel>
-        <local:KaraokeLine TestText="[00:15.65]｜[00:15.65]風《[00:15.65]か[00:15.86]ぜ》[00:16.07]が｜[00:16.31]渡《[00:16.31]わ[00:16.52]た》[00:17.03]る[00:17.66]｜[00:18.12]広《[00:18.12]ひ[00:18.42]ろ》[00:18.78]い｜[00:18.97]空《[00:18.97]そ[00:19.43]ら》[00:19.65]は[00:20.78]" FontSize="80" TextAlignment="Center" Width="800" />
     </Canvas>
 </UserControl>

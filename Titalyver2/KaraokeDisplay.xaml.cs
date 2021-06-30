@@ -2,6 +2,7 @@
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
+using System.Windows.Documents;
 using System.Diagnostics;
 using System.ComponentModel;
 using System.Windows.Media.Animation;
@@ -73,21 +74,44 @@ namespace Titalyver2
         public Thickness LinePadding { get => (Thickness)GetValue(LinePaddingProperty); set => SetValue(LinePaddingProperty, value); }
         public static readonly DependencyProperty LinePaddingProperty = DependencyProperty.Register(
             "LinePadding", typeof(Thickness), typeof(KaraokeDisplay),
-            new FrameworkPropertyMetadata(new Thickness(), FrameworkPropertyMetadataOptions.AffectsRender,OnChangePadding));
+            new FrameworkPropertyMetadata(new Thickness(), FrameworkPropertyMetadataOptions.AffectsRender, OnChangePadding));
         private static void OnChangePadding(DependencyObject dependencyObject, DependencyPropertyChangedEventArgs e)
         {
             KaraokeDisplay _this = (KaraokeDisplay)dependencyObject;
             _this.OnChangePadding();
         }
 
+        [Description("フォント"), Category("Karaoke Display")]
+        public FontFamily LineFontFamily { get => (FontFamily)GetValue(LineFontFamilyProperty); set => SetValue(LineFontFamilyProperty, value); }
+        public static readonly DependencyProperty LineFontFamilyProperty = TextElement.FontFamilyProperty.AddOwner(
+            typeof(KaraokeDisplay), new FrameworkPropertyMetadata(OnChangedTypeface));
 
+        [Description("フォント"), Category("Karaoke Display")]
+        public FontStyle LineFontStyle { get => (FontStyle)GetValue(LineFontStyleProperty); set => SetValue(LineFontStyleProperty, value); }
+        public static readonly DependencyProperty LineFontStyleProperty = TextElement.FontStyleProperty.AddOwner(
+            typeof(KaraokeDisplay), new FrameworkPropertyMetadata(OnChangedTypeface));
 
+        [Description("フォント"), Category("Karaoke Display")]
+        public FontWeight LineFontWeight { get => (FontWeight)GetValue(LineFontWeightProperty); set => SetValue(LineFontWeightProperty, value); }
+        public static readonly DependencyProperty LineFontWeightProperty = TextElement.FontWeightProperty.AddOwner(
+            typeof(KaraokeDisplay), new FrameworkPropertyMetadata(OnChangedTypeface));
 
-        [Description("タイムタグ同期歌詞"), Category("Karaoke Display"), DefaultValue("[00:00.00]テスト｜表示《ひょうじ》[00:10.00]")]
-        public string Lyrics { get => (string)GetValue(LyricsProperty); set => SetValue(LyricsProperty, value); }
-        public static readonly DependencyProperty LyricsProperty = DependencyProperty.Register(
-            "Lyrics", typeof(string), typeof(KaraokeDisplay),
-            new FrameworkPropertyMetadata("[00:00.00]テスト｜表示《ひょうじ》[00:10.00]", OnChangeLyrics));
+        [Description("フォント"), Category("Karaoke Display")]
+        public FontStretch LineFontStretch { get => (FontStretch)GetValue(LineFontStretchProperty); set => SetValue(LineFontStretchProperty, value); }
+        public static readonly DependencyProperty LineFontStretchProperty = TextElement.FontStretchProperty.AddOwner(
+            typeof(KaraokeDisplay), new FrameworkPropertyMetadata(OnChangedTypeface));
+
+        private static void OnChangedTypeface(DependencyObject dependencyObject, DependencyPropertyChangedEventArgs e)
+        {
+            KaraokeDisplay _this = (KaraokeDisplay)dependencyObject;
+            _this.Typeface = new Typeface(_this.FontFamily, _this.FontStyle, _this.FontWeight, _this.FontStretch);
+
+            if (_this.Lyrics != null)
+                _this.MakeKaraokeLines();
+        }
+
+        public SolidColorBrush ActiveBackColor = new(Color.FromArgb(63, 0, 128, 0));
+
 
 
 
@@ -139,7 +163,7 @@ namespace Titalyver2
                 BeginAnimation(AutoScrollYProperty, new DoubleAnimation() { BeginTime = null });
                 Animation = null;
             }
-            if (lyrics.Sync != LyricsContainer.SyncMode.None)
+            if (Lyrics.Sync != LyricsContainer.SyncMode.None)
             {
                 foreach (KaraokeLine kl in List.Children)
                 {
@@ -161,15 +185,25 @@ namespace Titalyver2
             }
         }
 
+        public Typeface Typeface { get; private set; }
+
+        public void SetFont(Typeface typeface,double size)
+        {
+            FontSize = size;
+            Typeface = typeface;
+            MakeKaraokeLines();
+        }
+
 
         public KaraokeDisplay()
         {
             InitializeComponent();
             foreach (Typeface typeface in FontFamily.GetTypefaces())
             {
-                this.typeface = typeface;
+                this.Typeface = typeface;
                 break;
             }
+            Typeface = new Typeface(Typeface.FontFamily, FontStyles.Italic, FontWeights.Bold, FontStretches.Condensed);
 
             SizeChanged += (s,e) =>
             {
@@ -184,29 +218,27 @@ namespace Titalyver2
         }
 
 
-        private static void OnChangeLyrics(DependencyObject dependencyObject, DependencyPropertyChangedEventArgs e)
-        {
-            KaraokeDisplay _this = (KaraokeDisplay)dependencyObject;
-            _this.SetLyrics();
-
-        }
         private static void OnChangeTime(DependencyObject dependencyObject, DependencyPropertyChangedEventArgs e)
         {
             KaraokeDisplay _this = (KaraokeDisplay)dependencyObject;
-            _this.OnChangeTime();
+            _this.UpdateFrame();
+        }
+
+        public void SetLyrics(string lyrics)
+        {
+            LyricsText = lyrics;
+            Lyrics = new LyricsContainer(lyrics);
+            AtTagTimeOffset = Lyrics.AtTagContainer.Offset;
+            MakeKaraokeLines();
         }
 
 
-
-        private void SetLyrics()
+        private void MakeKaraokeLines()
         {
-            lyrics = new LyricsContainer(Lyrics);
-            AtTagTimeOffset = lyrics.AtTagContainer.Offset;
-
             List.Children.Clear();
-            if (lyrics.Sync == LyricsContainer.SyncMode.None)
+            if (Lyrics.Sync == LyricsContainer.SyncMode.None)
             {
-                using System.IO.StringReader sr = new(Lyrics);
+                using System.IO.StringReader sr = new(LyricsText);
                 for (string line = sr.ReadLine(); line != null; line = sr.ReadLine())
                 {
                     TextBlock tb = new TextBlock();
@@ -218,14 +250,12 @@ namespace Titalyver2
             }
             else
             {
-                ;
-                SolidColorBrush b = new SolidColorBrush(Color.FromArgb(63, 0, 128, 0));
-                foreach (LyricsContainer.Line l in lyrics.Lines)
+                foreach (LyricsContainer.Line l in Lyrics.Lines)
                 {
-                    KaraokeLine kl = new(typeface, FontSize,
+                    KaraokeLine kl = new(Typeface, FontSize,
                                          ActiveFillColor, ActiveStrokeColor,
                                          StandbyFillColor, StandbyStrokeColor,
-                                         StrokeThickness, b, l, ActualWidth);
+                                         StrokeThickness,SleepFillColor,SleepStrokeColor, ActiveBackColor, l, ActualWidth);
                     kl.TextAlignment = TextAlignment;
                     kl.Padding = LinePadding;
                     _ = List.Children.Add(kl);
@@ -233,9 +263,9 @@ namespace Titalyver2
             }
             AutoScrollY = 0;
         }
-        private void OnChangeTime() //名前変えたい
+        private void UpdateFrame()
         {
-            if (lyrics.Sync == LyricsContainer.SyncMode.None)
+            if (Lyrics.Sync == LyricsContainer.SyncMode.None)
             {
                 Canvas.SetTop(List, ManualScrollY);
                 return;
@@ -252,10 +282,11 @@ namespace Titalyver2
                     Animation.Completed += (s, e) => { Animation = null; };
                     BeginAnimation(AutoScrollYProperty, Animation);
                 }
-
+                kl.SetTime(time);
                 if (kl.NeedRender(time))
                 {
-                    kl.Time = time;
+                    kl.Update();
+//                    kl.Time = time;
                 }
             }
             Canvas.SetTop(List, AutoScrollY + ManualScrollY);
@@ -266,14 +297,14 @@ namespace Titalyver2
         private void CompositionTarget_Rendering(object sender, EventArgs e)
         {
             Time = Stopwatch.Elapsed.TotalSeconds + TimeOffset;
-            OnChangeTime();
+            UpdateFrame();
         }
 
         private void OnChangeTextAlignment()
         {
-            if (lyrics == null)
+            if (Lyrics == null)
                 return;
-            if (lyrics.Sync == LyricsContainer.SyncMode.None)
+            if (Lyrics.Sync == LyricsContainer.SyncMode.None)
             {
                 foreach (TextBlock tb in List.Children)
                     tb.TextAlignment = TextAlignment;
@@ -288,9 +319,9 @@ namespace Titalyver2
 
         private void OnChangePadding()
         {
-            if (lyrics == null)
+            if (Lyrics == null)
                 return;
-            if (lyrics.Sync == LyricsContainer.SyncMode.None)
+            if (Lyrics.Sync == LyricsContainer.SyncMode.None)
             {
                 foreach (TextBlock tb in List.Children)
                     tb.Padding = LinePadding;
@@ -305,9 +336,9 @@ namespace Titalyver2
 
 
 
-        private Typeface typeface;
 
-        private LyricsContainer lyrics;
+        private LyricsContainer Lyrics;
+        private string LyricsText;
         private double AtTagTimeOffset;
 
         private readonly Stopwatch Stopwatch = new();
