@@ -27,13 +27,14 @@ namespace Titalyver2
     /// </summary>
     public partial class SettingsWindow : Window
     {
-        private static BrushConverter bc = new BrushConverter();
+        private static readonly BrushConverter bc = new();
 
         private MainWindow MainWindow;
 
 
         public SettingsWindow(MainWindow mainWindow)
         {
+            Owner = mainWindow;
             InitializeComponent();
             Language = Language = XmlLanguage.GetLanguage(CultureInfo.CurrentUICulture.Name);
 
@@ -93,7 +94,7 @@ namespace Titalyver2
 
         }
 
-        private SolidColorBrush ColorTextChanged(TextBox box)
+        private static SolidColorBrush ColorTextChanged(TextBox box)
         {
             try
             {
@@ -104,7 +105,7 @@ namespace Titalyver2
                 box.Foreground = m < 128 ? Brushes.White : Brushes.Black;
                 return brush;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 box.Background = Brushes.White;
                 box.Foreground = Brushes.Red;

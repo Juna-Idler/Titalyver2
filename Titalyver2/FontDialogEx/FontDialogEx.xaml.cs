@@ -45,7 +45,8 @@ namespace emanual.Wpf.Dialogs
 			public string Code { get; set; }
 
 		}
-		LanguageListItem[] LanguageList = {
+
+        private static readonly LanguageListItem[] LanguageList = {
 				new() { Name = "日本語（ja-jp）",  Code = "ja-jp" },
 				new() { Name = "米国英語（en-us）",  Code = "en-us" },
 				new() { Name = "中国語（zh-cn）",  Code = "zh-cn" },
@@ -98,33 +99,30 @@ namespace emanual.Wpf.Dialogs
 			if (lstFamilyName.Items.Count < 1)
 				return;
 
-			FontNameListItem item = lstFamilyName.SelectedItem as FontNameListItem;
 
-			if (item != null)
-			{
-				txtFamilyName.Text = item.LocalFontName;
-				SelectedFontFamily = item.FontFamily;
+            if (lstFamilyName.SelectedItem is FontNameListItem item)
+            {
+                txtFamilyName.Text = item.LocalFontName;
+                SelectedFontFamily = item.FontFamily;
 
-				this.UpdateTypeFace();
-				this.UpdateSampleText();
-			}
-		}
+                this.UpdateTypeFace();
+                this.UpdateSampleText();
+            }
+        }
 
 		//---------------------------------------------------------------------------------------------
 		private void lstTypeface_SelectionChanged(object sender, SelectionChangedEventArgs e)
 		{
-			TypefaceListItem item = lstTypeface.SelectedItem as TypefaceListItem;
+            if (lstTypeface.SelectedItem is TypefaceListItem item)
+            {
+                txtTypeface.Text = item.Name; ;
+                SelectedFontStretch = item.FontStretch;
+                SelectedFontStyle = item.FontStyle;
+                SelectedFontWeight = item.FontWeight;
 
-			if (item != null)
-			{
-				txtTypeface.Text = item.Name;;
-				SelectedFontStretch = item.FontStretch;
-				SelectedFontStyle = item.FontStyle;
-				SelectedFontWeight = item.FontWeight;
-
-				this.UpdateSampleText();
-			}
-		}
+                this.UpdateSampleText();
+            }
+        }
 
 		//---------------------------------------------------------------------------------------------
 		private void lstFontSize_SelectionChanged(object sender, SelectionChangedEventArgs e)

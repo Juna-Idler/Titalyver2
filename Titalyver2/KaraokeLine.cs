@@ -159,8 +159,8 @@ namespace Titalyver2
 
         protected override Size MeasureOverride(Size availableSize)
         {
-            double ww = WordsWidth + Padding.Left + Padding.Right;
-            double width = double.IsNaN(Width) ? ww : Width;
+//            double ww = WordsWidth + Padding.Left + Padding.Right;
+//            double width = double.IsNaN(Width) ? ww : Width;
             return new Size(Width, WordsHeight + Padding.Top + Padding.Bottom);
         }
 
@@ -401,12 +401,9 @@ namespace Titalyver2
                                     Color activeStroke,Color standbyStroke,
                                     double tickness)
             {
-                WipeStroke = new LinearGradientBrush(activeStroke, standbyStroke, 0);
-                WipeStroke.MappingMode = BrushMappingMode.Absolute;
-                WipeFill = new LinearGradientBrush(activeFill, standbyFill, 0);
-                WipeFill.MappingMode = BrushMappingMode.Absolute;
-                Pen = new Pen(WipeStroke, tickness);
-                Pen.LineJoin = PenLineJoin.Round;
+                WipeStroke = new(activeStroke, standbyStroke, 0) { MappingMode = BrushMappingMode.Absolute };
+                WipeFill = new(activeFill, standbyFill, 0) { MappingMode = BrushMappingMode.Absolute };
+                Pen = new(WipeStroke, tickness) { LineJoin = PenLineJoin.Round };
             }
 
             public void SetPenWipeBrush() { Pen.Brush = WipeStroke; }

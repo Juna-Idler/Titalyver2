@@ -26,14 +26,29 @@ namespace Titalyver2
 
         public enum EnumPlaybackEvent
         {
+            Bit_Play = 1,
+            Bit_Stop = 2,
+            Bit_Update = 4,
+            Bit_Seek = 8,
+
             NULL = 0,
-            PlayNew = 1,
+            Play = 1,
             Stop = 2,
-            PauseCancel = 3,
-            Pause = 4,
-            SeekPlaying = 5,
-            SeekPause = 6,
+
+            Update = 4,
+            UpdatePlay = 5,
+            UpdateStop = 6,
+
+            Seek = 8,
+            SeekPlay = 9,
+            SeekStop = 10,
+
+            SeekUpdate = 12,
+            SeekUpdatePlay = 13,
+            SeekUpdateStop = 14,
         };
+
+
 
         public struct Data
         {
@@ -47,6 +62,8 @@ namespace Titalyver2
 
             //おそらく音楽ファイルの多分フルパス
             public string FilePath;
+
+            public bool IsValid() => MetaData != null;
         }
 
 
@@ -178,41 +195,41 @@ namespace Titalyver2
             base.Terminalize();
         }
 
-        public bool Update(EnumPlaybackEvent pb_event, double seek_time, byte[] json)
+        public bool Update(EnumPlaybackEvent pbevent, double seektime, byte[] json)
         {
             int size = 4 + 8 + 4 + 4 + json.Length;
 
-            using (MutexLock ml = new MutexLock(Mutex, 100))
+            using (MutexLock ml = new(Mutex, 100))
             {
                 if (!ml.Result)
                     return false;
                 using (MemoryMappedViewAccessor mmva = MemoryMappedFile.CreateViewAccessor(0, size, MemoryMappedFileAccess.ReadWrite))
                 {
                     Int64 offset = 0;
-                    mmva.Write(offset, (Int32)pb_event); offset += 4;
-                    mmva.Write(offset, seek_time); offset += 8;
+                    mmva.Write(offset, (Int32)pbevent); offset += 4;
+                    mmva.Write(offset, seektime); offset += 8;
                     mmva.Write(offset, GetTimeOfDay()); offset += 4;
                     mmva.Write(offset, json.Length); offset += 4;
-                    mmva.WriteArray(offset, json,0,json.Length); 
+                    mmva.WriteArray(offset, json, 0, json.Length);
                 }
 
                 _ = EventWaitHandle.Set();
             }
             return true;
         }
-	    public bool Update(EnumPlaybackEvent pb_event, double seek_time)
+	    public bool Update(EnumPlaybackEvent pbevent, double seektime)
         {
             int size = 4 + 8 + 4;
 
-            using (MutexLock ml = new MutexLock(Mutex, 100))
+            using (MutexLock ml = new(Mutex, 100))
             {
                 if (!ml.Result)
                     return false;
                 using (MemoryMappedViewAccessor mmva = MemoryMappedFile.CreateViewAccessor(0, size, MemoryMappedFileAccess.ReadWrite))
                 {
                     Int64 offset = 0;
-                    mmva.Write(offset, (Int32)pb_event); offset += 4;
-                    mmva.Write(offset, seek_time); offset += 8;
+                    mmva.Write(offset, (Int32)pbevent); offset += 4;
+                    mmva.Write(offset, seektime); offset += 8;
                     mmva.Write(offset, GetTimeOfDay());
                 }
                 _ = EventWaitHandle.Set();
@@ -240,7 +257,7 @@ namespace Titalyver2
         public Data GetData() { return data; }
 
         private Data data;
-        private bool ReadData()
+        public bool ReadData(bool forceread = false)
         {
             byte[] buffer;
             try
@@ -257,7 +274,7 @@ namespace Titalyver2
                 data.TimeOfDay = BitConverter.ToInt32(bytes, 12);
                 Int32 json_size = BitConverter.ToInt32(bytes, 16);
 
-                if (data.MetaData != null && data.PlaybackEvent != EnumPlaybackEvent.PlayNew)
+                if (data.MetaData != null && (data.PlaybackEvent & EnumPlaybackEvent.Bit_Update) != EnumPlaybackEvent.Bit_Update && !forceread)
                 {
                     return true;
                 }
@@ -278,7 +295,10 @@ namespace Titalyver2
             {
                 using JsonDocument document = JsonDocument.Parse(buffer);
                 if (document.RootElement.ValueKind != JsonValueKind.Object)
+                {
+                    data.MetaData = null;
                     return false;
+                }
                 data.FilePath = document.RootElement.GetProperty("path").GetString();
                 JsonElement meta = document.RootElement.GetProperty("meta");
                 foreach (JsonProperty e in meta.EnumerateObject())
@@ -306,12 +326,12 @@ namespace Titalyver2
             catch (Exception e)
             {
                 Debug.WriteLine(e.Message);
+                data.MetaData = null;
                 return false;
             }
 
             return true;
         }
-
 
         public Receiver(PlaybackEventHandler playbackEventHandler)
         {
@@ -325,7 +345,7 @@ namespace Titalyver2
         {
             _ = RegisteredWaitHandle?.Unregister(EventWaitHandle);
             RegisteredWaitHandle = null;
-            base.Terminalize();
+            Terminalize();
         }
         private void WaitOrTimerCallback(object state, bool timedOut)
         {

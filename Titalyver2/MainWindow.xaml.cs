@@ -30,8 +30,9 @@ namespace Titalyver2
 
 
             Receiver = new Receiver(PlaybackEvent);
+            Receiver.ReadData();
             Message.Data data = Receiver.GetData();
-            if (data.PlaybackEvent == Message.EnumPlaybackEvent.NULL)
+            if (!data.IsValid())
                 return;
             string lyrics =  GetLyrics(data);
             KaraokeDisplay.SetLyrics(lyrics);
@@ -40,14 +41,14 @@ namespace Titalyver2
                 double delay = Message.GetTimeOfDay() - data.TimeOfDay / 1000.0;
                 KaraokeDisplay.ForceMove(delay + data.SeekTime, 0.5);
                 KaraokeDisplay.Time = delay + data.SeekTime;
-                if ((data.PlaybackEvent & Message.EnumPlaybackEvent.PlayNew) == Message.EnumPlaybackEvent.PlayNew )
+                if ((data.PlaybackEvent & Message.EnumPlaybackEvent.Play) == Message.EnumPlaybackEvent.Play)
                     KaraokeDisplay.Start();
             }
         }
 
         private void RestoreSettings()
         {
-            FontFamily ff = new FontFamily(Properties.Settings.Default.FontFamily);
+            FontFamily ff = new(Properties.Settings.Default.FontFamily);
             FontStyle fsy;
             try { fsy = (FontStyle)TypeDescriptor.GetConverter(typeof(FontStyle)).ConvertFromString(Properties.Settings.Default.FontStyle); }
             catch ( Exception) { fsy = FontStyles.Normal; }
@@ -86,66 +87,48 @@ namespace Titalyver2
         private void PlaybackEvent(Receiver.Data data)
         {
 
-            double delay = (Receiver.GetTimeOfDay() - data.TimeOfDay) / 1000.0;
-
-            switch (data.PlaybackEvent)
+            if ((data.PlaybackEvent & Message.EnumPlaybackEvent.Bit_Update) == Message.EnumPlaybackEvent.Bit_Update)
             {
-                case Message.EnumPlaybackEvent.PlayNew:
-                    {
-                        Uri uri = new(data.FilePath);
-                        string lp = uri.LocalPath;
+                Uri uri = new(data.FilePath);
+                string lp = uri.LocalPath;
 
-                        string text = LyricsSearcher.Search(lp, data.MetaData);
-                        if (text == "")
-                            break;
-                        _ = Dispatcher.InvokeAsync(() =>
+                string text = LyricsSearcher.Search(lp, data.MetaData);
+                _ = Dispatcher.InvokeAsync(() =>
+                {
+                    KaraokeDisplay.SetLyrics(text);
+                });
+            }
+            double time = -1;
+            if ((data.PlaybackEvent & Message.EnumPlaybackEvent.Bit_Seek) == Message.EnumPlaybackEvent.Bit_Seek)
+            {
+                time = data.SeekTime;
+            }
+            switch (data.PlaybackEvent & ~Message.EnumPlaybackEvent.Bit_Update & ~Message.EnumPlaybackEvent.Bit_Seek)
+            {
+                case Message.EnumPlaybackEvent.Play:
+                    _ = Dispatcher.InvokeAsync(() =>
+                    {
+                        if (time >= 0)
                         {
-                            KaraokeDisplay.SetLyrics(text);
-                            KaraokeDisplay.Time = (Message.GetTimeOfDay() - data.TimeOfDay) / 1000.0;
-                            KaraokeDisplay.Start();
-                            KaraokeDisplay.ForceMove(delay, 0.5);
-                        });
-                        break;
-                    }
+                            double delay = (Receiver.GetTimeOfDay() - data.TimeOfDay) / 1000.0;
+                            KaraokeDisplay.Time = time + delay;
+                            KaraokeDisplay.ForceMove(KaraokeDisplay.Time, 0.5);
+                        }
+                        KaraokeDisplay.Start();
+                    });
+                    break;
                 case Message.EnumPlaybackEvent.Stop:
                     _ = Dispatcher.InvokeAsync(() =>
                     {
+                        if (time >= 0)
+                        {
+                            KaraokeDisplay.Time = time;
+                            KaraokeDisplay.ForceMove(KaraokeDisplay.Time, 0.5);
+                        }
                         KaraokeDisplay.Stop();
-                    });
-                    break;
-                case Message.EnumPlaybackEvent.PauseCancel:
-                    _ = Dispatcher.InvokeAsync(() =>
-                    {
-                        KaraokeDisplay.Time = data.SeekTime + delay;
-                        KaraokeDisplay.Start();
-                    });
-                    break;
-                case Message.EnumPlaybackEvent.Pause:
-                    _ = Dispatcher.InvokeAsync(() =>
-                    {
-                        KaraokeDisplay.Stop();
-                        KaraokeDisplay.Time = data.SeekTime;
-                    });
-                    break;
-                case Message.EnumPlaybackEvent.SeekPlaying:
-                    _ = Dispatcher.InvokeAsync(() =>
-                    {
-                        KaraokeDisplay.Time = data.SeekTime + delay;
-                        KaraokeDisplay.Start();
-                        KaraokeDisplay.ForceMove(data.SeekTime + delay, 0.5);
-                    });
-                    break;
-                case Message.EnumPlaybackEvent.SeekPause:
-                    _ = Dispatcher.InvokeAsync(() =>
-
-                    {
-                        KaraokeDisplay.Stop();
-                        KaraokeDisplay.Time = data.SeekTime;
-                        KaraokeDisplay.ForceMove(data.SeekTime, 0.5);
                     });
                     break;
             }
-
         }
 
 
@@ -172,11 +155,18 @@ namespace Titalyver2
             }
         }
 
+        private SettingsWindow SettingsWindow;
+
         private void SettingButton_Click(object sender, RoutedEventArgs e)
         {
-
-            SettingsWindow SettingWindow = new SettingsWindow(this);
-            SettingWindow.Show();
+            if (SettingsWindow != null)
+            {
+                SettingsWindow.Activate();
+                return;
+            }
+            SettingsWindow = new SettingsWindow(this);
+            SettingsWindow.Closed += (s, e) => { SettingsWindow = null; };
+            SettingsWindow.Show();
         }
     }
 }

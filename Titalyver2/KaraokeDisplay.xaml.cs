@@ -278,10 +278,12 @@ namespace Titalyver2
                 using System.IO.StringReader sr = new(LyricsText);
                 for (string line = sr.ReadLine(); line != null; line = sr.ReadLine())
                 {
-                    TextBlock tb = new TextBlock();
-                    tb.FontSize = FontSize;
-                    tb.Foreground = SleepFillColor;
-                    tb.Text = line;
+                    TextBlock tb = new()
+                    {
+                        FontSize = FontSize,
+                        Foreground = SleepFillColor,
+                        Text = line
+                    };
                     _ = List.Children.Add(tb);
                 }
             }
