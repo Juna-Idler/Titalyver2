@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Windows;
 using System.Windows.Input;
+using System.Windows.Media;
+using System.ComponentModel;
 
 namespace Titalyver2
 {
@@ -23,6 +25,10 @@ namespace Titalyver2
             KaraokeDisplay.SetLyrics("");
             LyricsSearcher = new LyricsSearcher();
 
+
+            RestoreSettings();
+
+
             Receiver = new Receiver(PlaybackEvent);
             Message.Data data = Receiver.GetData();
             if (data.PlaybackEvent == Message.EnumPlaybackEvent.NULL)
@@ -38,6 +44,33 @@ namespace Titalyver2
                     KaraokeDisplay.Start();
             }
         }
+
+        private void RestoreSettings()
+        {
+            FontFamily ff = new FontFamily(Properties.Settings.Default.FontFamily);
+            FontStyle fsy;
+            try { fsy = (FontStyle)TypeDescriptor.GetConverter(typeof(FontStyle)).ConvertFromString(Properties.Settings.Default.FontStyle); }
+            catch ( Exception) { fsy = FontStyles.Normal; }
+            FontWeight fw;
+            try { fw = (FontWeight)TypeDescriptor.GetConverter(typeof(FontWeight)).ConvertFromString(Properties.Settings.Default.FontWeight); }
+            catch (Exception) { fw = FontWeights.Normal; }
+            FontStretch fsr;
+            try { fsr = (FontStretch)TypeDescriptor.GetConverter(typeof(FontStretch)).ConvertFromString(Properties.Settings.Default.FontStretch); }
+            catch (Exception) { fsr = FontStretches.Normal; }
+            KaraokeDisplay.SetFont(new(ff, fsy, fw, fsr), Properties.Settings.Default.FontSize);
+
+            BrushConverter bc = new();
+            KaraokeDisplay.ActiveFillColor = (SolidColorBrush)bc.ConvertFromString(Properties.Settings.Default.ActiveFill);
+            KaraokeDisplay.StandbyFillColor = (SolidColorBrush)bc.ConvertFromString(Properties.Settings.Default.StandbyFill);
+            KaraokeDisplay.SleepFillColor = (SolidColorBrush)bc.ConvertFromString(Properties.Settings.Default.SleepFill);
+            KaraokeDisplay.ActiveStrokeColor = (SolidColorBrush)bc.ConvertFromString(Properties.Settings.Default.ActiveStroke);
+            KaraokeDisplay.StandbyStrokeColor = (SolidColorBrush)bc.ConvertFromString(Properties.Settings.Default.StandbyStroke);
+            KaraokeDisplay.SleepStrokeColor = (SolidColorBrush)bc.ConvertFromString(Properties.Settings.Default.SleepStroke);
+            KaraokeDisplay.ActiveBackColor = (SolidColorBrush)bc.ConvertFromString(Properties.Settings.Default.ActiveBack);
+
+            Background = (SolidColorBrush)bc.ConvertFromString(Properties.Settings.Default.WindowBack);
+        }
+
         private string GetLyrics(Receiver.Data data)
         {
             Uri uri = new(data.FilePath);

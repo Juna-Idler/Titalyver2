@@ -37,7 +37,7 @@ namespace Titalyver2.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        [global::System.Configuration.DefaultSettingValueAttribute("20")]
         public double FontSize {
             get {
                 return ((double)(this["FontSize"]));
@@ -49,7 +49,7 @@ namespace Titalyver2.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
         public string FontStyle {
             get {
                 return ((string)(this["FontStyle"]));
@@ -61,7 +61,7 @@ namespace Titalyver2.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
         public string FontWeight {
             get {
                 return ((string)(this["FontWeight"]));
@@ -73,7 +73,7 @@ namespace Titalyver2.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
         public string FontStretch {
             get {
                 return ((string)(this["FontStretch"]));
@@ -85,13 +85,97 @@ namespace Titalyver2.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("")]
-        public string 設定 {
+        [global::System.Configuration.DefaultSettingValueAttribute("White")]
+        public string ActiveFill {
             get {
-                return ((string)(this["設定"]));
+                return ((string)(this["ActiveFill"]));
             }
             set {
-                this["設定"] = value;
+                this["ActiveFill"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("White")]
+        public string StandbyFill {
+            get {
+                return ((string)(this["StandbyFill"]));
+            }
+            set {
+                this["StandbyFill"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("White")]
+        public string SleepFill {
+            get {
+                return ((string)(this["SleepFill"]));
+            }
+            set {
+                this["SleepFill"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("Red")]
+        public string ActiveStroke {
+            get {
+                return ((string)(this["ActiveStroke"]));
+            }
+            set {
+                this["ActiveStroke"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("Blue")]
+        public string StandbyStroke {
+            get {
+                return ((string)(this["StandbyStroke"]));
+            }
+            set {
+                this["StandbyStroke"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("DarkBlue")]
+        public string SleepStroke {
+            get {
+                return ((string)(this["SleepStroke"]));
+            }
+            set {
+                this["SleepStroke"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("#7F004000")]
+        public string ActiveBack {
+            get {
+                return ((string)(this["ActiveBack"]));
+            }
+            set {
+                this["ActiveBack"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("#7F000000")]
+        public string WindowBack {
+            get {
+                return ((string)(this["WindowBack"]));
+            }
+            set {
+                this["WindowBack"] = value;
             }
         }
     }

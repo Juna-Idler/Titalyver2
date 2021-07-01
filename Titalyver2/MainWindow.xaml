@@ -6,11 +6,11 @@
         xmlns:local="clr-namespace:Titalyver2"
         mc:Ignorable="d"
         Title="Titalyver" Height="450" Width="800" WindowStyle="None" AllowsTransparency="True" Background="#7F000000"
-        ResizeMode="CanResizeWithGrip" MouseWheel="Window_MouseWheel" MouseLeftButtonDown="Window_MouseLeftButtonDown" MouseDown="Window_MouseDown">
+        ResizeMode="CanResizeWithGrip" MouseWheel="Window_MouseWheel" MouseLeftButtonDown="Window_MouseLeftButtonDown" MouseDown="Window_MouseDown" ScrollViewer.VerticalScrollBarVisibility="Disabled">
     <Canvas x:Name="Screen" ClipToBounds="True">
         <local:KaraokeDisplay x:Name="KaraokeDisplay" FontSize="48" Width="{Binding ActualWidth, ElementName=window, Mode=OneWay}" LinePadding="80,0,38,0" TextAlignment="Left" LineFontFamily="Yu Mincho Demibold" LineFontStretch="SemiExpanded" LineFontWeight="ExtraBlack" LineFontStyle="Italic" />
-        
-        <Button x:Name="SettingButton" Canvas.Left="0" Canvas.Top="0" Width="32" Height="32" BorderBrush="{x:Null}" Background="{x:Null}" Click="SettingButton_Click">
+
+        <Button x:Name="SettingButton" Canvas.Left="0" Canvas.Top="0" Width="32" Height="32" BorderBrush="{x:Null}" Click="SettingButton_Click" Background="#00000000">
             <Button.Content>
                 <Canvas>
                     <Path Stroke="white" StrokeThickness="2" Data="M-10,-7 l20,0 M-10,0 l20,0 M-10,7 l20,0">
@@ -22,7 +22,7 @@
                 </Canvas>
             </Button.Content>
         </Button>
-        
+
         <Button x:Name="CloseButton" Canvas.Right="0" Canvas.Top="0" Width="32" Height="32" Click="CloseButton_Click" BorderBrush="{x:Null}">
             <Button.Content>
                 <Canvas>

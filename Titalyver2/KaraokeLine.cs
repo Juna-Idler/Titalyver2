@@ -89,7 +89,7 @@ namespace Titalyver2
         private double LastRenderTime;
 
 
-        public void SetFillWipeColor()
+        public void SetWipeColor()
         {
             if (Words == null)
                 return;
@@ -97,14 +97,6 @@ namespace Titalyver2
             {
                 w.WipeDrawResource.WipeFill.GradientStops[0].Color = ActiveFillColor.Color;
                 w.WipeDrawResource.WipeFill.GradientStops[1].Color = StandbyFillColor.Color;
-            }
-        }
-        public void SetStrokeWipeColor()
-        {
-            if (Words == null)
-                return;
-            foreach (KaraokeWord w in Words)
-            {
                 w.WipeDrawResource.WipeStroke.GradientStops[0].Color = ActiveStrokeColor.Color;
                 w.WipeDrawResource.WipeStroke.GradientStops[1].Color = StandbyStrokeColor.Color;
             }
@@ -225,8 +217,7 @@ namespace Titalyver2
             WordsWidth = x;
             WordsHeight = y + 1.25 * FontSize;//何故かTypefaceから行の高さを求められないので適当な固定倍率値
 
-            SetFillWipeColor();
-            SetStrokeWipeColor();
+            SetWipeColor();
         }
 
         public bool NeedRender(double time)

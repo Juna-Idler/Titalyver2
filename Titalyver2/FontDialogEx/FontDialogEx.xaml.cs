@@ -18,6 +18,7 @@ using System.Windows.Markup; // XmlLanguage
 using System.Windows.Input;
 using System.Diagnostics; // Debug
 using System.Threading;
+using System.Globalization;
 
 namespace emanual.Wpf.Dialogs
 {
@@ -61,7 +62,7 @@ namespace emanual.Wpf.Dialogs
 		public FontDialogEx()
 		{
 			InitializeComponent();
-            Language = XmlLanguage.GetLanguage(Thread.CurrentThread.CurrentCulture.Name);
+			Language = XmlLanguage.GetLanguage(CultureInfo.CurrentUICulture.Name);
             FontLanguage = Language;
 			SelectedFontFamily = new FontFamily();
 //			this.FontFamily; //なんでもいいから適当に有効な値で初期化

@@ -51,6 +51,10 @@ namespace Titalyver2
             "SleepStrokeColor", typeof(SolidColorBrush), typeof(KaraokeDisplay),
             new FrameworkPropertyMetadata(Brushes.DarkBlue));
 
+        public SolidColorBrush ActiveBackColor { get; set; } = new(Color.FromArgb(63, 0, 128, 0));
+
+        public SolidColorBrush BackColor { get; set; } = Brushes.Transparent;
+
         //縁の太さ
         [Description("縁の太さ"), Category("Karaoke Display"), DefaultValue(2)]
         public double StrokeThickness { get => (double)GetValue(StrokeThicknessProperty); set => SetValue(StrokeThicknessProperty, value); }
@@ -110,7 +114,6 @@ namespace Titalyver2
                 _this.MakeKaraokeLines();
         }
 
-        public SolidColorBrush ActiveBackColor = new(Color.FromArgb(63, 0, 128, 0));
 
 
 
@@ -209,6 +212,11 @@ namespace Titalyver2
             {
                 if (e.WidthChanged)
                 {
+                    if (Lyrics == null)
+                        return;
+                    if (Lyrics.Sync == LyricsContainer.SyncMode.None)
+                        return;
+
                     foreach (KaraokeLine kl in List.Children)
                     {
                         kl.Width = ActualWidth;
@@ -231,7 +239,36 @@ namespace Titalyver2
             AtTagTimeOffset = Lyrics.AtTagContainer.Offset;
             MakeKaraokeLines();
         }
+        public void UpdateAll()
+        {
+            if (Lyrics == null)
+                return;
+            if (Lyrics.Sync == LyricsContainer.SyncMode.None)
+                return;
+            foreach (KaraokeLine kl in List.Children) { kl.Update(); }
+        }
+        public void ResetLineColors()
+        {
+            if (Lyrics == null)
+                return;
+            if (Lyrics.Sync == LyricsContainer.SyncMode.None)
+            {
+                return;
+            }
+            foreach (KaraokeLine kl in List.Children)
+            {
+                kl.ActiveFillColor = ActiveFillColor;
+                kl.ActiveStrokeColor = ActiveStrokeColor;
+                kl.StandbyFillColor = StandbyFillColor;
+                kl.StandbyStrokeColor = StandbyStrokeColor;
+                kl.SleepFillColor = SleepFillColor;
+                kl.SleepStrokeColor = SleepStrokeColor;
+                kl.ActiveBackColor = ActiveBackColor;
+                kl.SetWipeColor();
+                kl.Update();
+            }
 
+        }
 
         private void MakeKaraokeLines()
         {
