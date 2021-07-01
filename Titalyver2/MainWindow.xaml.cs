@@ -48,40 +48,40 @@ namespace Titalyver2
 
         private void RestoreSettings()
         {
-            FontFamily ff = new(Properties.Settings.Default.FontFamily);
+            Properties.Settings set = Properties.Settings.Default;
+            FontFamily ff = new(set.FontFamily);
             FontStyle fsy;
-            try { fsy = (FontStyle)TypeDescriptor.GetConverter(typeof(FontStyle)).ConvertFromString(Properties.Settings.Default.FontStyle); }
+            try { fsy = (FontStyle)TypeDescriptor.GetConverter(typeof(FontStyle)).ConvertFromString(set.FontStyle); }
             catch ( Exception) { fsy = FontStyles.Normal; }
             FontWeight fw;
-            try { fw = (FontWeight)TypeDescriptor.GetConverter(typeof(FontWeight)).ConvertFromString(Properties.Settings.Default.FontWeight); }
+            try { fw = (FontWeight)TypeDescriptor.GetConverter(typeof(FontWeight)).ConvertFromString(set.FontWeight); }
             catch (Exception) { fw = FontWeights.Normal; }
             FontStretch fsr;
-            try { fsr = (FontStretch)TypeDescriptor.GetConverter(typeof(FontStretch)).ConvertFromString(Properties.Settings.Default.FontStretch); }
+            try { fsr = (FontStretch)TypeDescriptor.GetConverter(typeof(FontStretch)).ConvertFromString(set.FontStretch); }
             catch (Exception) { fsr = FontStretches.Normal; }
-            KaraokeDisplay.SetFont(new(ff, fsy, fw, fsr), Properties.Settings.Default.FontSize);
+            KaraokeDisplay.SetFont(new(ff, fsy, fw, fsr), set.FontSize);
 
             BrushConverter bc = new();
-            KaraokeDisplay.ActiveFillColor = (SolidColorBrush)bc.ConvertFromString(Properties.Settings.Default.ActiveFill);
-            KaraokeDisplay.StandbyFillColor = (SolidColorBrush)bc.ConvertFromString(Properties.Settings.Default.StandbyFill);
-            KaraokeDisplay.SleepFillColor = (SolidColorBrush)bc.ConvertFromString(Properties.Settings.Default.SleepFill);
-            KaraokeDisplay.ActiveStrokeColor = (SolidColorBrush)bc.ConvertFromString(Properties.Settings.Default.ActiveStroke);
-            KaraokeDisplay.StandbyStrokeColor = (SolidColorBrush)bc.ConvertFromString(Properties.Settings.Default.StandbyStroke);
-            KaraokeDisplay.SleepStrokeColor = (SolidColorBrush)bc.ConvertFromString(Properties.Settings.Default.SleepStroke);
-            KaraokeDisplay.ActiveBackColor = (SolidColorBrush)bc.ConvertFromString(Properties.Settings.Default.ActiveBack);
+            KaraokeDisplay.ActiveFillColor = (SolidColorBrush)bc.ConvertFromString(set.ActiveFill);
+            KaraokeDisplay.StandbyFillColor = (SolidColorBrush)bc.ConvertFromString(set.StandbyFill);
+            KaraokeDisplay.SleepFillColor = (SolidColorBrush)bc.ConvertFromString(set.SleepFill);
+            KaraokeDisplay.ActiveStrokeColor = (SolidColorBrush)bc.ConvertFromString(set.ActiveStroke);
+            KaraokeDisplay.StandbyStrokeColor = (SolidColorBrush)bc.ConvertFromString(set.StandbyStroke);
+            KaraokeDisplay.SleepStrokeColor = (SolidColorBrush)bc.ConvertFromString(set.SleepStroke);
+            KaraokeDisplay.ActiveBackColor = (SolidColorBrush)bc.ConvertFromString(set.ActiveBack);
 
-            Background = (SolidColorBrush)bc.ConvertFromString(Properties.Settings.Default.WindowBack);
+            Background = (SolidColorBrush)bc.ConvertFromString(set.WindowBack);
+
+            KaraokeDisplay.TextAlignment = (TextAlignment)TypeDescriptor.GetConverter(typeof(TextAlignment)).ConvertFromString(set.TextAlignment);
         }
 
         private string GetLyrics(Receiver.Data data)
         {
-            Uri uri = new(data.FilePath);
-            string lp = uri.LocalPath;
-
+            string lp = string.IsNullOrEmpty(data.FilePath) ? "" : new Uri(data.FilePath).LocalPath;
             string text = LyricsSearcher.Search(lp, data.MetaData);
             if (text == "")
                 return "";
             return text;
-
         }
 
         private void PlaybackEvent(Receiver.Data data)

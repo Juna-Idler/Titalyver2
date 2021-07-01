@@ -115,6 +115,7 @@ namespace Titalyver2
         public KaraokeLine()
         {
             Width = 0;
+            Height = 0;
             Typeface = system_typeface;
             ActiveFillColor = Brushes.White;
             ActiveStrokeColor = Brushes.Red;
@@ -161,7 +162,7 @@ namespace Titalyver2
         {
 //            double ww = WordsWidth + Padding.Left + Padding.Right;
 //            double width = double.IsNaN(Width) ? ww : Width;
-            return new Size(Width, WordsHeight + Padding.Top + Padding.Bottom);
+            return new Size(Width, Height);
         }
 
         protected override Size ArrangeOverride(Size finalSize)
@@ -216,6 +217,7 @@ namespace Titalyver2
             EndTime = Line.EndTime / 1000.0;
             WordsWidth = x;
             WordsHeight = y + 1.25 * FontSize;//何故かTypefaceから行の高さを求められないので適当な固定倍率値
+            Height = WordsHeight + Padding.Top + Padding.Bottom;
 
             SetWipeColor();
         }
@@ -253,7 +255,7 @@ namespace Titalyver2
             if (ActiveBackColor.Color.A > 0)
             {
                 width += double.IsNaN(Width) ? Padding.Left + Padding.Right : 0;
-                Rect rect = new(0, 0, width, WordsHeight + Padding.Top + Padding.Bottom);
+                Rect rect = new(0, 0, width, Height);
                 if (BackColorFade)
                 {
                     if (StartTime < Time && Time < EndTime - FadeInTime)

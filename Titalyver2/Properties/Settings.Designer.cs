@@ -49,7 +49,7 @@ namespace Titalyver2.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        [global::System.Configuration.DefaultSettingValueAttribute("Normal")]
         public string FontStyle {
             get {
                 return ((string)(this["FontStyle"]));
@@ -61,7 +61,7 @@ namespace Titalyver2.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        [global::System.Configuration.DefaultSettingValueAttribute("Normal")]
         public string FontWeight {
             get {
                 return ((string)(this["FontWeight"]));
@@ -73,7 +73,7 @@ namespace Titalyver2.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        [global::System.Configuration.DefaultSettingValueAttribute("Normal")]
         public string FontStretch {
             get {
                 return ((string)(this["FontStretch"]));
@@ -176,6 +176,18 @@ namespace Titalyver2.Properties {
             }
             set {
                 this["WindowBack"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("Left")]
+        public string TextAlignment {
+            get {
+                return ((string)(this["TextAlignment"]));
+            }
+            set {
+                this["TextAlignment"] = value;
             }
         }
     }

@@ -9,13 +9,13 @@
       <Value Profile="(Default)">20</Value>
     </Setting>
     <Setting Name="FontStyle" Type="System.String" Scope="User">
-      <Value Profile="(Default)" />
+      <Value Profile="(Default)">Normal</Value>
     </Setting>
     <Setting Name="FontWeight" Type="System.String" Scope="User">
-      <Value Profile="(Default)" />
+      <Value Profile="(Default)">Normal</Value>
     </Setting>
     <Setting Name="FontStretch" Type="System.String" Scope="User">
-      <Value Profile="(Default)" />
+      <Value Profile="(Default)">Normal</Value>
     </Setting>
     <Setting Name="ActiveFill" Type="System.String" Scope="User">
       <Value Profile="(Default)">White</Value>
@@ -40,6 +40,9 @@
     </Setting>
     <Setting Name="WindowBack" Type="System.String" Scope="User">
       <Value Profile="(Default)">#7F000000</Value>
+    </Setting>
+    <Setting Name="TextAlignment" Type="System.String" Scope="User">
+      <Value Profile="(Default)">Left</Value>
     </Setting>
   </Settings>
 </SettingsFile>

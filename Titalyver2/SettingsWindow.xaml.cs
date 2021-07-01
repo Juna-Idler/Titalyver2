@@ -57,8 +57,22 @@ namespace Titalyver2
             WindowBack.Background = mainWindow.Background;
             WindowBack.Text = ((SolidColorBrush)mainWindow.Background).Color.ToString();
 
+            switch (mainWindow.KaraokeDisplay.TextAlignment)
+            {
+                case TextAlignment.Left:
+                    Left.IsChecked = true;
+                    break;
+                case TextAlignment.Center:
+                    Center.IsChecked = true;
+                    break;
+                case TextAlignment.Right:
+                    Right.IsChecked = true;
+                    break;
+            }
+
             MainWindow = mainWindow;
             FontSelect.Content = $"{TypefaceString(MainWindow.KaraokeDisplay.Typeface)} {MainWindow.KaraokeDisplay.FontSize}";
+
 
 
         }
@@ -180,6 +194,51 @@ namespace Titalyver2
         private void button_Click_1(object sender, RoutedEventArgs e)
         {
             Properties.Settings.Default.Save();
+        }
+
+
+        private void RadioButtonLeft_Checked(object sender, RoutedEventArgs e)
+        {
+            if (MainWindow == null) return;
+            MainWindow.KaraokeDisplay.TextAlignment = TextAlignment.Left;
+            Properties.Settings.Default.TextAlignment = TypeDescriptor.GetConverter(typeof(TextAlignment)).ConvertToString(TextAlignment.Left);
+            MainWindow.KaraokeDisplay.UpdateAll();
+        }
+
+        private void RadioButtonCenter_Checked(object sender, RoutedEventArgs e)
+        {
+            if (MainWindow == null) return;
+            MainWindow.KaraokeDisplay.TextAlignment = TextAlignment.Center;
+            Properties.Settings.Default.TextAlignment = TypeDescriptor.GetConverter(typeof(TextAlignment)).ConvertToString(TextAlignment.Center);
+            MainWindow.KaraokeDisplay.UpdateAll();
+        }
+
+        private void RadioButtonRight_Checked(object sender, RoutedEventArgs e)
+        {
+            if (MainWindow == null) return;
+            MainWindow.KaraokeDisplay.TextAlignment = TextAlignment.Right;
+            Properties.Settings.Default.TextAlignment = TypeDescriptor.GetConverter(typeof(TextAlignment)).ConvertToString(TextAlignment.Right);
+            MainWindow.KaraokeDisplay.UpdateAll();
+        }
+
+        private void RadioButtonTop_Checked(object sender, RoutedEventArgs e)
+        {
+            if (MainWindow == null) return;
+            MainWindow.KaraokeDisplay.KaraokeVerticalAlignment = VerticalAlignment.Top;
+        }
+
+        private void RadioButtonMiddle_Checked(object sender, RoutedEventArgs e)
+        {
+            if (MainWindow == null) return;
+            MainWindow.KaraokeDisplay.KaraokeVerticalAlignment = VerticalAlignment.Center;
+        }
+
+        private void RadioButtonBottom_Checked(object sender, RoutedEventArgs e)
+        {
+            if (MainWindow == null) return;
+            MainWindow.KaraokeDisplay.KaraokeVerticalAlignment = VerticalAlignment.Bottom;
+//            MainWindow.KaraokeDisplay.UpdateAll();
+
         }
     }
 }

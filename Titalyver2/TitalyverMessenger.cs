@@ -291,6 +291,7 @@ namespace Titalyver2
                 data.MetaData = new Dictionary<string, string[]>();
             else
                 data.MetaData.Clear();
+            data.FilePath = "";
             try
             {
                 using JsonDocument document = JsonDocument.Parse(buffer);

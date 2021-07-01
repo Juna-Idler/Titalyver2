@@ -53,7 +53,6 @@ namespace Titalyver2
 
         public SolidColorBrush ActiveBackColor { get; set; } = new(Color.FromArgb(63, 0, 128, 0));
 
-        public SolidColorBrush BackColor { get; set; } = Brushes.Transparent;
 
         //縁の太さ
         [Description("縁の太さ"), Category("Karaoke Display"), DefaultValue(2)]
@@ -74,7 +73,18 @@ namespace Titalyver2
             _this.OnChangeTextAlignment();
         }
 
-            [Description("行の余白"), Category("Karaoke Display")]
+        public VerticalAlignment KaraokeVerticalAlignment { get => (VerticalAlignment)GetValue(KaraokeVerticalAlignmentProperty); set => SetValue(KaraokeVerticalAlignmentProperty, value); }
+        public static readonly DependencyProperty KaraokeVerticalAlignmentProperty = DependencyProperty.Register(
+            "KaraokeVerticalAlignment", typeof(VerticalAlignment), typeof(KaraokeDisplay),
+            new FrameworkPropertyMetadata(VerticalAlignment.Top, FrameworkPropertyMetadataOptions.AffectsRender, OnChangeKVerticalAlignment));
+        private static void OnChangeKVerticalAlignment(DependencyObject dependencyObject, DependencyPropertyChangedEventArgs e)
+        {
+            KaraokeDisplay _this = (KaraokeDisplay)dependencyObject;
+            _this.OnChangeKVAlignment();
+        }
+
+
+        [Description("行の余白"), Category("Karaoke Display")]
         public Thickness LinePadding { get => (Thickness)GetValue(LinePaddingProperty); set => SetValue(LinePaddingProperty, value); }
         public static readonly DependencyProperty LinePaddingProperty = DependencyProperty.Register(
             "LinePadding", typeof(Thickness), typeof(KaraokeDisplay),
@@ -136,6 +146,7 @@ namespace Titalyver2
             "AutoScrollY", typeof(double), typeof(KaraokeDisplay),
             new FrameworkPropertyMetadata(0.0, FrameworkPropertyMetadataOptions.AffectsRender, OnChangeTime));
 
+        private double VOffsetY { get; set; }
 
 
         public void Start()
@@ -173,7 +184,22 @@ namespace Titalyver2
                     if (kl.StartTime <= time && time <= kl.EndTime)
                     {
                         Point p = kl.TranslatePoint(new Point(0, 0), List);
-                        Animation = new(-p.Y, new Duration(TimeSpan.FromSeconds(duration)));
+
+                        double y = 0;
+                        switch (KaraokeVerticalAlignment)
+                        {
+                            case VerticalAlignment.Top:
+                                y = -p.Y;
+                                break;
+                            case VerticalAlignment.Center:
+                                y = -p.Y + (Height - kl.Height) / 2;
+                                break;
+                            case VerticalAlignment.Bottom:
+                                y = -p.Y + Height - kl.Height;
+                                break;
+                        }
+
+                        Animation = new(y, new Duration(TimeSpan.FromSeconds(duration)));
                         Animation.Completed += (s, e) => { Animation = null; };
                         BeginAnimation(AutoScrollYProperty, Animation);
                         break;
@@ -182,7 +208,20 @@ namespace Titalyver2
             }
             if (Animation == null)
             {
-                Animation = new(0, new Duration(TimeSpan.FromSeconds(duration)));
+                double y = 0;
+                switch (KaraokeVerticalAlignment)
+                {
+                    case VerticalAlignment.Top:
+                        y = 0;
+                        break;
+                    case VerticalAlignment.Center:
+                        y = (Height - FontSize * 1.25) / 2;
+                        break;
+                    case VerticalAlignment.Bottom:
+                        y = Height - FontSize * 1.25;
+                        break;
+                }
+                Animation = new(y, new Duration(TimeSpan.FromSeconds(duration)));
                 Animation.Completed += (s, e) => { Animation = null; };
                 BeginAnimation(AutoScrollYProperty, Animation);
             }
@@ -300,7 +339,6 @@ namespace Titalyver2
                     _ = List.Children.Add(kl);
                 }
             }
-            AutoScrollY = 0;
         }
         private void UpdateFrame()
         {
@@ -317,7 +355,21 @@ namespace Titalyver2
                 {
                     Point p = kl.TranslatePoint(new Point(0, 0), List);
 
-                    Animation = new(-p.Y, new Duration(TimeSpan.FromSeconds(kl.StartTime - time)));
+                    double y = 0;
+                    switch (KaraokeVerticalAlignment)
+                    {
+                        case VerticalAlignment.Top:
+                            y = -p.Y;
+                            break;
+                        case VerticalAlignment.Center:
+                            y = -p.Y + (Height - kl.Height) / 2;
+                            break;
+                        case VerticalAlignment.Bottom:
+                            y = -p.Y + Height - kl.Height;
+                            break;
+                    }
+
+                    Animation = new(y, new Duration(TimeSpan.FromSeconds(kl.StartTime - time)));
                     Animation.Completed += (s, e) => { Animation = null; };
                     BeginAnimation(AutoScrollYProperty, Animation);
                 }
@@ -353,7 +405,10 @@ namespace Titalyver2
             {
                 kl.TextAlignment = TextAlignment;
             }
-
+        }
+        private void OnChangeKVAlignment()
+        {
+            ForceMove(Time);
         }
 
         private void OnChangePadding()

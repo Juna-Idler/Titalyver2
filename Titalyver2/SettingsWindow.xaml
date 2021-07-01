@@ -79,14 +79,14 @@
                             </Grid.RowDefinitions>
 
                             <Label>水平</Label>
-                            <RadioButton Grid.Column="1" GroupName="Horizontal">Left</RadioButton>
-                            <RadioButton Grid.Column="2" GroupName="Horizontal">Center</RadioButton>
-                            <RadioButton Grid.Column="3" GroupName="Horizontal">Right</RadioButton>
+                            <RadioButton x:Name="Left" Grid.Column="1" GroupName="Horizontal" Checked="RadioButtonLeft_Checked">Left</RadioButton>
+                            <RadioButton x:Name="Center" Grid.Column="2" GroupName="Horizontal" Checked="RadioButtonCenter_Checked">Center</RadioButton>
+                            <RadioButton x:Name="Right" Grid.Column="3" GroupName="Horizontal" Checked="RadioButtonRight_Checked">Right</RadioButton>
 
                             <Label Grid.Row="1">垂直</Label>
-                            <RadioButton Grid.Row="1" Grid.Column="1" GroupName="Vertical">Top</RadioButton>
-                            <RadioButton Grid.Row="1" Grid.Column="2" GroupName="Vertical">Middle</RadioButton>
-                            <RadioButton Grid.Row="1" Grid.Column="3" GroupName="Vertical">Botton</RadioButton>
+                            <RadioButton x:Name="Top" Grid.Row="1" Grid.Column="1" GroupName="Vertical" Checked="RadioButtonTop_Checked">Top</RadioButton>
+                            <RadioButton x:Name="Middle" Grid.Row="1" Grid.Column="2" GroupName="Vertical" Checked="RadioButtonMiddle_Checked">Middle</RadioButton>
+                            <RadioButton x:Name="Bottom" Grid.Row="1" Grid.Column="3" GroupName="Vertical" Checked="RadioButtonBottom_Checked">Bottom</RadioButton>
 
                             <Label Grid.Row="2">オフセット</Label>
                             <TextBox Grid.Row="2" Grid.Column="1" >left:</TextBox>
