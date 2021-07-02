@@ -191,7 +191,7 @@ namespace Titalyver2
             Properties.Settings.Default.WindowBack = bc.ConvertToString(MainWindow.Background);
         }
 
-        private void button_Click_1(object sender, RoutedEventArgs e)
+        private void ButtonSave_Click(object sender, RoutedEventArgs e)
         {
             Properties.Settings.Default.Save();
         }
@@ -239,6 +239,16 @@ namespace Titalyver2
             MainWindow.KaraokeDisplay.KaraokeVerticalAlignment = VerticalAlignment.Bottom;
 //            MainWindow.KaraokeDisplay.UpdateAll();
 
+        }
+
+        private void ButtonClose_Click(object sender, RoutedEventArgs e)
+        {
+            this.Close();
+        }
+
+        private void window_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            DragMove();
         }
     }
 }

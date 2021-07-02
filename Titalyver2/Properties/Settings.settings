@@ -44,5 +44,8 @@
     <Setting Name="TextAlignment" Type="System.String" Scope="User">
       <Value Profile="(Default)">Left</Value>
     </Setting>
+    <Setting Name="VerticalAlignment" Type="System.String" Scope="User">
+      <Value Profile="(Default)">Top</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

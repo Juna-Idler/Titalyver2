@@ -190,5 +190,17 @@ namespace Titalyver2.Properties {
                 this["TextAlignment"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("Top")]
+        public string VerticalAlignment {
+            get {
+                return ((string)(this["VerticalAlignment"]));
+            }
+            set {
+                this["VerticalAlignment"] = value;
+            }
+        }
     }
 }
