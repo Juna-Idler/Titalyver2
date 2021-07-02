@@ -146,7 +146,7 @@ namespace Titalyver2
             "AutoScrollY", typeof(double), typeof(KaraokeDisplay),
             new FrameworkPropertyMetadata(0.0, FrameworkPropertyMetadataOptions.AffectsRender, OnChangeTime));
 
-        private double VOffsetY { get; set; }
+        public double OffsetY { get; set; }
 
 
         public void Start()
@@ -380,7 +380,7 @@ namespace Titalyver2
 //                    kl.Time = time;
                 }
             }
-            Canvas.SetTop(List, AutoScrollY + ManualScrollY);
+            Canvas.SetTop(List, AutoScrollY + ManualScrollY + OffsetY);
         }
 
 
@@ -424,8 +424,8 @@ namespace Titalyver2
             foreach (KaraokeLine kl in List.Children)
             {
                 kl.Padding = LinePadding;
+                kl.Update();
             }
-
         }
 
 

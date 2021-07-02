@@ -9,13 +9,6 @@
         AllowsTransparency="True" Background="{x:Null}">
     <!--Window本体の背景を消さないと何故かごんぶとサイズバーが上に表示されて非常に醜い -->
     <Window.Resources>
-        <Style TargetType="TextBox">
-            <Setter Property="Margin" Value="2,2,2,2" />
-            <Setter Property="HorizontalContentAlignment" Value="Center"/>
-        </Style>
-        <Style TargetType="RadioButton" BasedOn="{StaticResource {x:Type ToggleButton}}">
-            <Setter Property="Margin" Value="2,2,2,2" />
-        </Style>
     </Window.Resources>
     <Grid>
         <Grid.Background>
@@ -39,6 +32,12 @@
                     <Button x:Name="FontSelect" Click="Button_Click" Content=""/>
 
                     <GroupBox Header="Colors">
+                        <GroupBox.Resources>
+                            <Style TargetType="TextBox">
+                                <Setter Property="Margin" Value="2,2,2,2" />
+                                <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                            </Style>
+                        </GroupBox.Resources>
                         <Grid>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="auto"/>
@@ -71,6 +70,16 @@
 
                     </GroupBox>
                     <GroupBox Header="Alignment">
+                        <GroupBox.Resources>
+                            <Style TargetType="RadioButton" BasedOn="{StaticResource {x:Type ToggleButton}}">
+                                <Setter Property="Margin" Value="2,2,2,2" />
+                            </Style>
+                            <Style TargetType="local:NumericUpDown">
+                                <Setter Property="Margin" Value="2,0,2,0"/>
+                                <Setter Property="ButtonPadding" Value="2,0,2,0"/>
+                            </Style>
+
+                        </GroupBox.Resources>
                         <Grid >
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="auto"/>
@@ -84,20 +93,20 @@
                                 <RowDefinition/>
                             </Grid.RowDefinitions>
 
-                            <Label>Horizontal</Label>
-                            <RadioButton x:Name="Left" Grid.Column="1" GroupName="Horizontal" Checked="RadioButtonLeft_Checked">Left</RadioButton>
-                            <RadioButton x:Name="Center" Grid.Column="2" GroupName="Horizontal" Checked="RadioButtonCenter_Checked">Center</RadioButton>
-                            <RadioButton x:Name="Right" Grid.Column="3" GroupName="Horizontal" Checked="RadioButtonRight_Checked">Right</RadioButton>
+                            <Label Grid.Row="0">Vertical</Label>
+                            <RadioButton x:Name="Top" Grid.Row="0" Grid.Column="1" GroupName="Vertical" Checked="RadioButtonTop_Checked">Top</RadioButton>
+                            <RadioButton x:Name="Middle" Grid.Row="0" Grid.Column="2" GroupName="Vertical" Checked="RadioButtonMiddle_Checked">Middle</RadioButton>
+                            <RadioButton x:Name="Bottom" Grid.Row="0" Grid.Column="3" GroupName="Vertical" Checked="RadioButtonBottom_Checked">Bottom</RadioButton>
 
-                            <Label Grid.Row="1">Vertical</Label>
-                            <RadioButton x:Name="Top" Grid.Row="1" Grid.Column="1" GroupName="Vertical" Checked="RadioButtonTop_Checked">Top</RadioButton>
-                            <RadioButton x:Name="Middle" Grid.Row="1" Grid.Column="2" GroupName="Vertical" Checked="RadioButtonMiddle_Checked">Middle</RadioButton>
-                            <RadioButton x:Name="Bottom" Grid.Row="1" Grid.Column="3" GroupName="Vertical" Checked="RadioButtonBottom_Checked">Bottom</RadioButton>
+                            <Label Grid.Row="1">Horizontal</Label>
+                            <RadioButton x:Name="Left" Grid.Row="1" Grid.Column="1" GroupName="Horizontal" Checked="RadioButtonLeft_Checked">Left</RadioButton>
+                            <RadioButton x:Name="Center" Grid.Row="1" Grid.Column="2" GroupName="Horizontal" Checked="RadioButtonCenter_Checked">Center</RadioButton>
+                            <RadioButton x:Name="Right" Grid.Row="1" Grid.Column="3" GroupName="Horizontal" Checked="RadioButtonRight_Checked">Right</RadioButton>
 
                             <Label Grid.Row="2">Offset</Label>
-                            <TextBox Grid.Row="2" Grid.Column="1" >left:</TextBox>
-                            <TextBox Grid.Row="2" Grid.Column="2" >up/down</TextBox>
-                            <TextBox Grid.Row="2" Grid.Column="3" >right:</TextBox>
+                            <local:NumericUpDown x:Name="OffsetLeft" Grid.Row="2" Grid.Column="1" ValueChanged="OffsetLeft_ValueChanged" Maximum="256" Increment="4" />
+                            <local:NumericUpDown x:Name="OffsetVertical" Grid.Row="2" Grid.Column="2" ValueChanged="OffsetVertical_ValueChanged" Minimum="-1024" Maximum="1024" Increment="4" />
+                            <local:NumericUpDown x:Name="OffsetRight" Grid.Row="2" Grid.Column="3" ValueChanged="OffsetRight_ValueChanged" Maximum="256" Increment="4" />
 
                         </Grid>
 
@@ -115,6 +124,7 @@
             <Button Grid.Column="0" Content="Save" VerticalAlignment="Center" HorizontalAlignment="Stretch" Width="64" Click="ButtonSave_Click" Margin="10,0,0,0" ToolTip="Save settingfile for next startup" Padding="1,4,1,4"/>
             <Button Grid.Column="2" Content="Close" VerticalAlignment="Center" HorizontalAlignment="Stretch" Width="64" Margin="0,0,20,0" Click="ButtonClose_Click" Padding="1,4,1,5"/>
         </Grid>
+        <local:NumericUpDown HorizontalAlignment="Left" Margin="745,213,0,0" Grid.Row="1" VerticalAlignment="Top"/>
     </Grid>
 
 </Window>

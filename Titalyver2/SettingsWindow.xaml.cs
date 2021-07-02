@@ -69,6 +69,11 @@ namespace Titalyver2
                     Right.IsChecked = true;
                     break;
             }
+            Thickness t = mainWindow.KaraokeDisplay.LinePadding;
+            OffsetLeft.Value = (decimal)t.Left;
+            OffsetRight.Value = (decimal)t.Right;
+            OffsetVertical.Value = (decimal)mainWindow.KaraokeDisplay.OffsetY;
+
 
             MainWindow = mainWindow;
             FontSelect.Content = $"{TypefaceString(MainWindow.KaraokeDisplay.Typeface)} {MainWindow.KaraokeDisplay.FontSize}";
@@ -249,6 +254,28 @@ namespace Titalyver2
         private void window_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             DragMove();
+        }
+
+        private void OffsetLeft_ValueChanged(object sender, EventArgs e)
+        {
+            if (MainWindow == null) return;
+            Thickness t = MainWindow.KaraokeDisplay.LinePadding;
+            t.Left = (double)OffsetLeft.Value;
+            MainWindow.KaraokeDisplay.LinePadding = t;
+        }
+
+        private void OffsetRight_ValueChanged(object sender, EventArgs e)
+        {
+            if (MainWindow == null) return;
+            Thickness t = MainWindow.KaraokeDisplay.LinePadding;
+            t.Right = (double)OffsetRight.Value;
+            MainWindow.KaraokeDisplay.LinePadding = t;
+        }
+
+        private void OffsetVertical_ValueChanged(object sender, EventArgs e)
+        {
+            if (MainWindow == null) return;
+            MainWindow.KaraokeDisplay.OffsetY = (double)OffsetVertical.Value;
         }
     }
 }
