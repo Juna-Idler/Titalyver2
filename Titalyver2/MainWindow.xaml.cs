@@ -15,7 +15,7 @@ namespace Titalyver2
 
         private readonly Receiver Receiver;
 
-        private readonly LyricsSearcher LyricsSearcher;
+        public readonly LyricsSearcher LyricsSearcher;
 
 
         public MainWindow()
@@ -73,7 +73,7 @@ namespace Titalyver2
             Background = (SolidColorBrush)bc.ConvertFromString(set.WindowBack);
 
             KaraokeDisplay.TextAlignment = (TextAlignment)TypeDescriptor.GetConverter(typeof(TextAlignment)).ConvertFromString(set.TextAlignment);
-            KaraokeDisplay.VerticalAlignment = (VerticalAlignment)TypeDescriptor.GetConverter(typeof(VerticalAlignment)).ConvertFromString(set.VerticalAlignment);
+            KaraokeDisplay.KaraokeVerticalAlignment = (VerticalAlignment)TypeDescriptor.GetConverter(typeof(VerticalAlignment)).ConvertFromString(set.VerticalAlignment);
 
             KaraokeDisplay.LinePadding = new Thickness(set.OffsetLeft, set.LineTopSpace, set.OffsetRight, set.LineBottomSpace);
             KaraokeDisplay.OffsetY = set.OffsetVertical;
@@ -81,6 +81,9 @@ namespace Titalyver2
             KaraokeDisplay.RubyBottomSpace = set.RubyBottomSpace;
             KaraokeDisplay.NoRubyTopSpace = set.NoRubySpace;
 
+
+            LyricsSearcher.SetSearchList(set.LyricsSearchList);
+            LyricsSearcher.NoLyricsFormatText = set.NoLyricsFormat;
         }
 
         private string GetLyrics(Receiver.Data data)
@@ -88,7 +91,9 @@ namespace Titalyver2
             string lp = string.IsNullOrEmpty(data.FilePath) ? "" : new Uri(data.FilePath).LocalPath;
             string text = LyricsSearcher.Search(lp, data.MetaData);
             if (text == "")
+            {
                 return "";
+            }
             return text;
         }
 
@@ -97,9 +102,7 @@ namespace Titalyver2
 
             if ((data.PlaybackEvent & Message.EnumPlaybackEvent.Bit_Update) == Message.EnumPlaybackEvent.Bit_Update)
             {
-                string lp = string.IsNullOrEmpty(data.FilePath) ? "" : new Uri(data.FilePath).LocalPath;
-
-                string text = LyricsSearcher.Search(lp, data.MetaData);
+                string text = GetLyrics(data);
                 _ = Dispatcher.InvokeAsync(() =>
                 {
                     KaraokeDisplay.SetLyrics(text);
@@ -174,6 +177,17 @@ namespace Titalyver2
             SettingsWindow = new SettingsWindow(this);
             SettingsWindow.Closed += (s, e) => { SettingsWindow = null; };
             SettingsWindow.Show();
+        }
+
+        private void MenuItemTopmost_Click(object sender, RoutedEventArgs e)
+        {
+            var i = (System.Windows.Controls.MenuItem)sender;
+            Topmost = i.IsChecked;
+        }
+
+        private void MenuItemReload_Click(object sender, RoutedEventArgs e)
+        {
+            PlaybackEvent(Receiver.GetData());
         }
     }
 }

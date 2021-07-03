@@ -139,6 +139,7 @@ namespace Titalyver2
         public KaraokeLine(Typeface typeface, double fontSize, SolidColorBrush activeFill,SolidColorBrush activeStroke,
             SolidColorBrush standbyFill, SolidColorBrush standbyStroke, double strokeTickness,
             SolidColorBrush sleepFillColor,SolidColorBrush sleepStrokeColor,  SolidColorBrush activeBackColor,
+            Thickness padding,double rubyBottom,double noRubyTop,
             LyricsContainer.Line line,double width)
         {
             Width = width;
@@ -152,6 +153,10 @@ namespace Titalyver2
             SleepFillColor = sleepFillColor;
             SleepStrokeColor = sleepStrokeColor;
             ActiveBackColor = activeBackColor;
+
+            Padding = padding;
+            RubyBottomSpace = rubyBottom;
+            NoRubyTopSpace = noRubyTop;
 
             SetLyricsLine(line);
         }

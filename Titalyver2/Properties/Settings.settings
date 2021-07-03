@@ -71,5 +71,17 @@
     <Setting Name="Outline" Type="System.Double" Scope="User">
       <Value Profile="(Default)">2</Value>
     </Setting>
+    <Setting Name="LyricsSearchList" Type="System.String" Scope="User">
+      <Value Profile="(Default)">file:%directoryname%/%filename%.kra
+file:%directoryname%/%filename%.lrc
+file:%directoryname%/%filename%.txt
+string:&lt;lyrics&gt;</Value>
+    </Setting>
+    <Setting Name="NoLyricsFormat" Type="System.String" Scope="User">
+      <Value Profile="(Default)">&lt;artist&gt;
+&lt;title&gt;
+&lt;album&gt;
+</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

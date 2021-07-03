@@ -12,6 +12,8 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 
+using System.IO;
+
 using System.Windows.Markup;
 using System.Globalization;
 
@@ -38,6 +40,16 @@ namespace Titalyver2
             InitializeComponent();
             Language = Language = XmlLanguage.GetLanguage(CultureInfo.CurrentUICulture.Name);
 
+            InitializeDisplay(mainWindow);
+            InitializeLyrics(mainWindow);
+
+            MainWindow = mainWindow;
+
+        }
+
+        #region Display
+        private void InitializeDisplay(MainWindow mainWindow)
+        {
             FontSelect.Content = $"{TypefaceString(mainWindow.KaraokeDisplay.Typeface)} {mainWindow.KaraokeDisplay.FontSize}";
             Outline.Value = (decimal)mainWindow.KaraokeDisplay.StrokeThickness;
 
@@ -73,7 +85,7 @@ namespace Titalyver2
             }
             switch (mainWindow.KaraokeDisplay.KaraokeVerticalAlignment)
             {
-                case VerticalAlignment.Top :
+                case VerticalAlignment.Top:
                     VTop.IsChecked = true;
                     break;
                 case VerticalAlignment.Center:
@@ -93,12 +105,8 @@ namespace Titalyver2
             LineBottom.Value = (decimal)t.Bottom;
             RubyBottom.Value = (decimal)mainWindow.KaraokeDisplay.RubyBottomSpace;
             NoRubyTop.Value = (decimal)mainWindow.KaraokeDisplay.NoRubyTopSpace;
-
-            MainWindow = mainWindow;
-
-
-
         }
+
         private string TypefaceString(Typeface typeface)
         {
             string family = typeface.FontFamily.FamilyNames.ContainsKey(Language) ? typeface.FontFamily.FamilyNames[Language] : typeface.FontFamily.Source;
@@ -339,5 +347,51 @@ namespace Titalyver2
             MainWindow.KaraokeDisplay.NoRubyTopSpace = (double)NoRubyTop.Value;
             Properties.Settings.Default.NoRubySpace = MainWindow.KaraokeDisplay.NoRubyTopSpace;
         }
+
+        #endregion Display
+
+        #region Lyrics
+
+        private static readonly string[] Example = new string[] {
+            "%directoryname%",
+            "%filename%",
+            "%filename_ext%",
+            "%path%",
+            "",
+            "<title>",
+            "<artist>",
+            "<album>",
+            "Other <tagname>",
+        };
+
+        private void InitializeLyrics(MainWindow mainWindow)
+        {
+            ReplacerList.ItemsSource = Example;
+
+            LyricsSerchList.Text = string.Join("\n", mainWindow.LyricsSearcher.SearchList);
+
+            NoLyricsFormat.Text = mainWindow.LyricsSearcher.NoLyricsFormatText;
+        }
+
+
+        private void LyricsSerchList_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            if (MainWindow == null) return;
+            MainWindow.LyricsSearcher.SearchList.Clear();
+            using StringReader sr = new(LyricsSerchList.Text);
+            for (string line = sr.ReadLine(); line != null; line = sr.ReadLine())
+            {
+                MainWindow.LyricsSearcher.SearchList.Add(line);
+            }
+            Properties.Settings.Default.LyricsSearchList = LyricsSerchList.Text;
+        }
+
+        private void NoLyricsFormat_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            if (MainWindow == null) return;
+            MainWindow.LyricsSearcher.NoLyricsFormatText = NoLyricsFormat.Text;
+            Properties.Settings.Default.NoLyricsFormat = NoLyricsFormat.Text;
+        }
+        #endregion Lyrics
     }
 }

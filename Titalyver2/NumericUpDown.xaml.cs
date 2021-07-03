@@ -56,7 +56,7 @@ namespace Titalyver2
         public event EventHandler ValueChanged;
 
         [Description("リセット値"), Category("NumericUpDown")]
-        public decimal RestValue { get; set; } = 0;
+        public decimal ResetValue { get; set; } = 0;
 
         public NumericUpDown()
         {
@@ -119,7 +119,7 @@ namespace Titalyver2
         {
             if (e.MiddleButton == MouseButtonState.Pressed)
             {
-                Number.Text = RestValue.ToString();
+                Number.Text = ResetValue.ToString();
             }
         }
     }

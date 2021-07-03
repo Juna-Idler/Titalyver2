@@ -26,10 +26,7 @@
         <TabControl Grid.Row="1" Margin="4,0,4,0" >
             <TabItem x:Name="Display" Header="Display">
                 <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" >
-                <StackPanel CanVerticallyScroll="True" >
-                    <StackPanel.Background>
-                        <SolidColorBrush Color="{DynamicResource {x:Static SystemColors.ControlColorKey}}"/>
-                    </StackPanel.Background>
+                    <StackPanel Background="{DynamicResource {x:Static SystemColors.ControlBrushKey}}">
                     <Grid >
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*"/>
@@ -38,7 +35,7 @@
                         </Grid.ColumnDefinitions>
                         <Button x:Name="FontSelect" Click="Button_Click" Content="" Margin="2,2,2,0"/>
                         <Label Grid.Column="1" Padding="5,8,4,0">Outline</Label>
-<local:NumericUpDown x:Name="Outline" Grid.Column="2" ButtonWidth="10" TextAlignment="Right" Width="40" Value="2" RestValue="2" ButtonPadding="1,0,1,0" ValueChanged="Outline_ValueChanged" FontSize="16" Margin="0,2,2,0" />                        
+<local:NumericUpDown x:Name="Outline" Grid.Column="2" ButtonWidth="10" TextAlignment="Right" Width="48" Value="2" ResetValue="2" ButtonPadding="1,0,1,0" ValueChanged="Outline_ValueChanged" FontSize="16" Margin="0,2,2,0" Increment="0.1" />                        
 
                     </Grid>
 
@@ -157,6 +154,34 @@
                 </StackPanel>
                 </ScrollViewer>
             </TabItem>
+            
+            <TabItem Header="Lyrics">
+                <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" >
+                    <StackPanel Background="{DynamicResource {x:Static SystemColors.ControlBrushKey}}">
+                        <GroupBox Header="Serch List" >
+                            <TextBox x:Name="LyricsSerchList" VerticalScrollBarVisibility="Visible" HorizontalScrollBarVisibility="Auto" TextChanged="LyricsSerchList_TextChanged" AcceptsReturn="True">
+                                
+                            </TextBox>
+                        </GroupBox>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="auto"/>
+                            </Grid.ColumnDefinitions>
+                        <GroupBox Header="No Lyrics Format">
+                            <TextBox x:Name="NoLyricsFormat" TextChanged="NoLyricsFormat_TextChanged" AcceptsReturn="True">
+                                
+                            </TextBox>
+                        </GroupBox>
+                        <GroupBox Header="Replacer" Grid.Column="1">
+                                <ListBox x:Name="ReplacerList" >
+                                </ListBox>
+                            </GroupBox>
+                        </Grid>
+                    </StackPanel>
+                </ScrollViewer>
+            </TabItem>
+            
         </TabControl>
         <Grid Grid.Row="2" Margin="0,8,0,8" >
             <Grid.ColumnDefinitions>

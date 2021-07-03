@@ -298,5 +298,30 @@ namespace Titalyver2.Properties {
                 this["Outline"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("file:%directoryname%/%filename%.kra\r\nfile:%directoryname%/%filename%.lrc\r\nfile:%d" +
+            "irectoryname%/%filename%.txt\r\nstring:<lyrics>")]
+        public string LyricsSearchList {
+            get {
+                return ((string)(this["LyricsSearchList"]));
+            }
+            set {
+                this["LyricsSearchList"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("<artist>\r\n<title>\r\n<album>\r\n")]
+        public string NoLyricsFormat {
+            get {
+                return ((string)(this["NoLyricsFormat"]));
+            }
+            set {
+                this["NoLyricsFormat"] = value;
+            }
+        }
     }
 }

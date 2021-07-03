@@ -358,9 +358,10 @@ namespace Titalyver2
                     KaraokeLine kl = new(Typeface, FontSize,
                                          ActiveFillColor, ActiveStrokeColor,
                                          StandbyFillColor, StandbyStrokeColor,
-                                         StrokeThickness,SleepFillColor,SleepStrokeColor, ActiveBackColor, l, ActualWidth);
+                                         StrokeThickness, SleepFillColor, SleepStrokeColor, ActiveBackColor,
+                                         LinePadding, RubyBottomSpace, NoRubyTopSpace,
+                                         l, ActualWidth);
                     kl.TextAlignment = TextAlignment;
-                    kl.Padding = LinePadding;
                     _ = List.Children.Add(kl);
                 }
             }
