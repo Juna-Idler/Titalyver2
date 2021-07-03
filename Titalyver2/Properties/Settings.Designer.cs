@@ -202,5 +202,101 @@ namespace Titalyver2.Properties {
                 this["VerticalAlignment"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("16")]
+        public double OffsetLeft {
+            get {
+                return ((double)(this["OffsetLeft"]));
+            }
+            set {
+                this["OffsetLeft"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("16")]
+        public double OffsetRight {
+            get {
+                return ((double)(this["OffsetRight"]));
+            }
+            set {
+                this["OffsetRight"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        public double OffsetVertical {
+            get {
+                return ((double)(this["OffsetVertical"]));
+            }
+            set {
+                this["OffsetVertical"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        public double LineTopSpace {
+            get {
+                return ((double)(this["LineTopSpace"]));
+            }
+            set {
+                this["LineTopSpace"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        public double LineBottomSpace {
+            get {
+                return ((double)(this["LineBottomSpace"]));
+            }
+            set {
+                this["LineBottomSpace"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        public double RubyBottomSpace {
+            get {
+                return ((double)(this["RubyBottomSpace"]));
+            }
+            set {
+                this["RubyBottomSpace"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        public double NoRubySpace {
+            get {
+                return ((double)(this["NoRubySpace"]));
+            }
+            set {
+                this["NoRubySpace"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("2")]
+        public double Outline {
+            get {
+                return ((double)(this["Outline"]));
+            }
+            set {
+                this["Outline"] = value;
+            }
+        }
     }
 }

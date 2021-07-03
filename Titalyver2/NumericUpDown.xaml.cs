@@ -9,6 +9,7 @@ namespace Titalyver2
 {
     /// <summary>
     /// NumericUpDown.xaml の相互作用ロジック
+    /// 適当に作ったのでまだ穴があります
     /// </summary>
     public partial class NumericUpDown : UserControl
     {

@@ -59,8 +59,13 @@ namespace Titalyver2
         public double StrokeThickness { get => (double)GetValue(StrokeThicknessProperty); set => SetValue(StrokeThicknessProperty, value); }
         public static readonly DependencyProperty StrokeThicknessProperty = DependencyProperty.Register(
             "StrokeThickness", typeof(double), typeof(KaraokeDisplay),
-            new FrameworkPropertyMetadata(2.0));
+            new FrameworkPropertyMetadata(2.0,OnChangeThickness));
+        private static void OnChangeThickness(DependencyObject dependencyObject, DependencyPropertyChangedEventArgs e)
+        {
+            KaraokeDisplay _this = (KaraokeDisplay)dependencyObject;
+            _this.OnChangeThickness();
 
+        }
 
         [Description("文字の配置"), Category("Karaoke Display"), DefaultValue(TextAlignment.Left)]
         public TextAlignment TextAlignment { get => (TextAlignment)GetValue(TextAlignmentProperty); set => SetValue(TextAlignmentProperty, value); }
@@ -88,12 +93,32 @@ namespace Titalyver2
         public Thickness LinePadding { get => (Thickness)GetValue(LinePaddingProperty); set => SetValue(LinePaddingProperty, value); }
         public static readonly DependencyProperty LinePaddingProperty = DependencyProperty.Register(
             "LinePadding", typeof(Thickness), typeof(KaraokeDisplay),
-            new FrameworkPropertyMetadata(new Thickness(), FrameworkPropertyMetadataOptions.AffectsRender, OnChangePadding));
-        private static void OnChangePadding(DependencyObject dependencyObject, DependencyPropertyChangedEventArgs e)
+            new FrameworkPropertyMetadata(new Thickness(), FrameworkPropertyMetadataOptions.AffectsRender, OnChangeLineSpace));
+        private static void OnChangeLineSpace(DependencyObject dependencyObject, DependencyPropertyChangedEventArgs e)
         {
             KaraokeDisplay _this = (KaraokeDisplay)dependencyObject;
-            _this.OnChangePadding();
+            _this.OnChangeLineSpace();
         }
+
+        [Description("ルビ無し行のルビ代わりの隙間"), Category("Karaoke Display")]
+        public double NoRubyTopSpace { get => (double)GetValue(NoRubyTopSpaceProperty); set => SetValue(NoRubyTopSpaceProperty, value); }
+        public static readonly DependencyProperty NoRubyTopSpaceProperty = DependencyProperty.Register(
+            "NoRubyTopSpace", typeof(double), typeof(KaraokeDisplay),
+            new FrameworkPropertyMetadata(0.0, FrameworkPropertyMetadataOptions.AffectsRender, OnChangeLineSpace));
+
+
+        [Description("ルビと親文字の間"), Category("Karaoke Display")]
+        public double RubyBottomSpace { get => (double)GetValue(RubyBottomSpaceProperty); set => SetValue(RubyBottomSpaceProperty, value); }
+        public static readonly DependencyProperty RubyBottomSpaceProperty = DependencyProperty.Register(
+            "RubyBottomSpace", typeof(double), typeof(KaraokeDisplay),
+            new FrameworkPropertyMetadata(0.0, FrameworkPropertyMetadataOptions.AffectsRender, OnChangeRubyBottomSpace));
+        private static void OnChangeRubyBottomSpace(DependencyObject dependencyObject, DependencyPropertyChangedEventArgs e)
+        {
+            KaraokeDisplay _this = (KaraokeDisplay)dependencyObject;
+            _this.OnChangeRubyBottomSpace();
+        }
+
+
 
         [Description("フォント"), Category("Karaoke Display")]
         public FontFamily LineFontFamily { get => (FontFamily)GetValue(LineFontFamilyProperty); set => SetValue(LineFontFamilyProperty, value); }
@@ -411,7 +436,7 @@ namespace Titalyver2
             ForceMove(Time);
         }
 
-        private void OnChangePadding()
+        private void OnChangeLineSpace()
         {
             if (Lyrics == null)
                 return;
@@ -424,10 +449,43 @@ namespace Titalyver2
             foreach (KaraokeLine kl in List.Children)
             {
                 kl.Padding = LinePadding;
+                kl.NoRubyTopSpace = NoRubyTopSpace;
+                kl.UpdateHeight();
+                kl.Update();
+            }
+            UpdateLayout();
+        }
+        private void OnChangeRubyBottomSpace()
+        {
+            if (Lyrics == null)
+                return;
+            if (Lyrics.Sync == LyricsContainer.SyncMode.None)
+            {
+                return;
+            }
+            foreach (KaraokeLine kl in List.Children)
+            {
+                kl.RubyBottomSpace = RubyBottomSpace;
+                kl.MakeWords();
+            }
+            UpdateLayout();
+        }
+
+        private void OnChangeThickness()
+        {
+            if (Lyrics == null)
+                return;
+            if (Lyrics.Sync == LyricsContainer.SyncMode.None)
+            {
+                return;
+            }
+            foreach (KaraokeLine kl in List.Children)
+            {
+                kl.StrokeThickness = StrokeThickness;
+                kl.SetStrokeTickness();
                 kl.Update();
             }
         }
-
 
 
 

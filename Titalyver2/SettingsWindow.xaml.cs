@@ -38,6 +38,8 @@ namespace Titalyver2
             InitializeComponent();
             Language = Language = XmlLanguage.GetLanguage(CultureInfo.CurrentUICulture.Name);
 
+            FontSelect.Content = $"{TypefaceString(mainWindow.KaraokeDisplay.Typeface)} {mainWindow.KaraokeDisplay.FontSize}";
+            Outline.Value = (decimal)mainWindow.KaraokeDisplay.StrokeThickness;
 
             ActiveFill.Background = mainWindow.KaraokeDisplay.ActiveFillColor;
             ActiveFill.Text = mainWindow.KaraokeDisplay.ActiveFillColor.Color.ToString();
@@ -60,23 +62,39 @@ namespace Titalyver2
             switch (mainWindow.KaraokeDisplay.TextAlignment)
             {
                 case TextAlignment.Left:
-                    Left.IsChecked = true;
+                    HLeft.IsChecked = true;
                     break;
                 case TextAlignment.Center:
-                    Center.IsChecked = true;
+                    HCenter.IsChecked = true;
                     break;
                 case TextAlignment.Right:
-                    Right.IsChecked = true;
+                    HRight.IsChecked = true;
                     break;
             }
+            switch (mainWindow.KaraokeDisplay.KaraokeVerticalAlignment)
+            {
+                case VerticalAlignment.Top :
+                    VTop.IsChecked = true;
+                    break;
+                case VerticalAlignment.Center:
+                    VMiddle.IsChecked = true;
+                    break;
+                case VerticalAlignment.Bottom:
+                    VBottom.IsChecked = true;
+                    break;
+            }
+
             Thickness t = mainWindow.KaraokeDisplay.LinePadding;
             OffsetLeft.Value = (decimal)t.Left;
             OffsetRight.Value = (decimal)t.Right;
             OffsetVertical.Value = (decimal)mainWindow.KaraokeDisplay.OffsetY;
 
+            LineTop.Value = (decimal)t.Top;
+            LineBottom.Value = (decimal)t.Bottom;
+            RubyBottom.Value = (decimal)mainWindow.KaraokeDisplay.RubyBottomSpace;
+            NoRubyTop.Value = (decimal)mainWindow.KaraokeDisplay.NoRubyTopSpace;
 
             MainWindow = mainWindow;
-            FontSelect.Content = $"{TypefaceString(MainWindow.KaraokeDisplay.Typeface)} {MainWindow.KaraokeDisplay.FontSize}";
 
 
 
@@ -230,19 +248,21 @@ namespace Titalyver2
         {
             if (MainWindow == null) return;
             MainWindow.KaraokeDisplay.KaraokeVerticalAlignment = VerticalAlignment.Top;
+            Properties.Settings.Default.VerticalAlignment = TypeDescriptor.GetConverter(typeof(VerticalAlignment)).ConvertToString(VerticalAlignment.Top);
         }
 
         private void RadioButtonMiddle_Checked(object sender, RoutedEventArgs e)
         {
             if (MainWindow == null) return;
             MainWindow.KaraokeDisplay.KaraokeVerticalAlignment = VerticalAlignment.Center;
+            Properties.Settings.Default.VerticalAlignment = TypeDescriptor.GetConverter(typeof(VerticalAlignment)).ConvertToString(VerticalAlignment.Center);
         }
 
         private void RadioButtonBottom_Checked(object sender, RoutedEventArgs e)
         {
             if (MainWindow == null) return;
             MainWindow.KaraokeDisplay.KaraokeVerticalAlignment = VerticalAlignment.Bottom;
-//            MainWindow.KaraokeDisplay.UpdateAll();
+            Properties.Settings.Default.VerticalAlignment = TypeDescriptor.GetConverter(typeof(VerticalAlignment)).ConvertToString(VerticalAlignment.Bottom);
 
         }
 
@@ -262,6 +282,7 @@ namespace Titalyver2
             Thickness t = MainWindow.KaraokeDisplay.LinePadding;
             t.Left = (double)OffsetLeft.Value;
             MainWindow.KaraokeDisplay.LinePadding = t;
+            Properties.Settings.Default.OffsetLeft = t.Left;
         }
 
         private void OffsetRight_ValueChanged(object sender, EventArgs e)
@@ -270,12 +291,53 @@ namespace Titalyver2
             Thickness t = MainWindow.KaraokeDisplay.LinePadding;
             t.Right = (double)OffsetRight.Value;
             MainWindow.KaraokeDisplay.LinePadding = t;
+            Properties.Settings.Default.OffsetRight = t.Right;
         }
 
         private void OffsetVertical_ValueChanged(object sender, EventArgs e)
         {
             if (MainWindow == null) return;
             MainWindow.KaraokeDisplay.OffsetY = (double)OffsetVertical.Value;
+            Properties.Settings.Default.OffsetVertical = MainWindow.KaraokeDisplay.OffsetY;
+        }
+
+        private void Outline_ValueChanged(object sender, EventArgs e)
+        {
+            if (MainWindow == null) return;
+            MainWindow.KaraokeDisplay.StrokeThickness = (double)Outline.Value;
+            Properties.Settings.Default.Outline = MainWindow.KaraokeDisplay.StrokeThickness;
+        }
+
+        private void LineTop_ValueChanged(object sender, EventArgs e)
+        {
+            if (MainWindow == null) return;
+            Thickness t = MainWindow.KaraokeDisplay.LinePadding;
+            t.Top = (double)LineTop.Value;
+            MainWindow.KaraokeDisplay.LinePadding = t;
+            Properties.Settings.Default.LineTopSpace = t.Top;
+        }
+
+        private void LineBottom_ValueChanged(object sender, EventArgs e)
+        {
+            if (MainWindow == null) return;
+            Thickness t = MainWindow.KaraokeDisplay.LinePadding;
+            t.Bottom = (double)LineBottom.Value;
+            MainWindow.KaraokeDisplay.LinePadding = t;
+            Properties.Settings.Default.LineBottomSpace = t.Bottom;
+        }
+
+        private void RubyBottom_ValueChanged(object sender, EventArgs e)
+        {
+            if (MainWindow == null) return;
+            MainWindow.KaraokeDisplay.RubyBottomSpace = (double)RubyBottom.Value;
+            Properties.Settings.Default.RubyBottomSpace = MainWindow.KaraokeDisplay.RubyBottomSpace;
+        }
+
+        private void NoRubyTop_ValueChanged(object sender, EventArgs e)
+        {
+            if (MainWindow == null) return;
+            MainWindow.KaraokeDisplay.NoRubyTopSpace = (double)NoRubyTop.Value;
+            Properties.Settings.Default.NoRubySpace = MainWindow.KaraokeDisplay.NoRubyTopSpace;
         }
     }
 }

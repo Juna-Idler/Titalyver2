@@ -25,7 +25,6 @@ namespace Titalyver2
             }
         }
 
-        //あとルビと本文間の微調整
 
         public SolidColorBrush ActiveFillColor { get ; set ; }
         public SolidColorBrush ActiveStrokeColor { get ; set; }
@@ -48,8 +47,14 @@ namespace Titalyver2
 
         public Thickness Padding { get ; set ; }
 
+        public double RubyBottomSpace { get; set; }
 
+        public double NoRubyTopSpace { get; set; }
 
+        public void UpdateHeight()
+        {
+            Height = WordsHeight + Padding.Top + Padding.Bottom + (Line.HasRuby ? 0 : NoRubyTopSpace);
+        }
 
 
         public double Time { get; private set; }
@@ -76,6 +81,7 @@ namespace Titalyver2
 
 
         private LyricsContainer.Line Line;
+
         private readonly SolidColorBrush FadeFillBrush = new();
         private readonly SolidColorBrush FadeStrokeBrush = new();
         private readonly SolidColorBrush FadeBackBrush = new();
@@ -178,7 +184,7 @@ namespace Titalyver2
                 return;
             double x = 0;
             double ruby_x = 100;//ルビパディング（初期化値は一文字目の）
-            double y = Line.HasRuby ? Typeface.CapsHeight * FontSize / 2 : 0;
+            double y = Line.HasRuby ? Typeface.CapsHeight * FontSize / 2 + RubyBottomSpace : 0;
             List <KaraokeWord> words = new(Line.Words.Length);
             foreach (LyricsContainer.Line.WordWithRuby wwr in Line.Words)
             {
@@ -217,7 +223,7 @@ namespace Titalyver2
             EndTime = Line.EndTime / 1000.0;
             WordsWidth = x;
             WordsHeight = y + 1.25 * FontSize;//何故かTypefaceから行の高さを求められないので適当な固定倍率値
-            Height = WordsHeight + Padding.Top + Padding.Bottom;
+            Height = WordsHeight + Padding.Top + Padding.Bottom + (Line.HasRuby ? 0 : NoRubyTopSpace);
 
             SetWipeColor();
         }
@@ -302,7 +308,7 @@ namespace Titalyver2
             }
 
 
-            drawingContext.PushTransform(new TranslateTransform(alignment_x, Padding.Top));
+            drawingContext.PushTransform(new TranslateTransform(alignment_x, Padding.Top + (Line.HasRuby ? 0 : NoRubyTopSpace)));
 
             if (StartTime < Time && Time < EndTime)
             {

@@ -73,6 +73,14 @@ namespace Titalyver2
             Background = (SolidColorBrush)bc.ConvertFromString(set.WindowBack);
 
             KaraokeDisplay.TextAlignment = (TextAlignment)TypeDescriptor.GetConverter(typeof(TextAlignment)).ConvertFromString(set.TextAlignment);
+            KaraokeDisplay.VerticalAlignment = (VerticalAlignment)TypeDescriptor.GetConverter(typeof(VerticalAlignment)).ConvertFromString(set.VerticalAlignment);
+
+            KaraokeDisplay.LinePadding = new Thickness(set.OffsetLeft, set.LineTopSpace, set.OffsetRight, set.LineBottomSpace);
+            KaraokeDisplay.OffsetY = set.OffsetVertical;
+
+            KaraokeDisplay.RubyBottomSpace = set.RubyBottomSpace;
+            KaraokeDisplay.NoRubyTopSpace = set.NoRubySpace;
+
         }
 
         private string GetLyrics(Receiver.Data data)
@@ -89,8 +97,7 @@ namespace Titalyver2
 
             if ((data.PlaybackEvent & Message.EnumPlaybackEvent.Bit_Update) == Message.EnumPlaybackEvent.Bit_Update)
             {
-                Uri uri = new(data.FilePath);
-                string lp = uri.LocalPath;
+                string lp = string.IsNullOrEmpty(data.FilePath) ? "" : new Uri(data.FilePath).LocalPath;
 
                 string text = LyricsSearcher.Search(lp, data.MetaData);
                 _ = Dispatcher.InvokeAsync(() =>

@@ -28,7 +28,7 @@ namespace Titalyver2
 
         public string Search(string filepath, Dictionary<string, string[]> metaData)
         {
-            string directoryname = Path.GetDirectoryName(filepath);
+            string directoryname = Path.GetDirectoryName(filepath) ?? "";
             string filename = Path.GetFileNameWithoutExtension(filepath);
             string filename_ext = Path.GetFileName(filepath);
 
