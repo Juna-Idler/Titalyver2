@@ -204,7 +204,7 @@ namespace Titalyver2
             }
             if (Lyrics.Sync != LyricsContainer.SyncMode.None)
             {
-                foreach (KaraokeLine kl in List.Children)
+                foreach (KaraokeLineClip kl in List.Children)
                 {
                     if (kl.StartTime <= time && time <= kl.EndTime)
                     {
@@ -281,7 +281,7 @@ namespace Titalyver2
                     if (Lyrics.Sync == LyricsContainer.SyncMode.None)
                         return;
 
-                    foreach (KaraokeLine kl in List.Children)
+                    foreach (KaraokeLineClip kl in List.Children)
                     {
                         kl.Width = ActualWidth;
                     }
@@ -309,7 +309,7 @@ namespace Titalyver2
                 return;
             if (Lyrics.Sync == LyricsContainer.SyncMode.None)
                 return;
-            foreach (KaraokeLine kl in List.Children) { kl.Update(); }
+            foreach (KaraokeLineClip kl in List.Children) { kl.Update(); }
         }
         public void ResetLineColors()
         {
@@ -319,7 +319,15 @@ namespace Titalyver2
             {
                 return;
             }
-            foreach (KaraokeLine kl in List.Children)
+            ActiveFillColor.Freeze();
+            ActiveStrokeColor.Freeze();
+            StandbyFillColor.Freeze();
+            StandbyStrokeColor.Freeze();
+            SleepFillColor.Freeze();
+            SleepStrokeColor.Freeze();
+            ActiveBackColor.Freeze();
+
+            foreach (KaraokeLineClip kl in List.Children)
             {
                 kl.ActiveFillColor = ActiveFillColor;
                 kl.ActiveStrokeColor = ActiveStrokeColor;
@@ -328,7 +336,7 @@ namespace Titalyver2
                 kl.SleepFillColor = SleepFillColor;
                 kl.SleepStrokeColor = SleepStrokeColor;
                 kl.ActiveBackColor = ActiveBackColor;
-                kl.SetWipeColor();
+//                kl.SetWipeColor();
                 kl.Update();
             }
 
@@ -355,7 +363,7 @@ namespace Titalyver2
             {
                 foreach (LyricsContainer.Line l in Lyrics.Lines)
                 {
-                    KaraokeLine kl = new(Typeface, FontSize,
+                    KaraokeLineClip kl = new(Typeface, FontSize,
                                          ActiveFillColor, ActiveStrokeColor,
                                          StandbyFillColor, StandbyStrokeColor,
                                          StrokeThickness, SleepFillColor, SleepStrokeColor, ActiveBackColor,
@@ -375,7 +383,7 @@ namespace Titalyver2
             }
             double time = Time - AtTagTimeOffset;
 
-            foreach (KaraokeLine kl in List.Children)
+            foreach (KaraokeLineClip kl in List.Children)
             {
                 if (Animation == null && time < kl.StartTime && kl.StartTime - kl.FadeInTime < time)
                 {
@@ -427,7 +435,7 @@ namespace Titalyver2
                     tb.TextAlignment = TextAlignment;
                 return;
             }
-            foreach (KaraokeLine kl in List.Children)
+            foreach (KaraokeLineClip kl in List.Children)
             {
                 kl.TextAlignment = TextAlignment;
             }
@@ -447,7 +455,7 @@ namespace Titalyver2
                     tb.Padding = LinePadding;
                 return;
             }
-            foreach (KaraokeLine kl in List.Children)
+            foreach (KaraokeLineClip kl in List.Children)
             {
                 kl.Padding = LinePadding;
                 kl.NoRubyTopSpace = NoRubyTopSpace;
@@ -464,7 +472,7 @@ namespace Titalyver2
             {
                 return;
             }
-            foreach (KaraokeLine kl in List.Children)
+            foreach (KaraokeLineClip kl in List.Children)
             {
                 kl.RubyBottomSpace = RubyBottomSpace;
                 kl.MakeWords();
@@ -480,10 +488,10 @@ namespace Titalyver2
             {
                 return;
             }
-            foreach (KaraokeLine kl in List.Children)
+            foreach (KaraokeLineClip kl in List.Children)
             {
                 kl.StrokeThickness = StrokeThickness;
-                kl.SetStrokeTickness();
+                kl.SetStrokeThickness();
                 kl.Update();
             }
         }
