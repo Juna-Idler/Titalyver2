@@ -112,7 +112,6 @@ namespace Titalyver2
         private double WordsHeight;
 
 
-        private bool IsLastRenderOnSleep;
         private double LastRenderTime;
 
 
@@ -250,17 +249,21 @@ namespace Titalyver2
 
         public bool NeedRender(double time)
         {
-            return (StartTime < time && time < EndTime) ||
-                    (time < StartTime && time > StartTime - FadeInTime) ||
-                    (time > EndTime && time < EndTime + FadeOutTime) ||
-                    !IsLastRenderOnSleep;
+            if (Line.Sync == LyricsContainer.SyncMode.Karaoke)
+            {
+                return (StartTime - FadeInTime < time && time < EndTime + FadeOutTime) ||
+                       (StartTime - FadeInTime < LastRenderTime && LastRenderTime < EndTime + FadeOutTime);
+            }
+            return !((time < StartTime - FadeInTime && LastRenderTime < StartTime - FadeInTime) ||
+                   (EndTime + FadeOutTime < time && EndTime + FadeOutTime < LastRenderTime) ||
+                   (StartTime < time && time < EndTime - FadeInTime && StartTime < LastRenderTime && LastRenderTime < EndTime - FadeInTime));
+
         }
 
         protected override void OnRender(DrawingContext drawingContext)
         {
             if (Words == null)
                 return;
-            IsLastRenderOnSleep = false;
             LastRenderTime = Time;
 
             double alignment_x = 0;
@@ -288,17 +291,19 @@ namespace Titalyver2
                     {
                         drawingContext.DrawRectangle(ActiveBackColor, null, rect);
                     }
-                    else if (Time < StartTime && Time > StartTime - FadeInTime)
+                    else if (StartTime - FadeInTime < Time && Time < StartTime)
                     {
                         double rate = (Time - (StartTime - FadeInTime)) / FadeInTime;
                         FadeBackBrush.Color = (ActiveBackColor.Color * (float)rate);
                         drawingContext.DrawRectangle(FadeBackBrush, null, rect);
 
                     }
-                    else if (Time < EndTime && Time > EndTime - FadeInTime)
+                    else if (EndTime - FadeInTime < Time && Time < EndTime)
                     {
                         double rate = (Time - (EndTime - FadeInTime)) / FadeInTime;
-                        FadeBackBrush.Color = (ActiveBackColor.Color * (float)(1 - rate));
+                        Color c = ActiveBackColor.Color;
+                        c.A = (byte)(c.A * (1 - rate));
+                        FadeBackBrush.Color = c;
                         drawingContext.DrawRectangle(FadeBackBrush, null, rect);
                     }
                 }
@@ -449,7 +454,6 @@ namespace Titalyver2
             }
             else
             {
-                IsLastRenderOnSleep = true;
                 foreach (KaraokeWord w in Words) { drawingContext.DrawGeometry(null, SleepPen, w.Glyphs); }
                 foreach (KaraokeWord r in Rubys) { drawingContext.DrawGeometry(null, SleepRubyPen, r.Glyphs); }
                 foreach (KaraokeWord w in Words) { drawingContext.DrawGeometry(SleepFillColor, null, w.Glyphs); }
@@ -572,36 +576,6 @@ namespace Titalyver2
                 }
 
             }
-
-
-
-
-            private double WipeX;
-            public double GetWipePointX(double time)
-            {
-                if (time < StartTime)
-                    return OffsetX;
-                if (time > EndTime)
-                    return OffsetX + Width;
-
-                double x = OffsetX;
-                double last_time = StartTime;
-                for (int i = 0;i < Times.Length;i++)
-                {
-                    if (time < Times[i])
-                    {
-                        double rate = (time - last_time) / (Times[i] - last_time);
-                        return WipeX = x + (Widths[i] * rate);
-                    }
-                    x += Widths[i];
-                    last_time = Times[i];
-                }
-                {
-                    double rate = (time - last_time) / (EndTime - last_time);
-                    return WipeX = x + ((Width - (x - OffsetX)) * rate);
-                }
-            }
-            public double GetWipePointX() => WipeX;
 
         }
 

@@ -109,6 +109,7 @@ namespace Titalyver2
                     if (HasRuby)
                         Ruby.Complement();
                 }
+
                 public void GetFirstTime(out int count, out int time)
                 {
                     if (HasRuby)
@@ -179,6 +180,21 @@ namespace Titalyver2
                     Sync = SyncMode.None;
                 else
                     Sync = SyncMode.Karaoke;
+            }
+
+            public bool FullComplement()
+            {
+                if (Complement())
+                {
+                    foreach (WordWithRuby w in Words)
+                    {
+                        bool r = w.Word.FullComplement();
+                        if (r && w.HasRuby)
+                            return w.Ruby.FullComplement();
+                        return r;
+                    }
+                }
+                return false;
             }
 
             public bool Complement()
@@ -292,6 +308,41 @@ namespace Titalyver2
                     if (EndTimes[i] >= 0 && StartTimes[i + 1] < 0)
                         StartTimes[i + 1] = EndTimes[i];
                 }
+            }
+            public bool FullComplement()
+            {
+                if (StartTimes[0] < 0 || EndTimes[^1] < 0)
+                    return false;
+
+                for (int i = 0; i < Chars.Length - 1; i++)
+                {
+                    if (EndTimes[i] < 0 && StartTimes[i + 1] < 0)
+                    {
+                        int prev_count = 1;
+                        int prev_time = StartTimes[i];
+                        int next_count = 1;
+                        int next_time = EndTimes[^1];
+                        for (int j = i + 2; j < Chars.Length; j++)
+                        {
+                            if (StartTimes[j] >= 0)
+                            {
+                                next_time = StartTimes[j];
+                                break;
+                            }
+                            next_count++;
+                        }
+                        int divtime = (prev_time * next_count + next_time * prev_count) / (prev_count + next_count);
+                        EndTimes[i] = StartTimes[i + 1] = divtime;
+                    }
+                    else
+                    {
+                        if (StartTimes[i + 1] < 0)
+                            StartTimes[i + 1] = EndTimes[i];
+                        else if (EndTimes[i] < 0)
+                            EndTimes[i] = StartTimes[i + 1];
+                    }
+                }
+                return true;
             }
             public void GetFirstTime(out int count ,out int time)
             {
