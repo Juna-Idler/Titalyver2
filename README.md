@@ -9,6 +9,7 @@ TimeTagedLyricsViewer version 2
 - 音楽再生機能は無いのでプラグイン機能のあるプレイヤーに専用プラグインを設置することでのみ機能します。
  （現在foobar2000(foo_titalyver_messenger)とMusicBee(mb_TitalyverMessenger)のみ）
 
+https://youtu.be/q31rUxmlPFU デモ（21/7/6）
 
 
 2ってあんまりつけたくなかったんだけど、ほかに変なものを付けるよりはまだましということで2
