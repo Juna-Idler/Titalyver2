@@ -67,8 +67,17 @@ namespace Titalyver2
             FadePen.Thickness = StrokeThickness;
             FadeRubyPen.Thickness = StrokeThickness / 2;
         }
+        public void SetStrokeColor()
+        {
+            ActivePen.Brush = ActiveStrokeColor;
+            ActiveRubyPen.Brush = ActiveStrokeColor;
+            StandbyPen.Brush = StandbyStrokeColor;
+            StandbyRubyPen.Brush = StandbyStrokeColor;
+            SleepPen.Brush = SleepStrokeColor;
+            SleepRubyPen.Brush = SleepStrokeColor;
+        }
 
-    public double Time { get; private set; }
+        public double Time { get; private set; }
 
         public void SetTime(double time) { Time = time; }
 

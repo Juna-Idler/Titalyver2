@@ -330,13 +330,15 @@ namespace Titalyver2
             foreach (KaraokeLineClip kl in List.Children)
             {
                 kl.ActiveFillColor = ActiveFillColor;
-                kl.ActiveStrokeColor = ActiveStrokeColor;
                 kl.StandbyFillColor = StandbyFillColor;
-                kl.StandbyStrokeColor = StandbyStrokeColor;
                 kl.SleepFillColor = SleepFillColor;
-                kl.SleepStrokeColor = SleepStrokeColor;
                 kl.ActiveBackColor = ActiveBackColor;
-//                kl.SetWipeColor();
+
+                kl.ActiveStrokeColor = ActiveStrokeColor;
+                kl.StandbyStrokeColor = StandbyStrokeColor;
+                kl.SleepStrokeColor = SleepStrokeColor;
+                kl.SetStrokeColor();
+
                 kl.Update();
             }
 
