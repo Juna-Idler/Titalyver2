@@ -28,43 +28,18 @@ namespace Titalyver2
         {
             Bit_Play = 1,
             Bit_Stop = 2,
-            Bit_Update = 4,
-            Bit_Seek = 8,
+            Bit_Seek = 4,
 
             NULL = 0,
             Play = 1,
             Stop = 2,
 
-            Update = 4,
-            UpdatePlay = 5,
-            UpdateStop = 6,
-
-            Seek = 8,
-            SeekPlay = 9,
-            SeekStop = 10,
-
-            SeekUpdate = 12,
-            SeekUpdatePlay = 13,
-            SeekUpdateStop = 14,
+            Seek = 4,
+            SeekPlay = 5,
+            SeekStop = 6,
         };
 
 
-
-        public struct Data
-        {
-            public EnumPlaybackEvent PlaybackEvent; //イベント内容
-            public double SeekTime;  //イベントが発生した時の再生位置
-            public Int32 TimeOfDay; //イベントが発生した24時間周期のミリ秒単位の時刻
-
-            //メタデータ keyは小文字 複数の同一keyの可能性あり（なのでList<Pair>） Dic<string,string[]>とどっちがいいのか？
-            //文字列はstring それ以外はRawTextなstring
-            public Dictionary<string, string[]> MetaData;
-
-            //おそらく音楽ファイルの多分フルパス
-            public string FilePath;
-
-            public bool IsValid() => MetaData != null;
-        }
 
 
         public bool IsValid() { return Mutex != null; }
@@ -197,18 +172,20 @@ namespace Titalyver2
 
         public bool Update(EnumPlaybackEvent pbevent, double seektime, byte[] json)
         {
-            int size = 4 + 8 + 4 + 4 + json.Length;
+            int size = 4 + 8 + 4 + 4 + 4 + json.Length;
 
-            using (MutexLock ml = new(Mutex, 100))
+            using (MutexLock ml = new MutexLock(Mutex, 100))
             {
                 if (!ml.Result)
                     return false;
                 using (MemoryMappedViewAccessor mmva = MemoryMappedFile.CreateViewAccessor(0, size, MemoryMappedFileAccess.ReadWrite))
                 {
+                    Int32 timeofday = GetTimeOfDay();
                     Int64 offset = 0;
                     mmva.Write(offset, (Int32)pbevent); offset += 4;
                     mmva.Write(offset, seektime); offset += 8;
-                    mmva.Write(offset, GetTimeOfDay()); offset += 4;
+                    mmva.Write(offset, timeofday); offset += 4;
+                    mmva.Write(offset, timeofday); offset += 4;
                     mmva.Write(offset, json.Length); offset += 4;
                     mmva.WriteArray(offset, json, 0, json.Length);
                 }
@@ -221,7 +198,7 @@ namespace Titalyver2
         {
             int size = 4 + 8 + 4;
 
-            using (MutexLock ml = new(Mutex, 100))
+            using (MutexLock ml = new MutexLock(Mutex, 100))
             {
                 if (!ml.Result)
                     return false;
@@ -247,17 +224,40 @@ namespace Titalyver2
 
     public class Receiver : Message
     {
+        public struct Data
+        {
+            public EnumPlaybackEvent PlaybackEvent; //イベント内容
+            public double SeekTime;  //イベントが発生した時の再生位置
+            public Int32 TimeOfDay; //イベントが発生した24時間周期のミリ秒単位の時刻
+            public Int32 UpdateTimeOfDay; //メタデータ更新時刻
+
+            //メタデータ keyは小文字 複数の同一keyの可能性あり
+            //文字列はstring それ以外はRawTextなstring
+            public Dictionary<string, string[]> MetaData;
+
+            //おそらく音楽ファイルの多分フルパス
+            public string FilePath;
+
+            public bool IsValid() => MetaData != null;
+            public bool Updated;//Receiverが自動で設定
+        }
+
+
 
         public delegate void PlaybackEventHandler(Data data);
         public event PlaybackEventHandler OnPlaybackEventChanged;
 
+
+        public bool Updated { get { return LastUpdateTimeOfDay != data.UpdateTimeOfDay; } }
+
         private RegisteredWaitHandle RegisteredWaitHandle;
 
+        private Int32 LastUpdateTimeOfDay = -1;
 
         public Data GetData() { return data; }
 
         private Data data;
-        public bool ReadData(bool forceread = false)
+        public bool ReadData()
         {
             byte[] buffer;
             try
@@ -267,15 +267,17 @@ namespace Titalyver2
                     return false;
                 using MemoryMappedFile mmf = MemoryMappedFile.OpenExisting(MMF_Name, MemoryMappedFileRights.Read);
                 using MemoryMappedViewStream stream = mmf.CreateViewStream(0, 0, MemoryMappedFileAccess.Read);
-                byte[] bytes = new byte[20];
-                int read = stream.Read(bytes, 0, 20);
+                byte[] bytes = new byte[24];
+                int read = stream.Read(bytes, 0, 24);
                 data.PlaybackEvent = (EnumPlaybackEvent)BitConverter.ToUInt32(bytes, 0);
                 data.SeekTime = BitConverter.ToDouble(bytes, 4);
                 data.TimeOfDay = BitConverter.ToInt32(bytes, 12);
-                Int32 json_size = BitConverter.ToInt32(bytes, 16);
+                data.UpdateTimeOfDay = BitConverter.ToInt32(bytes, 16);
+                Int32 json_size = BitConverter.ToInt32(bytes, 20);
 
-                if (data.MetaData != null && (data.PlaybackEvent & EnumPlaybackEvent.Bit_Update) != EnumPlaybackEvent.Bit_Update && !forceread)
+                if (LastUpdateTimeOfDay == data.UpdateTimeOfDay)
                 {
+                    data.Updated = false;
                     return true;
                 }
                 buffer = new byte[json_size];
@@ -330,7 +332,8 @@ namespace Titalyver2
                 data.MetaData = null;
                 return false;
             }
-
+            LastUpdateTimeOfDay = data.UpdateTimeOfDay;
+            data.Updated = true;
             return true;
         }
 

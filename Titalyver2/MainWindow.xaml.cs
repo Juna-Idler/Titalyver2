@@ -31,7 +31,7 @@ namespace Titalyver2
 
             Receiver = new Receiver(PlaybackEvent);
             Receiver.ReadData();
-            Message.Data data = Receiver.GetData();
+            Receiver.Data data = Receiver.GetData();
             if (!data.IsValid())
                 return;
             string lyrics =  GetLyrics(data);
@@ -100,12 +100,13 @@ namespace Titalyver2
         private void PlaybackEvent(Receiver.Data data)
         {
 
-            if ((data.PlaybackEvent & Message.EnumPlaybackEvent.Bit_Update) == Message.EnumPlaybackEvent.Bit_Update)
+            if (data.Updated)
             {
                 string text = GetLyrics(data);
                 _ = Dispatcher.InvokeAsync(() =>
                 {
                     KaraokeDisplay.SetLyrics(text);
+                    KaraokeDisplay.ForceMove(0, 0);
                 });
             }
             double time = -1;
@@ -113,7 +114,7 @@ namespace Titalyver2
             {
                 time = data.SeekTime;
             }
-            switch (data.PlaybackEvent & ~Message.EnumPlaybackEvent.Bit_Update & ~Message.EnumPlaybackEvent.Bit_Seek)
+            switch (data.PlaybackEvent & ~Message.EnumPlaybackEvent.Bit_Seek)
             {
                 case Message.EnumPlaybackEvent.Play:
                     _ = Dispatcher.InvokeAsync(() =>

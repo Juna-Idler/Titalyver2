@@ -192,8 +192,6 @@
             <Button Grid.Column="0" Content="Save" VerticalAlignment="Center" HorizontalAlignment="Stretch" Width="64" Click="ButtonSave_Click" Margin="10,0,0,0" ToolTip="Save settingfile for next startup" Padding="1,4,1,4"/>
             <Button Grid.Column="2" Content="Close" VerticalAlignment="Center" HorizontalAlignment="Stretch" Width="64" Margin="0,0,20,0" Click="ButtonClose_Click" Padding="1,4,1,5"/>
         </Grid>
-        <local:NumericUpDown HorizontalAlignment="Left" Margin="745,213,0,0" Grid.Row="1" VerticalAlignment="Top"/>
-        <GroupBox x:Name="groupBox" Header="GroupBox" HorizontalAlignment="Left" Height="8" Margin="785,32,0,0" Grid.Row="2" VerticalAlignment="Top" Width="28"/>
     </Grid>
 
 </Window>
