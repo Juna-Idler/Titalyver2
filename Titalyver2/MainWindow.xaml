@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:Titalyver2"
         mc:Ignorable="d"
         Title="Titalyver" Height="450" Width="800" WindowStyle="None" AllowsTransparency="True" Background="#7F000000"
-        ResizeMode="CanResizeWithGrip" MouseWheel="Window_MouseWheel" MouseLeftButtonDown="Window_MouseLeftButtonDown" MouseDown="Window_MouseDown" ScrollViewer.VerticalScrollBarVisibility="Disabled">
+        ResizeMode="CanResizeWithGrip" MouseWheel="Window_MouseWheel" MouseLeftButtonDown="Window_MouseLeftButtonDown" MouseDown="Window_MouseDown" ScrollViewer.VerticalScrollBarVisibility="Disabled" SizeChanged="window_SizeChanged">
     <Window.ContextMenu>
         <ContextMenu>
             <MenuItem Header="Settings" Click="SettingButton_Click"/>
@@ -64,5 +64,20 @@
                 </Style>
             </Button.Style>
         </Button>
+        <ToggleButton x:Name="SliderButton" Canvas.Left="0" Canvas.Bottom="0" Width="32" Height="32" Click="SliderButton_Click" Background="#00000000" BorderBrush="{x:Null}" >
+            <ToggleButton.Content>
+                <Canvas>
+                    <Path Stroke="white" StrokeThickness="2" Data="M-10,0 l20,0 M0,-5 l0,11">
+                        <Path.Effect>
+                            <BlurEffect Radius="10"/>
+                        </Path.Effect>
+                    </Path>
+                    <Path Stroke="Black" StrokeThickness="1" Data="M-10,0 l20,0 M0,-5 l0,11"/>
+                </Canvas>
+            </ToggleButton.Content>
+
+        </ToggleButton>
+        <Slider x:Name="TimeSlider" Canvas.Left="32" Canvas.Bottom="-8" Width="736" Height="32" IsTabStop="False" TickPlacement="BottomRight" Minimum="-5" Maximum="5" ValueChanged="TimeSlider_ValueChanged" Visibility="Hidden" Background="#7F000000" Foreground="#BFE5E5E5" />        
+        
     </Canvas>
 </Window>

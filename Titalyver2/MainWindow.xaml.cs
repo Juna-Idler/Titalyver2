@@ -4,6 +4,9 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.ComponentModel;
 
+using System.Windows.Data;
+using System.Globalization;
+
 namespace Titalyver2
 {
     /// <summary>
@@ -189,6 +192,23 @@ namespace Titalyver2
         private void MenuItemReload_Click(object sender, RoutedEventArgs e)
         {
             PlaybackEvent(Receiver.GetData());
+        }
+
+        private void TimeSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            KaraokeDisplay.UserTimeOffset = TimeSlider.Value;
+//            if (!KaraokeDisplay.Starting)
+//                KaraokeDisplay
+        }
+
+        private void SliderButton_Click(object sender, RoutedEventArgs e)
+        {
+            TimeSlider.Visibility = (SliderButton.IsChecked ?? false) ? Visibility.Visible : Visibility.Hidden;
+        }
+
+        private void window_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            TimeSlider.Width = ActualWidth - 64;
         }
     }
 }

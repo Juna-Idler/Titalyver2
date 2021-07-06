@@ -195,6 +195,7 @@ namespace Titalyver2
                 CompositionTarget.Rendering -= CompositionTarget_Rendering;
             Stopwatch.Stop();
         }
+        public bool Starting { get { return Stopwatch.IsRunning; } }
         public void ForceMove(double time, double duration = 0.5)
         {
             if (Animation != null)
@@ -383,7 +384,7 @@ namespace Titalyver2
                 Canvas.SetTop(List, ManualScrollY);
                 return;
             }
-            double time = Time - AtTagTimeOffset;
+            double time = Time - AtTagTimeOffset + UserTimeOffset;
 
             foreach (KaraokeLineClip kl in List.Children)
             {
@@ -424,7 +425,7 @@ namespace Titalyver2
         private void CompositionTarget_Rendering(object sender, EventArgs e)
         {
             Time = Stopwatch.Elapsed.TotalSeconds + TimeOffset;
-            UpdateFrame();
+//            UpdateFrame();
         }
 
         private void OnChangeTextAlignment()
@@ -508,6 +509,7 @@ namespace Titalyver2
 
         private double TimeOffset;
 
+        public double UserTimeOffset { get; set; }
 
 
         private DoubleAnimation Animation;
