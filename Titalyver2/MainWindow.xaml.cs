@@ -183,6 +183,40 @@ namespace Titalyver2
             SettingsWindow.Show();
         }
 
+        private void TimeSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            KaraokeDisplay.UserTimeOffset = TimeSlider.Value;
+//            if (!KaraokeDisplay.Starting)
+//                KaraokeDisplay
+        }
+        private void TimeSlider_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            if (e.MiddleButton == MouseButtonState.Pressed)
+            {
+                TimeSlider.Value = 0;
+                e.Handled = true;
+            }
+        }
+
+        private void TimeSlider_MouseWheel(object sender, MouseWheelEventArgs e)
+        {
+            if (e.Delta > 0)
+                TimeSlider.Value += TimeSlider.SmallChange;
+            if (e.Delta < 0)
+                TimeSlider.Value -= TimeSlider.SmallChange;
+            e.Handled = true;
+        }
+
+        private void SliderButton_Click(object sender, RoutedEventArgs e)
+        {
+            TimeSlider.Visibility = (SliderButton.IsChecked ?? false) ? Visibility.Visible : Visibility.Hidden;
+        }
+
+        private void window_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            TimeSlider.Width = ActualWidth - 64;
+        }
+
         private void MenuItemTopmost_Click(object sender, RoutedEventArgs e)
         {
             var i = (System.Windows.Controls.MenuItem)sender;
@@ -194,21 +228,20 @@ namespace Titalyver2
             PlaybackEvent(Receiver.GetData());
         }
 
-        private void TimeSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        private void window_ContextMenuOpening(object sender, System.Windows.Controls.ContextMenuEventArgs e)
         {
-            KaraokeDisplay.UserTimeOffset = TimeSlider.Value;
-//            if (!KaraokeDisplay.Starting)
-//                KaraokeDisplay
+            Maximize.IsChecked = WindowState == WindowState.Maximized;
         }
 
-        private void SliderButton_Click(object sender, RoutedEventArgs e)
+        private void Maximize_Click(object sender, RoutedEventArgs e)
         {
-            TimeSlider.Visibility = (SliderButton.IsChecked ?? false) ? Visibility.Visible : Visibility.Hidden;
+            WindowState = WindowState == WindowState.Maximized ? WindowState.Normal : WindowState.Maximized;
+
         }
 
-        private void window_SizeChanged(object sender, SizeChangedEventArgs e)
+        private void window_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
-            TimeSlider.Width = ActualWidth - 64;
+            WindowState = WindowState == WindowState.Maximized ? WindowState.Normal : WindowState.Maximized;
         }
     }
 }
