@@ -8,6 +8,7 @@ TimeTagedLyricsViewer version 2
 - 独自仕様のルビ（振り仮名）表示に対応しています。
 - 音楽再生機能は無いのでプラグイン機能のあるプレイヤーに専用プラグインを設置することでのみ機能します。
  （現在foobar2000(foo_titalyver_messenger)とMusicBee(mb_TitalyverMessenger)のみ）
+- .NET 5.0で作ってます
 
 https://youtu.be/q31rUxmlPFU デモ（21/7/6）
 
