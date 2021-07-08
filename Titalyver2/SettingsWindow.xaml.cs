@@ -223,12 +223,6 @@ namespace Titalyver2
             Properties.Settings.Default.WindowBack = bc.ConvertToString(MainWindow.Background);
         }
 
-        private void ButtonSave_Click(object sender, RoutedEventArgs e)
-        {
-            Properties.Settings.Default.Save();
-        }
-
-
         private void RadioButtonLeft_Checked(object sender, RoutedEventArgs e)
         {
             if (MainWindow == null) return;
@@ -273,11 +267,6 @@ namespace Titalyver2
             MainWindow.KaraokeDisplay.KaraokeVerticalAlignment = VerticalAlignment.Bottom;
             Properties.Settings.Default.VerticalAlignment = TypeDescriptor.GetConverter(typeof(VerticalAlignment)).ConvertToString(VerticalAlignment.Bottom);
 
-        }
-
-        private void ButtonClose_Click(object sender, RoutedEventArgs e)
-        {
-            this.Close();
         }
 
         private void window_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
@@ -406,6 +395,19 @@ namespace Titalyver2
                 WindowState = WindowState.Normal;
             }
         }
+        private void ButtonSave_Click(object sender, RoutedEventArgs e)
+        {
+            Properties.Settings.Default.Save();
+//            System.Configuration.Configuration config = System.Configuration.ConfigurationManager.OpenExeConfiguration(System.Configuration.ConfigurationUserLevel.PerUserRoamingAndLocal);
+//            config.FilePath;
+        }
+
+        private void ButtonClose_Click(object sender, RoutedEventArgs e)
+        {
+            this.Close();
+        }
+
+
 
     }
 }

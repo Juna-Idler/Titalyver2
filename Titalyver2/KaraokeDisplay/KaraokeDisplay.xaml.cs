@@ -280,7 +280,14 @@ namespace Titalyver2
                     if (Lyrics == null)
                         return;
                     if (Lyrics.Sync == LyricsContainer.SyncMode.None)
+                    {
+                        foreach (TextBlock tb in List.Children)
+                        {
+                            tb.Width = ActualWidth;
+                        }
+
                         return;
+                    }
 
                     foreach (KaraokeLineClip kl in List.Children)
                     {
@@ -356,8 +363,11 @@ namespace Titalyver2
                     TextBlock tb = new()
                     {
                         FontSize = FontSize,
-                        Foreground = SleepFillColor,
-                        Text = line
+                        Foreground = ActiveFillColor,
+                        Text = line,
+                        Padding = LinePadding,
+                        TextAlignment = TextAlignment,
+                        Width = ActualWidth,
                     };
                     _ = List.Children.Add(tb);
                 }
