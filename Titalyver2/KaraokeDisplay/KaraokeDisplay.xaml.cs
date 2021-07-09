@@ -198,11 +198,16 @@ namespace Titalyver2
         public bool Starting { get { return Stopwatch.IsRunning; } }
         public void ForceMove(double time, double duration = 0.5)
         {
-            if (Animation != null)
+            if (duration == 0)
+            {
+                BeginAnimation(AutoScrollYProperty, null);
+            }
+            else if (AutoScrollYAnimation != null)
             {
                 BeginAnimation(AutoScrollYProperty, new DoubleAnimation() { BeginTime = null });
-                Animation = null;
             }
+            AutoScrollYAnimation = null;
+
             if (Lyrics.Sync != LyricsContainer.SyncMode.None)
             {
                 foreach (KaraokeLineClip kl in List.Children)
@@ -225,14 +230,21 @@ namespace Titalyver2
                                 break;
                         }
 
-                        Animation = new(y, new Duration(TimeSpan.FromSeconds(duration)));
-                        Animation.Completed += (s, e) => { Animation = null; };
-                        BeginAnimation(AutoScrollYProperty, Animation);
-                        break;
+                        if (duration == 0)
+                        {
+                            AutoScrollY = y;
+                        }
+                        else
+                        {
+                            AutoScrollYAnimation = new(y, new Duration(TimeSpan.FromSeconds(duration)));
+                            AutoScrollYAnimation.Completed += (s, e) => { AutoScrollYAnimation = null; };
+                            BeginAnimation(AutoScrollYProperty, AutoScrollYAnimation);
+                        }
+                        return;
                     }
                 }
             }
-            if (Animation == null)
+            if (AutoScrollYAnimation == null)
             {
                 double y = 0;
                 switch (KaraokeVerticalAlignment)
@@ -247,9 +259,16 @@ namespace Titalyver2
                         y = Height - FontSize * 1.25;
                         break;
                 }
-                Animation = new(y, new Duration(TimeSpan.FromSeconds(duration)));
-                Animation.Completed += (s, e) => { Animation = null; };
-                BeginAnimation(AutoScrollYProperty, Animation);
+                if (duration == 0)
+                {
+                    AutoScrollY = y;
+                }
+                else
+                {
+                    AutoScrollYAnimation = new(y, new Duration(TimeSpan.FromSeconds(duration)));
+                    AutoScrollYAnimation.Completed += (s, e) => { AutoScrollYAnimation = null; };
+                    BeginAnimation(AutoScrollYProperty, AutoScrollYAnimation);
+                }
             }
         }
 
@@ -385,6 +404,7 @@ namespace Titalyver2
                     kl.TextAlignment = TextAlignment;
                     _ = List.Children.Add(kl);
                 }
+                UpdateFrame();
             }
         }
         private void UpdateFrame()
@@ -398,7 +418,7 @@ namespace Titalyver2
 
             foreach (KaraokeLineClip kl in List.Children)
             {
-                if (Animation == null && time < kl.StartTime && kl.StartTime - kl.FadeInTime < time)
+                if (AutoScrollYAnimation == null && time < kl.StartTime && kl.StartTime - kl.FadeInTime < time)
                 {
                     Point p = kl.TranslatePoint(new Point(0, 0), List);
 
@@ -416,9 +436,9 @@ namespace Titalyver2
                             break;
                     }
 
-                    Animation = new(y, new Duration(TimeSpan.FromSeconds(kl.StartTime - time)));
-                    Animation.Completed += (s, e) => { Animation = null; };
-                    BeginAnimation(AutoScrollYProperty, Animation);
+                    AutoScrollYAnimation = new(y, new Duration(TimeSpan.FromSeconds(kl.StartTime - time)));
+                    AutoScrollYAnimation.Completed += (s, e) => { AutoScrollYAnimation = null; };
+                    BeginAnimation(AutoScrollYProperty, AutoScrollYAnimation);
                 }
                 kl.SetTime(time);
                 if (kl.NeedRender(time))
@@ -455,7 +475,7 @@ namespace Titalyver2
         }
         private void OnChangeKVAlignment()
         {
-            ForceMove(Time);
+            ForceMove(Time,0);
         }
 
         private void OnChangeLineSpace()
@@ -522,7 +542,7 @@ namespace Titalyver2
         public double UserTimeOffset { get; set; }
 
 
-        private DoubleAnimation Animation;
+        private DoubleAnimation AutoScrollYAnimation;
 
 
     }

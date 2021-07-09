@@ -28,11 +28,12 @@ namespace Titalyver2
             KaraokeDisplay.SetLyrics("");
             LyricsSearcher = new LyricsSearcher();
 
-
             RestoreSettings();
 
-
             Receiver = new Receiver(PlaybackEvent);
+        }
+        private void window_Loaded(object sender, RoutedEventArgs e)
+        {
             Receiver.ReadData();
             Receiver.Data data = Receiver.GetData();
             if (!data.IsValid())
@@ -41,13 +42,15 @@ namespace Titalyver2
             KaraokeDisplay.SetLyrics(lyrics);
             if (lyrics != "")
             {
-                double delay = Message.GetTimeOfDay() - data.TimeOfDay / 1000.0;
+                double delay = (Message.GetTimeOfDay() - data.TimeOfDay) / 1000.0;
                 KaraokeDisplay.ForceMove(delay + data.SeekTime, 0.5);
                 KaraokeDisplay.Time = delay + data.SeekTime;
                 if ((data.PlaybackEvent & Message.EnumPlaybackEvent.Play) == Message.EnumPlaybackEvent.Play)
                     KaraokeDisplay.Start();
             }
+
         }
+
 
         private void RestoreSettings()
         {
@@ -243,5 +246,6 @@ namespace Titalyver2
         {
             WindowState = WindowState == WindowState.Maximized ? WindowState.Normal : WindowState.Maximized;
         }
+
     }
 }

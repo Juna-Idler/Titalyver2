@@ -37,6 +37,8 @@ namespace Titalyver2
             }
             Sync = sync;
             lines.Add(new("[99:59.99]"));
+            if (lines.First().StartTime != 0)
+                lines.Insert(0, new Line("[00:00.00]"));
             Lines = lines.ToArray();
             for (int i = 0; i < Lines.Length - 1; i++)
             {

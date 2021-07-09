@@ -339,7 +339,7 @@ namespace Titalyver2
             if (MainWindow == null) return;
             MainWindow.KaraokeDisplay.NoRubyTopSpace = (double)NoRubyTop.Value;
             Properties.Settings.Default.NoRubySpace = MainWindow.KaraokeDisplay.NoRubyTopSpace;
-            MainWindow.KaraokeDisplay.ForceMove(MainWindow.KaraokeDisplay.Time,0);
+            MainWindow.KaraokeDisplay.ForceMove(MainWindow.KaraokeDisplay.Time, 0);
         }
 
         #endregion Display
