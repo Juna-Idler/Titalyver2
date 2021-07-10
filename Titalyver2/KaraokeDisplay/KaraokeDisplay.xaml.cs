@@ -196,6 +196,7 @@ namespace Titalyver2
             Stopwatch.Stop();
         }
         public bool Starting { get { return Stopwatch.IsRunning; } }
+
         public void ForceMove(double time, double duration = 0.5)
         {
             if (duration == 0)
@@ -212,7 +213,7 @@ namespace Titalyver2
             {
                 foreach (KaraokeLineClip kl in List.Children)
                 {
-                    if (kl.StartTime <= time && time <= kl.EndTime)
+                    if (kl.StartTime - kl.FadeInTime <= time && time <= kl.EndTime - kl.FadeInTime)
                     {
                         Point p = kl.TranslatePoint(new Point(0, 0), List);
 
@@ -271,6 +272,13 @@ namespace Titalyver2
                 }
             }
         }
+        public void WeakMove(double time, double duration = 0.5)
+        {
+            if (AutoScrollYAnimation != null && Math.Abs(Time - time) < 1)
+                return;
+            ForceMove(time, duration);
+        }
+
 
         public Typeface Typeface { get; private set; }
 
@@ -285,6 +293,8 @@ namespace Titalyver2
         public KaraokeDisplay()
         {
             InitializeComponent();
+            IsHitTestVisible = false;
+
             foreach (Typeface typeface in FontFamily.GetTypefaces())
             {
                 this.Typeface = typeface;

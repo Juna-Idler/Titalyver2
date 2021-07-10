@@ -126,6 +126,7 @@ namespace Titalyver2
 
         public KaraokeLineClip()
         {
+            IsHitTestVisible = false;
             Width = 0;
             Height = 0;
             Typeface = system_typeface;
@@ -157,6 +158,7 @@ namespace Titalyver2
             Thickness padding,double rubyBottom,double noRubyTop,
             LyricsContainer.Line line,double width)
         {
+            IsHitTestVisible = false;
             Width = width;
             Typeface = typeface;
             FontSize = fontSize;

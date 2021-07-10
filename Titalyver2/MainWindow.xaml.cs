@@ -129,7 +129,8 @@ namespace Titalyver2
                         {
                             double delay = (Receiver.GetTimeOfDay() - data.TimeOfDay) / 1000.0;
                             KaraokeDisplay.Time = time + delay;
-                            KaraokeDisplay.ForceMove(KaraokeDisplay.Time, 0.5);
+//                            KaraokeDisplay.ForceMove(KaraokeDisplay.Time, 0.5);
+                            KaraokeDisplay.WeakMove(KaraokeDisplay.Time, 0);
                         }
                         KaraokeDisplay.Start();
                     });
@@ -140,7 +141,7 @@ namespace Titalyver2
                         if (time >= 0)
                         {
                             KaraokeDisplay.Time = time;
-                            KaraokeDisplay.ForceMove(KaraokeDisplay.Time, 0.5);
+                            KaraokeDisplay.ForceMove(KaraokeDisplay.Time, 0);
                         }
                         KaraokeDisplay.Stop();
                     });
