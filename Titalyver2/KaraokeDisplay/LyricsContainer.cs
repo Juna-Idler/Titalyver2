@@ -43,7 +43,9 @@ namespace Titalyver2
             for (int i = 0; i < Lines.Length - 1; i++)
             {
                 if (Lines[i].EndTime < 0)
-                    Lines[i].EndTime = Lines[i + 1].StartTime;
+                {
+                    Lines[i].EndTime = Lines[i].Words.Length > 0 ? Math.Max(Lines[i].Words[^1].EndTime, Lines[i + 1].StartTime) : Lines[i + 1].StartTime;
+                }
             }
         }
 

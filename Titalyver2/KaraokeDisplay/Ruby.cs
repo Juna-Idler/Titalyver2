@@ -1,6 +1,7 @@
 ﻿
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
+using System.Linq;
 
 
 
@@ -44,19 +45,38 @@ namespace Titalyver2
             
             if (rubyings != null)
             {
+                string basestring = string.Join("", result.Select((u) => { return u.BaseText; }));
                 foreach (RubyingWord rubying in rubyings)
                 {
-                    for (int i = 0; i < result.Count; i++)
+                    string serchtarget = basestring;
+                    while (true)
                     {
-                        if (result[i].HasRuby)
-                            continue;
-
-                        string target = result[i].BaseText;
-                        int index = target.IndexOf(rubying.TargetText);
-                        if (index >= 0)
+                        int index = serchtarget.IndexOf(rubying.TargetText);
+                        if (index < 0)
                         {
-                            int div1 = index + rubying.ParentOffset;
-                            int div2 = index + rubying.ParentOffset + rubying.ParentLength;
+                            break;
+                        }
+                        serchtarget = serchtarget[(index + rubying.TargetText.Length)..];
+
+                        int count = 0;
+                        index += rubying.ParentOffset;
+                        for (int i = 0; i < result.Count; i++)
+                        {
+                            if (count > index)
+                                break;
+                            if (count + result[i].BaseText.Length <= index)
+                            {
+                                count += result[i].BaseText.Length;
+                                continue;
+                            }
+                            if (result[i].HasRuby)
+                                break;
+                            if (index + rubying.ParentLength > count + result[i].BaseText.Length)
+                                break;
+
+                            int div1 = index - count;
+                            int div2 = index - count + rubying.ParentLength;
+                            string target = result[i].BaseText;
 
                             if (div1 > 0 && div2 < target.Length)
                             {
@@ -64,25 +84,24 @@ namespace Titalyver2
                                 result.Insert(i, new(target[0..div1]));
                                 result.Insert(i + 1, new(target[div1..div2], rubying.RubyText));
                                 result.Insert(i + 2, new(target[div2..]));
-                                i++;
                             }
                             else if (div1 == 0 && div2 < target.Length)
                             {
                                 result.RemoveAt(i);
-                                result.Insert(i, new(target[0..div2],rubying.RubyText));
+                                result.Insert(i, new(target[0..div2], rubying.RubyText));
                                 result.Insert(i + 1, new(target[div2..]));
                             }
                             else if (div1 > 0 && div2 == target.Length)
                             {
                                 result.RemoveAt(i);
                                 result.Insert(i, new(target[0..div1]));
-                                result.Insert(i + 1, new(target[div1..],rubying.RubyText));
-                                i++;
+                                result.Insert(i + 1, new(target[div1..], rubying.RubyText));
                             }
                             else if (div1 == 0 && div2 == target.Length)
                             {
-                                result[i] = new(target,rubying.RubyText);
+                                result[i] = new(target, rubying.RubyText);
                             }
+                            break;
                         }
                     }
                 }
