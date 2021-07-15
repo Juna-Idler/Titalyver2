@@ -197,86 +197,13 @@ namespace Titalyver2
         }
         public bool Starting { get { return Stopwatch.IsRunning; } }
 
-        public void ForceMove(double time, double duration = 0.5)
+        public void ForceMove(double time)
         {
-            if (duration == 0)
-            {
-                BeginAnimation(AutoScrollYProperty, null);
-            }
-            else if (AutoScrollYAnimation != null)
-            {
-                BeginAnimation(AutoScrollYProperty, new DoubleAnimation() { BeginTime = null });
-            }
-            AutoScrollYAnimation = null;
-
             if (Lyrics.Sync != LyricsContainer.SyncMode.None)
             {
-                foreach (KaraokeLineClip kl in List.Children)
-                {
-                    if (kl.StartTime - kl.FadeInTime <= time && time <= kl.EndTime - kl.FadeInTime)
-                    {
-                        Point p = kl.TranslatePoint(new Point(0, 0), List);
-
-                        double y = 0;
-                        switch (KaraokeVerticalAlignment)
-                        {
-                            case VerticalAlignment.Top:
-                                y = -p.Y;
-                                break;
-                            case VerticalAlignment.Center:
-                                y = -p.Y + (Height - kl.Height) / 2;
-                                break;
-                            case VerticalAlignment.Bottom:
-                                y = -p.Y + Height - kl.Height;
-                                break;
-                        }
-
-                        if (duration == 0)
-                        {
-                            AutoScrollY = y;
-                        }
-                        else
-                        {
-                            AutoScrollYAnimation = new(y, new Duration(TimeSpan.FromSeconds(duration)));
-                            AutoScrollYAnimation.Completed += (s, e) => { AutoScrollYAnimation = null; };
-                            BeginAnimation(AutoScrollYProperty, AutoScrollYAnimation);
-                        }
-                        return;
-                    }
-                }
-            }
-            if (AutoScrollYAnimation == null)
-            {
-                double y = 0;
-                switch (KaraokeVerticalAlignment)
-                {
-                    case VerticalAlignment.Top:
-                        y = 0;
-                        break;
-                    case VerticalAlignment.Center:
-                        y = (Height - FontSize * 1.25) / 2;
-                        break;
-                    case VerticalAlignment.Bottom:
-                        y = Height - FontSize * 1.25;
-                        break;
-                }
-                if (duration == 0)
-                {
-                    AutoScrollY = y;
-                }
-                else
-                {
-                    AutoScrollYAnimation = new(y, new Duration(TimeSpan.FromSeconds(duration)));
-                    AutoScrollYAnimation.Completed += (s, e) => { AutoScrollYAnimation = null; };
-                    BeginAnimation(AutoScrollYProperty, AutoScrollYAnimation);
-                }
-            }
-        }
-        public void WeakMove(double time, double duration = 0.5)
-        {
-            if (AutoScrollYAnimation != null && Math.Abs(Time - time) < 1)
+                AutoScrollY = GetAutoScroolY(time);
                 return;
-            ForceMove(time, duration);
+            }
         }
 
 
@@ -417,6 +344,60 @@ namespace Titalyver2
                 UpdateFrame();
             }
         }
+
+        private double GetAutoScroolY(double time)
+        {
+            int prev = 0;
+            for (int i = 1;i < List.Children.Count;i++)
+            {
+                if (time > ((KaraokeLineClip)List.Children[i]).StartTime)
+                {
+                    prev = i;
+                    continue;
+                }
+                double height = 0;
+                while (i + 1 < List.Children.Count && ((KaraokeLineClip)List.Children[i+1]).StartTime == ((KaraokeLineClip)List.Children[i]).StartTime)
+                {
+                    height += ((KaraokeLineClip)List.Children[i]).Height;
+                    i++;
+                }
+                KaraokeLineClip prevkl = (KaraokeLineClip)List.Children[prev];
+                KaraokeLineClip kl = (KaraokeLineClip)List.Children[i];
+                Point zero = new (0, 0);
+                Point prevp = prevkl.TranslatePoint(zero, List);
+                double y;
+                double lineheight;
+                if (kl.StartTime - kl.FadeInTime < time && time < kl.StartTime)
+                {
+                    Point p = kl.TranslatePoint(zero, List);
+                    double duration = Math.Min(kl.FadeInTime, kl.StartTime - prevkl.StartTime);
+                    double rate = (time - (kl.StartTime - duration)) / duration;
+                    y = -((p.Y - prevp.Y) * rate + prevp.Y);
+                    lineheight = kl.Height * rate + prevkl.Height * (1 - rate);
+                    height += lineheight;
+                }
+                else
+                {
+                    y = -prevp.Y;
+                    lineheight = prevkl.Height;
+                    height += lineheight;
+                }
+                switch (KaraokeVerticalAlignment)
+                {
+                    case VerticalAlignment.Top:
+                        y += height - lineheight;
+                        break;
+                    case VerticalAlignment.Center:
+                        y += (Height - height) / 2 + height - lineheight;
+                        break;
+                    case VerticalAlignment.Bottom:
+                        y += Height - lineheight;
+                        break;
+                }
+                return y;
+            }
+            return 0;
+        }
         private void UpdateFrame()
         {
             if (Lyrics.Sync == LyricsContainer.SyncMode.None)
@@ -428,28 +409,6 @@ namespace Titalyver2
 
             foreach (KaraokeLineClip kl in List.Children)
             {
-                if (AutoScrollYAnimation == null && time < kl.StartTime && kl.StartTime - kl.FadeInTime < time)
-                {
-                    Point p = kl.TranslatePoint(new Point(0, 0), List);
-
-                    double y = 0;
-                    switch (KaraokeVerticalAlignment)
-                    {
-                        case VerticalAlignment.Top:
-                            y = -p.Y;
-                            break;
-                        case VerticalAlignment.Center:
-                            y = -p.Y + (Height - kl.Height) / 2;
-                            break;
-                        case VerticalAlignment.Bottom:
-                            y = -p.Y + Height - kl.Height;
-                            break;
-                    }
-
-                    AutoScrollYAnimation = new(y, new Duration(TimeSpan.FromSeconds(kl.StartTime - time)));
-                    AutoScrollYAnimation.Completed += (s, e) => { AutoScrollYAnimation = null; };
-                    BeginAnimation(AutoScrollYProperty, AutoScrollYAnimation);
-                }
                 kl.SetTime(time);
                 if (kl.NeedRender(time))
                 {
@@ -457,6 +416,7 @@ namespace Titalyver2
 //                    kl.Time = time;
                 }
             }
+            AutoScrollY = GetAutoScroolY(time);
             Canvas.SetTop(List, AutoScrollY + ManualScrollY + OffsetY);
         }
 
@@ -485,7 +445,7 @@ namespace Titalyver2
         }
         private void OnChangeKVAlignment()
         {
-            ForceMove(Time,0);
+            ForceMove(Time);
         }
 
         private void OnChangeLineSpace()
@@ -550,9 +510,6 @@ namespace Titalyver2
         private double TimeOffset;
 
         public double UserTimeOffset { get; set; }
-
-
-        private DoubleAnimation AutoScrollYAnimation;
 
 
     }

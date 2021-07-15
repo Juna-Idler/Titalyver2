@@ -84,12 +84,17 @@ namespace Titalyver2
 
         protected class MutexLock : IDisposable
         {
-            private readonly Mutex Mutex;
+            private Mutex Mutex;
             public bool Result { get; private set; }
             public MutexLock(Mutex mutex, int timeout_millisec)
             {
                 Mutex = mutex;
                 Result = mutex.WaitOne(timeout_millisec);
+            }
+            public void Unlock()
+            {
+                Mutex?.ReleaseMutex();
+                Mutex = null;
             }
 
             protected virtual void Dispose(bool disposing)
@@ -134,6 +139,7 @@ namespace Titalyver2
                 {
                     if (!ml.Result)
                     {
+                        ml.Unlock();
                         Terminalize();
                         return false;
                     }
@@ -144,6 +150,7 @@ namespace Titalyver2
                         {
                             using (MemoryMappedFile test = MemoryMappedFile.OpenExisting(MMF_Name))
                             {
+                                ml.Unlock();
                                 Terminalize();
                                 return false;
                             }
@@ -153,6 +160,7 @@ namespace Titalyver2
                     }
                     catch (Exception e)
                     {
+                        ml.Unlock();
                         Terminalize();
                         Debug.WriteLine(e.Message);
                         return false;

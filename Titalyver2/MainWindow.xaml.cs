@@ -43,7 +43,7 @@ namespace Titalyver2
             if (lyrics != "")
             {
                 double delay = (Message.GetTimeOfDay() - data.TimeOfDay) / 1000.0;
-                KaraokeDisplay.ForceMove(delay + data.SeekTime, 0.5);
+                KaraokeDisplay.ForceMove(delay + data.SeekTime);
                 KaraokeDisplay.Time = delay + data.SeekTime;
                 if ((data.PlaybackEvent & Message.EnumPlaybackEvent.Play) == Message.EnumPlaybackEvent.Play)
                     KaraokeDisplay.Start();
@@ -112,7 +112,7 @@ namespace Titalyver2
                 _ = Dispatcher.InvokeAsync(() =>
                 {
                     KaraokeDisplay.SetLyrics(text);
-                    KaraokeDisplay.ForceMove(0, 0);
+                    KaraokeDisplay.ForceMove(0);
                 });
             }
             double time = -1;
@@ -129,8 +129,7 @@ namespace Titalyver2
                         {
                             double delay = (Receiver.GetTimeOfDay() - data.TimeOfDay) / 1000.0;
                             KaraokeDisplay.Time = time + delay;
-//                            KaraokeDisplay.ForceMove(KaraokeDisplay.Time, 0.5);
-                            KaraokeDisplay.WeakMove(KaraokeDisplay.Time, 0);
+                            KaraokeDisplay.ForceMove(KaraokeDisplay.Time);
                         }
                         KaraokeDisplay.Start();
                     });
@@ -141,7 +140,7 @@ namespace Titalyver2
                         if (time >= 0)
                         {
                             KaraokeDisplay.Time = time;
-                            KaraokeDisplay.ForceMove(KaraokeDisplay.Time, 0);
+                            KaraokeDisplay.ForceMove(KaraokeDisplay.Time);
                         }
                         KaraokeDisplay.Stop();
                     });

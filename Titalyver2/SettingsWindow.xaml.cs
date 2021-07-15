@@ -313,7 +313,7 @@ namespace Titalyver2
             t.Top = (double)LineTop.Value;
             MainWindow.KaraokeDisplay.LinePadding = t;
             Properties.Settings.Default.LineTopSpace = t.Top;
-            MainWindow.KaraokeDisplay.ForceMove(MainWindow.KaraokeDisplay.Time, 0);
+            MainWindow.KaraokeDisplay.ForceMove(MainWindow.KaraokeDisplay.Time);
         }
 
         private void LineBottom_ValueChanged(object sender, EventArgs e)
@@ -323,7 +323,7 @@ namespace Titalyver2
             t.Bottom = (double)LineBottom.Value;
             MainWindow.KaraokeDisplay.LinePadding = t;
             Properties.Settings.Default.LineBottomSpace = t.Bottom;
-            MainWindow.KaraokeDisplay.ForceMove(MainWindow.KaraokeDisplay.Time, 0);
+            MainWindow.KaraokeDisplay.ForceMove(MainWindow.KaraokeDisplay.Time);
         }
 
         private void RubyBottom_ValueChanged(object sender, EventArgs e)
@@ -331,7 +331,7 @@ namespace Titalyver2
             if (MainWindow == null) return;
             MainWindow.KaraokeDisplay.RubyBottomSpace = (double)RubyBottom.Value;
             Properties.Settings.Default.RubyBottomSpace = MainWindow.KaraokeDisplay.RubyBottomSpace;
-            MainWindow.KaraokeDisplay.ForceMove(MainWindow.KaraokeDisplay.Time, 0);
+            MainWindow.KaraokeDisplay.ForceMove(MainWindow.KaraokeDisplay.Time);
         }
 
         private void NoRubyTop_ValueChanged(object sender, EventArgs e)
@@ -339,7 +339,7 @@ namespace Titalyver2
             if (MainWindow == null) return;
             MainWindow.KaraokeDisplay.NoRubyTopSpace = (double)NoRubyTop.Value;
             Properties.Settings.Default.NoRubySpace = MainWindow.KaraokeDisplay.NoRubyTopSpace;
-            MainWindow.KaraokeDisplay.ForceMove(MainWindow.KaraokeDisplay.Time, 0);
+            MainWindow.KaraokeDisplay.ForceMove(MainWindow.KaraokeDisplay.Time);
         }
 
         #endregion Display
