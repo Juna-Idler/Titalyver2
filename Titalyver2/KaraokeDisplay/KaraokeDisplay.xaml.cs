@@ -350,45 +350,54 @@ namespace Titalyver2
             int prev = 0;
             for (int i = 1;i < List.Children.Count;i++)
             {
-                if (time > ((KaraokeLineClip)List.Children[i]).StartTime)
+                if (time >= ((KaraokeLineClip)List.Children[i]).StartTime)
                 {
                     prev = i;
                     continue;
                 }
+                double prevheight = 0;
+                while (prev - 1 >= 0 && ((KaraokeLineClip)List.Children[prev - 1]).StartTime == ((KaraokeLineClip)List.Children[prev]).StartTime)
+                {
+                    prevheight += ((KaraokeLineClip)List.Children[prev]).Height;
+                    prev--;
+                }
+                prevheight += ((KaraokeLineClip)List.Children[prev]).Height;
+
+                KaraokeLineClip prevkl = (KaraokeLineClip)List.Children[prev];
+                KaraokeLineClip kl = (KaraokeLineClip)List.Children[i];
+
                 double height = 0;
                 while (i + 1 < List.Children.Count && ((KaraokeLineClip)List.Children[i+1]).StartTime == ((KaraokeLineClip)List.Children[i]).StartTime)
                 {
                     height += ((KaraokeLineClip)List.Children[i]).Height;
                     i++;
                 }
-                KaraokeLineClip prevkl = (KaraokeLineClip)List.Children[prev];
-                KaraokeLineClip kl = (KaraokeLineClip)List.Children[i];
+                height += ((KaraokeLineClip)List.Children[i]).Height;
+
                 Point zero = new (0, 0);
                 Point prevp = prevkl.TranslatePoint(zero, List);
                 double y;
                 double lineheight;
-                if (kl.StartTime - kl.FadeInTime < time && time < kl.StartTime)
+                if (time < kl.StartTime - kl.FadeInTime)
+                {
+                    y = -prevp.Y;
+                    lineheight = prevheight;
+                }
+                else
                 {
                     Point p = kl.TranslatePoint(zero, List);
                     double duration = Math.Min(kl.FadeInTime, kl.StartTime - prevkl.StartTime);
                     double rate = (time - (kl.StartTime - duration)) / duration;
                     y = -((p.Y - prevp.Y) * rate + prevp.Y);
-                    lineheight = kl.Height * rate + prevkl.Height * (1 - rate);
-                    height += lineheight;
-                }
-                else
-                {
-                    y = -prevp.Y;
-                    lineheight = prevkl.Height;
-                    height += lineheight;
+                    lineheight = height * rate + prevheight * (1 - rate);
                 }
                 switch (KaraokeVerticalAlignment)
                 {
                     case VerticalAlignment.Top:
-                        y += height - lineheight;
+                        y += 0;
                         break;
                     case VerticalAlignment.Center:
-                        y += (Height - height) / 2 + height - lineheight;
+                        y += (Height - lineheight) / 2;
                         break;
                     case VerticalAlignment.Bottom:
                         y += Height - lineheight;
