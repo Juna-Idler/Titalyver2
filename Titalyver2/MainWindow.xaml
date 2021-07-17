@@ -15,6 +15,9 @@
             <MenuItem Header="Reload" Click="MenuItemReload_Click"/>
             <MenuItem x:Name="Maximize" Header="Maximize" Click="Maximize_Click"/>
             <Separator/>
+            <MenuItem Header="View Lyrics Text" Click="MenuItemText_Click"/>
+            <MenuItem x:Name="OpenFolder" Header="Open Lyrics File Folder" Click="OpenFolder_Click"/>
+            <Separator/>
             <MenuItem Header="Close" Click="CloseButton_Click"/>
         </ContextMenu>
     </Window.ContextMenu>

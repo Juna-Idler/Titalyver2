@@ -18,9 +18,9 @@ namespace Titalyver2
         {
         }
 
-        //        private string command;
-        //        private string path;
-        //        private string text;
+        public string Command { get; private set; }
+        public string FilePath { get; private set; }
+        public string Text { get; private set; }
 
         public List<string> SearchList { get; private set; } = new();
         public void SetSearchList(string list)
@@ -80,31 +80,43 @@ namespace Titalyver2
 
             for (int i = 0; i < SearchList.Count;i++)
             {
-                string r = Replace(SearchList[i], directoryname,filename,filename_ext,filepath,metaData);
+                int index = SearchList[i].IndexOf(":");
+                if (index <= 0)
+                    continue;
+                Command = SearchList[i][..index];
+                string r = Replace(SearchList[i], directoryname, filename, filename_ext, filepath, metaData);
 
-                if (r.IndexOf("file:", StringComparison.OrdinalIgnoreCase) == 0)
+                if (Command == "file")
                 {
                     string path = r[5..];
                     if (!File.Exists(path))
                         continue;
                     try
                     {
-                        return File.ReadAllText(path);
+                        FilePath = path;
+                        Text = File.ReadAllText(path);
+                        return Text;
                     }
                     catch (Exception e)
                     {
                         Debug.WriteLine(e.Message);
                     }
                 }
-                else if (r.IndexOf("string:", StringComparison.OrdinalIgnoreCase) == 0)
+                else if (Command == "string")
                 {
-                    r = r[7..];
-                    if (r != "")
-                        return r;
+                    Text = r[7..];
+                    if (Text != "")
+                    {
+                        FilePath = "";
+                        return Text;
+                    }
                 }
             }
 
-            return Replace(NoLyricsFormatText, directoryname, filename, filename_ext, filepath, metaData);
+            Command = "";
+            FilePath = "";
+            Text = Replace(NoLyricsFormatText, directoryname, filename, filename_ext, filepath, metaData);
+            return Text;
         }
 
 

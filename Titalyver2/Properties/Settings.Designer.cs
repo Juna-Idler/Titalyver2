@@ -314,7 +314,7 @@ namespace Titalyver2.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("<artist>\r\n<title>\r\n<album>\r\n")]
+        [global::System.Configuration.DefaultSettingValueAttribute("<artist>\r\n<title><tracktitle>\r\n<album>\r\n")]
         public string NoLyricsFormat {
             get {
                 return ((string)(this["NoLyricsFormat"]));

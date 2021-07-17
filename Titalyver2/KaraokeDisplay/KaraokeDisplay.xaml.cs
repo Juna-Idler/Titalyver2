@@ -171,7 +171,7 @@ namespace Titalyver2
             "AutoScrollY", typeof(double), typeof(KaraokeDisplay),
             new FrameworkPropertyMetadata(0.0, FrameworkPropertyMetadataOptions.AffectsRender, OnChangeTime));
 
-        public double OffsetY { get; set; }
+        public double VerticalOffsetY { get; set; }
 
 
         public void Start()
@@ -197,7 +197,7 @@ namespace Titalyver2
         }
         public bool Starting { get { return Stopwatch.IsRunning; } }
 
-        public void ForceMove(double time)
+        public void SetAutoScrollY(double time)
         {
             if (Lyrics.Sync != LyricsContainer.SyncMode.None)
             {
@@ -426,7 +426,7 @@ namespace Titalyver2
                 }
             }
             AutoScrollY = GetAutoScroolY(time);
-            Canvas.SetTop(List, AutoScrollY + ManualScrollY + OffsetY);
+            Canvas.SetTop(List, AutoScrollY + ManualScrollY + VerticalOffsetY);
         }
 
 
@@ -454,7 +454,7 @@ namespace Titalyver2
         }
         private void OnChangeKVAlignment()
         {
-            ForceMove(Time);
+            SetAutoScrollY(Time);
         }
 
         private void OnChangeLineSpace()

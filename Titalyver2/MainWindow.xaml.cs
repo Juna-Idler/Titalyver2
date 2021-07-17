@@ -4,6 +4,8 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.ComponentModel;
 
+using System.IO;
+
 using System.Windows.Data;
 using System.Globalization;
 
@@ -43,8 +45,8 @@ namespace Titalyver2
             if (lyrics != "")
             {
                 double delay = (Message.GetTimeOfDay() - data.TimeOfDay) / 1000.0;
-                KaraokeDisplay.ForceMove(delay + data.SeekTime);
                 KaraokeDisplay.Time = delay + data.SeekTime;
+                KaraokeDisplay.SetAutoScrollY(KaraokeDisplay.Time);
                 if ((data.PlaybackEvent & Message.EnumPlaybackEvent.Play) == Message.EnumPlaybackEvent.Play)
                     KaraokeDisplay.Start();
             }
@@ -82,7 +84,7 @@ namespace Titalyver2
             KaraokeDisplay.KaraokeVerticalAlignment = (VerticalAlignment)TypeDescriptor.GetConverter(typeof(VerticalAlignment)).ConvertFromString(set.VerticalAlignment);
 
             KaraokeDisplay.LinePadding = new Thickness(set.OffsetLeft, set.LineTopSpace, set.OffsetRight, set.LineBottomSpace);
-            KaraokeDisplay.OffsetY = set.OffsetVertical;
+            KaraokeDisplay.VerticalOffsetY = set.OffsetVertical;
 
             KaraokeDisplay.RubyBottomSpace = set.RubyBottomSpace;
             KaraokeDisplay.NoRubyTopSpace = set.NoRubySpace;
@@ -112,7 +114,6 @@ namespace Titalyver2
                 _ = Dispatcher.InvokeAsync(() =>
                 {
                     KaraokeDisplay.SetLyrics(text);
-                    KaraokeDisplay.ForceMove(0);
                 });
             }
             double time = -1;
@@ -129,7 +130,7 @@ namespace Titalyver2
                         {
                             double delay = (Receiver.GetTimeOfDay() - data.TimeOfDay) / 1000.0;
                             KaraokeDisplay.Time = time + delay;
-                            KaraokeDisplay.ForceMove(KaraokeDisplay.Time);
+                            KaraokeDisplay.SetAutoScrollY(KaraokeDisplay.Time);
                         }
                         KaraokeDisplay.Start();
                     });
@@ -140,7 +141,7 @@ namespace Titalyver2
                         if (time >= 0)
                         {
                             KaraokeDisplay.Time = time;
-                            KaraokeDisplay.ForceMove(KaraokeDisplay.Time);
+                            KaraokeDisplay.SetAutoScrollY(KaraokeDisplay.Time);
                         }
                         KaraokeDisplay.Stop();
                     });
@@ -228,12 +229,13 @@ namespace Titalyver2
 
         private void MenuItemReload_Click(object sender, RoutedEventArgs e)
         {
-            PlaybackEvent(Receiver.GetData());
+            KaraokeDisplay.SetLyrics(GetLyrics(Receiver.GetData()));
         }
 
         private void window_ContextMenuOpening(object sender, System.Windows.Controls.ContextMenuEventArgs e)
         {
             Maximize.IsChecked = WindowState == WindowState.Maximized;
+            OpenFolder.IsEnabled = LyricsSearcher.FilePath != "";
         }
 
         private void Maximize_Click(object sender, RoutedEventArgs e)
@@ -247,5 +249,21 @@ namespace Titalyver2
             WindowState = WindowState == WindowState.Maximized ? WindowState.Normal : WindowState.Maximized;
         }
 
+        private void OpenFolder_Click(object sender, RoutedEventArgs e)
+        {
+            string directoryname = Path.GetDirectoryName(LyricsSearcher.FilePath);
+            string filename = Path.GetFileName(LyricsSearcher.FilePath);
+            string filepath = Path.Combine(directoryname, filename);
+            _ = System.Diagnostics.Process.Start("EXPLORER.EXE", @"/select," + filepath);
+        }
+
+        private void MenuItemText_Click(object sender, RoutedEventArgs e)
+        {
+            TextViewWindow tvw = new TextViewWindow();
+            System.Windows.Controls.TextBox tb = (System.Windows.Controls.TextBox)tvw.Content;
+            tb.Text = LyricsSearcher.Text;
+            tvw.Owner = this;
+            tvw.Show();
+        }
     }
 }

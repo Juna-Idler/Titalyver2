@@ -79,7 +79,7 @@ string:&lt;lyrics&gt;</Value>
     </Setting>
     <Setting Name="NoLyricsFormat" Type="System.String" Scope="User">
       <Value Profile="(Default)">&lt;artist&gt;
-&lt;title&gt;
+&lt;title&gt;&lt;tracktitle&gt;
 &lt;album&gt;
 </Value>
     </Setting>
