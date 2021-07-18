@@ -45,18 +45,18 @@ namespace Titalyver2
             
             if (rubyings != null)
             {
-                string basestring = string.Join("", result.Select((u) => { return u.BaseText; }));
+                string serchtarget = string.Join("", result.Select((u) => { return u.BaseText; }));
                 foreach (RubyingWord rubying in rubyings)
                 {
-                    string serchtarget = basestring;
+                    int serchstartindex = 0;
                     while (true)
                     {
-                        int index = serchtarget.IndexOf(rubying.TargetText);
+                        int index = serchtarget.IndexOf(rubying.TargetText,serchstartindex);
                         if (index < 0)
                         {
                             break;
                         }
-                        serchtarget = serchtarget[(index + rubying.TargetText.Length)..];
+                        serchstartindex = index + rubying.TargetText.Length;
 
                         int count = 0;
                         index += rubying.ParentOffset;
