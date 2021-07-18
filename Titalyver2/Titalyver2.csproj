@@ -6,9 +6,16 @@
     <UseWPF>true</UseWPF>
     <Authors>Juna</Authors>
     <Company />
-    <ApplicationIcon />
+    <ApplicationIcon>Titalyver2.ico</ApplicationIcon>
     <Win32Resource />
+    <PackageIcon></PackageIcon>
+    <PackageIconUrl />
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="image\favicon.ico" />
+    <None Remove="image\favicon.ico" />
+  </ItemGroup>
 
   <ItemGroup>
     <None Include="..\.editorconfig" Link=".editorconfig" />
@@ -27,6 +34,10 @@
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="image\" />
   </ItemGroup>
 
 </Project>

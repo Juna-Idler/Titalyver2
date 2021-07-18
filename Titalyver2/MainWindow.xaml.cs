@@ -259,7 +259,9 @@ namespace Titalyver2
 
         private void MenuItemText_Click(object sender, RoutedEventArgs e)
         {
+            double h = System.Windows.SystemParameters.WorkArea.Height;
             TextViewWindow tvw = new TextViewWindow();
+            tvw.MaxHeight = h;
             System.Windows.Controls.TextBox tb = (System.Windows.Controls.TextBox)tvw.Content;
             tb.Text = LyricsSearcher.Text;
             tvw.Owner = this;
