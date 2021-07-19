@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "iTunesReceiver": {
+      "commandName": "Executable",
+      "executablePath": "C:\\Users\\junai\\source\\repos\\Titalyver2\\iTunesReceiver\\bin\\Debug\\net5.0-windows\\Titalyver2.exe"
+    }
+  }
+}

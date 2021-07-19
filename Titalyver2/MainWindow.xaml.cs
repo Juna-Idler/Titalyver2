@@ -18,7 +18,7 @@ namespace Titalyver2
     {
 
 
-        private readonly Receiver Receiver;
+        private ITitalyverReceiver Receiver;
 
         public readonly LyricsSearcher LyricsSearcher;
 
@@ -32,23 +32,36 @@ namespace Titalyver2
 
             RestoreSettings();
 
-            Receiver = new Receiver(PlaybackEvent);
         }
         private void window_Loaded(object sender, RoutedEventArgs e)
         {
-            Receiver.ReadData();
-            Receiver.Data data = Receiver.GetData();
-            if (!data.IsValid())
-                return;
-            string lyrics =  GetLyrics(data);
-            KaraokeDisplay.SetLyrics(lyrics);
-            if (lyrics != "")
+            iTunesReceiverDll iTunesDll = new iTunesReceiverDll();
+            if (iTunesDll.Load())
             {
-                double delay = (Message.GetTimeOfDay() - data.TimeOfDay) / 1000.0;
-                KaraokeDisplay.Time = delay + data.SeekTime;
-                KaraokeDisplay.SetAutoScrollY(KaraokeDisplay.Time);
-                if ((data.PlaybackEvent & Message.EnumPlaybackEvent.Play) == Message.EnumPlaybackEvent.Play)
-                    KaraokeDisplay.Start();
+                Receiver = iTunesDll.GetReceiver();
+                if (Receiver != null)
+                {
+                    Receiver.OnPlaybackEventChanged += PlaybackEvent;
+                }
+            }
+            if (Receiver == null)
+            {
+                MMFReceiver mmfr = new MMFReceiver(PlaybackEvent);
+                Receiver = mmfr;
+                mmfr.ReadData();
+                ITitalyverReceiver.Data data = mmfr.GetData();
+                if (!data.IsValid())
+                    return;
+                string lyrics = GetLyrics(data);
+                KaraokeDisplay.SetLyrics(lyrics);
+                if (lyrics != "")
+                {
+                    double delay = (MMFMessage.GetTimeOfDay() - data.TimeOfDay) / 1000.0;
+                    KaraokeDisplay.Time = delay + data.SeekTime;
+                    KaraokeDisplay.SetAutoScrollY(KaraokeDisplay.Time);
+                    if ((data.PlaybackEvent & ITitalyverReceiver.EnumPlaybackEvent.Play) == ITitalyverReceiver.EnumPlaybackEvent.Play)
+                        KaraokeDisplay.Start();
+                }
             }
 
         }
@@ -94,7 +107,7 @@ namespace Titalyver2
             LyricsSearcher.NoLyricsFormatText = set.NoLyricsFormat;
         }
 
-        private string GetLyrics(Receiver.Data data)
+        private string GetLyrics(ITitalyverReceiver.Data data)
         {
             string lp = string.IsNullOrEmpty(data.FilePath) ? "" : new Uri(data.FilePath).LocalPath;
             string text = LyricsSearcher.Search(lp, data.MetaData);
@@ -105,10 +118,10 @@ namespace Titalyver2
             return text;
         }
 
-        private void PlaybackEvent(Receiver.Data data)
+        private void PlaybackEvent(ITitalyverReceiver.Data data)
         {
 
-            if (data.Updated)
+            if (data.MetaDataUpdated)
             {
                 string text = GetLyrics(data);
                 _ = Dispatcher.InvokeAsync(() =>
@@ -117,25 +130,25 @@ namespace Titalyver2
                 });
             }
             double time = -1;
-            if ((data.PlaybackEvent & Message.EnumPlaybackEvent.Bit_Seek) == Message.EnumPlaybackEvent.Bit_Seek)
+            if ((data.PlaybackEvent & ITitalyverReceiver.EnumPlaybackEvent.Bit_Seek) == ITitalyverReceiver.EnumPlaybackEvent.Bit_Seek)
             {
                 time = data.SeekTime;
             }
-            switch (data.PlaybackEvent & ~Message.EnumPlaybackEvent.Bit_Seek)
+            switch (data.PlaybackEvent & ~ITitalyverReceiver.EnumPlaybackEvent.Bit_Seek)
             {
-                case Message.EnumPlaybackEvent.Play:
+                case ITitalyverReceiver.EnumPlaybackEvent.Play:
                     _ = Dispatcher.InvokeAsync(() =>
                     {
                         if (time >= 0)
                         {
-                            double delay = (Receiver.GetTimeOfDay() - data.TimeOfDay) / 1000.0;
+                            double delay = (MMFMessage.GetTimeOfDay() - data.TimeOfDay) / 1000.0;
                             KaraokeDisplay.Time = time + delay;
                             KaraokeDisplay.SetAutoScrollY(KaraokeDisplay.Time);
                         }
                         KaraokeDisplay.Start();
                     });
                     break;
-                case Message.EnumPlaybackEvent.Stop:
+                case ITitalyverReceiver.EnumPlaybackEvent.Stop:
                     _ = Dispatcher.InvokeAsync(() =>
                     {
                         if (time >= 0)

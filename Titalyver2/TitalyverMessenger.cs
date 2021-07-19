@@ -12,7 +12,7 @@ using System.Text.Json;
 
 namespace Titalyver2
 {
-    public class Message
+    public class MMFMessage
     {
         protected const UInt32 MMF_MaxSize = 1024 * 1024 * 64;
 
@@ -22,24 +22,6 @@ namespace Titalyver2
 
         protected Mutex Mutex;
         protected EventWaitHandle EventWaitHandle;
-
-
-        public enum EnumPlaybackEvent
-        {
-            Bit_Play = 1,
-            Bit_Stop = 2,
-            Bit_Seek = 4,
-
-            NULL = 0,
-            Play = 1,
-            Stop = 2,
-
-            Seek = 4,
-            SeekPlay = 5,
-            SeekStop = 6,
-        };
-
-
 
 
         public bool IsValid() { return Mutex != null; }
@@ -78,9 +60,9 @@ namespace Titalyver2
         }
 
 
-        public Message() {}
+        public MMFMessage() {}
 
-        ~Message() { Terminalize(); }
+        ~MMFMessage() { Terminalize(); }
 
         protected class MutexLock : IDisposable
         {
@@ -124,11 +106,9 @@ namespace Titalyver2
                 GC.SuppressFinalize(this);
             }
         }
-
-
     };
 
-    public class Messenger : Message
+    public class MMFMessenger : MMFMessage
     {
 	    private MemoryMappedFile MemoryMappedFile;
         public new bool Initialize()
@@ -178,7 +158,7 @@ namespace Titalyver2
             base.Terminalize();
         }
 
-        public bool Update(EnumPlaybackEvent pbevent, double seektime, byte[] json)
+        public bool Update(ITitalyverReceiver.EnumPlaybackEvent pbevent, double seektime, byte[] json)
         {
             int size = 4 + 8 + 4 + 4 + 4 + json.Length;
 
@@ -202,7 +182,7 @@ namespace Titalyver2
             }
             return true;
         }
-	    public bool Update(EnumPlaybackEvent pbevent, double seektime)
+	    public bool Update(ITitalyverReceiver.EnumPlaybackEvent pbevent, double seektime)
         {
             int size = 4 + 8 + 4;
 
@@ -224,37 +204,15 @@ namespace Titalyver2
 
 
 
-        public Messenger() { }
-        ~Messenger() { Terminalize(); }
+        public MMFMessenger() { }
+        ~MMFMessenger() { Terminalize(); }
 
     }
 
 
-    public class Receiver : Message
+    public class MMFReceiver : MMFMessage,ITitalyverReceiver
     {
-        public struct Data
-        {
-            public EnumPlaybackEvent PlaybackEvent; //イベント内容
-            public double SeekTime;  //イベントが発生した時の再生位置
-            public Int32 TimeOfDay; //イベントが発生した24時間周期のミリ秒単位の時刻
-            public Int32 UpdateTimeOfDay; //メタデータ更新時刻
-
-            //メタデータ keyは小文字 複数の同一keyの可能性あり
-            //文字列はstring それ以外はRawTextなstring
-            public Dictionary<string, string[]> MetaData;
-
-            //おそらく音楽ファイルの多分フルパス
-            public string FilePath;
-
-            public bool IsValid() => MetaData != null;
-            public bool Updated;//Receiverが自動で設定
-        }
-
-
-
-        public delegate void PlaybackEventHandler(Data data);
-        public event PlaybackEventHandler OnPlaybackEventChanged;
-
+        public event ITitalyverReceiver.PlaybackEventHandler OnPlaybackEventChanged;
 
         public bool Updated { get { return LastUpdateTimeOfDay != data.UpdateTimeOfDay; } }
 
@@ -262,9 +220,9 @@ namespace Titalyver2
 
         private Int32 LastUpdateTimeOfDay = -1;
 
-        public Data GetData() { return data; }
+        public ITitalyverReceiver.Data GetData() { return data; }
 
-        private Data data;
+        private ITitalyverReceiver.Data data;
         public bool ReadData()
         {
             byte[] buffer;
@@ -277,7 +235,7 @@ namespace Titalyver2
                 using MemoryMappedViewStream stream = mmf.CreateViewStream(0, 0, MemoryMappedFileAccess.Read);
                 byte[] bytes = new byte[24];
                 int read = stream.Read(bytes, 0, 24);
-                data.PlaybackEvent = (EnumPlaybackEvent)BitConverter.ToUInt32(bytes, 0);
+                data.PlaybackEvent = (ITitalyverReceiver.EnumPlaybackEvent)BitConverter.ToUInt32(bytes, 0);
                 data.SeekTime = BitConverter.ToDouble(bytes, 4);
                 data.TimeOfDay = BitConverter.ToInt32(bytes, 12);
                 data.UpdateTimeOfDay = BitConverter.ToInt32(bytes, 16);
@@ -285,7 +243,7 @@ namespace Titalyver2
 
                 if (LastUpdateTimeOfDay == data.UpdateTimeOfDay)
                 {
-                    data.Updated = false;
+                    data.MetaDataUpdated = false;
                     return true;
                 }
                 buffer = new byte[json_size];
@@ -341,11 +299,11 @@ namespace Titalyver2
                 return false;
             }
             LastUpdateTimeOfDay = data.UpdateTimeOfDay;
-            data.Updated = true;
+            data.MetaDataUpdated = true;
             return true;
         }
 
-        public Receiver(PlaybackEventHandler playbackEventHandler)
+        public MMFReceiver(ITitalyverReceiver.PlaybackEventHandler playbackEventHandler)
         {
             if (!base.Initialize())
                 return;
@@ -353,10 +311,8 @@ namespace Titalyver2
             EventWaitHandle = new EventWaitHandle(false, EventResetMode.AutoReset, WriteEvent_Name);
             RegisteredWaitHandle = ThreadPool.RegisterWaitForSingleObject(EventWaitHandle, WaitOrTimerCallback, null, -1, false);
         }
-        ~Receiver()
+        ~MMFReceiver()
         {
-            _ = RegisteredWaitHandle?.Unregister(EventWaitHandle);
-            RegisteredWaitHandle = null;
             Terminalize();
         }
         private void WaitOrTimerCallback(object state, bool timedOut)
@@ -366,6 +322,13 @@ namespace Titalyver2
                 if (ReadData())
                     OnPlaybackEventChanged?.Invoke(data);
             }
+        }
+
+        void ITitalyverReceiver.Terminalize()
+        {
+            _ = RegisteredWaitHandle?.Unregister(EventWaitHandle);
+            RegisteredWaitHandle = null;
+            base.Terminalize();
         }
     }
 }
