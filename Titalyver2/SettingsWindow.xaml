@@ -193,18 +193,7 @@
                     </StackPanel>
                 </ScrollViewer>
             </TabItem>
-            <TabItem Header="Receiver">
-                <StackPanel Background="{DynamicResource {x:Static SystemColors.ControlBrushKey}}">
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition/>
-                            <ColumnDefinition/>
-                        </Grid.ColumnDefinitions>
-                    <RadioButton Grid.Column="0" >MMF Receiver</RadioButton>
-                    <RadioButton Grid.Column="1" >iTunes Receiver</RadioButton>
-                    </Grid>
-                </StackPanel>
-            </TabItem>
+
 
         </TabControl>
         <Grid Grid.Row="2" Margin="0,8,0,8" >

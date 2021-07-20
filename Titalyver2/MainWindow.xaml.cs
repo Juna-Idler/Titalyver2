@@ -65,6 +65,12 @@ namespace Titalyver2
             }
 
         }
+        private void window_Closed(object sender, EventArgs e)
+        {
+            Receiver.Terminalize();
+
+        }
+
 
 
         private void RestoreSettings()
@@ -280,5 +286,6 @@ namespace Titalyver2
             tvw.Owner = this;
             tvw.Show();
         }
+
     }
 }
