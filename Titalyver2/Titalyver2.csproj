@@ -12,6 +12,11 @@
     <PackageIconUrl />
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <DebugType>portable</DebugType>
+    <DebugSymbols>true</DebugSymbols>
+  </PropertyGroup>
+
   <ItemGroup>
     <None Remove="image\favicon.ico" />
     <None Remove="image\favicon.ico" />

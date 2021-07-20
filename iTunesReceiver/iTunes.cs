@@ -43,6 +43,7 @@ namespace iTunesReceiver
             {
                 SetOnPlayerPlayEvent(null);
                 SetOnPlayerStopEvent(null);
+                SetOnAboutToPromptUserToQuitEvent(null);
                 SetOnQuittingEvent(null);
                 _ = Marshal.ReleaseComObject(App);
                 App = null;
@@ -69,6 +70,17 @@ namespace iTunesReceiver
                 App.OnPlayerStopEvent += onPlayerStopEvent;
             OnPlayerStopEvent = onPlayerStopEvent;
         }
+
+        private _IiTunesEvents_OnAboutToPromptUserToQuitEventEventHandler OnAboutToPromptUserToQuitEvent;
+        public void SetOnAboutToPromptUserToQuitEvent(_IiTunesEvents_OnAboutToPromptUserToQuitEventEventHandler onAboutToPromptUserToQuitEvent)
+        {
+            if (OnAboutToPromptUserToQuitEvent != null)
+                App.OnAboutToPromptUserToQuitEvent -= OnAboutToPromptUserToQuitEvent;
+            if (onAboutToPromptUserToQuitEvent != null)
+                App.OnAboutToPromptUserToQuitEvent += onAboutToPromptUserToQuitEvent;
+            OnAboutToPromptUserToQuitEvent = onAboutToPromptUserToQuitEvent;
+        }
+
 
         private _IiTunesEvents_OnQuittingEventEventHandler OnQuittingEvent;
         public void SetOnQuittingEvent(_IiTunesEvents_OnQuittingEventEventHandler onQuittingEvent)
