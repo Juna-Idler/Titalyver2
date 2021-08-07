@@ -10,6 +10,7 @@ TimeTagedLyricsViewer version 2
  （現在foobar2000(foo_titalyver_messenger)とMusicBee(mb_TitalyverMessenger)のみ）
 - 今更iTunesにもとりあえず対応しました。 
 - .NET 5.0で作ってます
+- 操作方法等はwikiの方に https://github.com/Juna-Idler/Titalyver2/wiki
 
 ## デモ動画
 - https://youtu.be/vsW0YLNFHT4 iTunes（21/7/20）
