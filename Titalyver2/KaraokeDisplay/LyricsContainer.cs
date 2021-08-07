@@ -391,7 +391,7 @@ namespace Titalyver2
             Match match = Regex.Match(timetagtext, @"^\[(\d+):(\d+)[:.](\d+)\](.*)$");
             if (match.Success)
             {
-                double second = double.Parse(match.Groups[2].Value + '.' + match.Groups[3].Value);
+                double second = double.Parse(match.Groups[2].Value + '.' + match.Groups[3].Value, CultureInfo.InvariantCulture);
                 StartTime = int.Parse(match.Groups[1].Value) * 60000 + (int)(second * 1000);
                 Text = match.Groups[4].Value;
             }

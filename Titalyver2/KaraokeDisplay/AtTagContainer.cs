@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-
+using System.Globalization;
 using System.Text.RegularExpressions;
 
 
@@ -62,7 +62,7 @@ namespace Titalyver2
                     }
                     else if (name == "offset")
                     {
-                        if (double.TryParse(value, out double result))
+                        if (double.TryParse(value, NumberStyles.Number, CultureInfo.InvariantCulture, out double result))
                         {
                             Offset = (result >= 10 || result <= -10) ? result / 1000 : result;
                         }
@@ -76,7 +76,7 @@ namespace Titalyver2
                 if (match.Success)
                 {
                     //[]タグは知らんけど、[offset:ぐらいは読んでやってもいい
-                    if (double.TryParse(match.Groups[1].Value, out double result))
+                    if (double.TryParse(match.Groups[1].Value, NumberStyles.Number, CultureInfo.InvariantCulture, out double result))
                     {
                         Offset = (result >= 10 || result <= -10) ? result / 1000 : result;
                     }
