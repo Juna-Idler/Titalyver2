@@ -115,7 +115,12 @@ namespace Titalyver2
 
         private string GetLyrics(ITitalyverReceiver.Data data)
         {
-            string lp = string.IsNullOrEmpty(data.FilePath) ? "" : new Uri(data.FilePath).LocalPath;
+            string lp = "";
+            if (!string.IsNullOrEmpty(data.FilePath))
+            {
+                Uri u = new Uri(data.FilePath);
+                lp = u.LocalPath + Uri.UnescapeDataString(u.Fragment);
+            }
             string text = LyricsSearcher.Search(lp, data.MetaData);
             if (text == "")
             {
