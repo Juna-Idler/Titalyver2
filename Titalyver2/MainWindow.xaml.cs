@@ -259,7 +259,7 @@ namespace Titalyver2
         private void window_ContextMenuOpening(object sender, System.Windows.Controls.ContextMenuEventArgs e)
         {
             Maximize.IsChecked = WindowState == WindowState.Maximized;
-            OpenFolder.IsEnabled = LyricsSearcher.FilePath != "";
+            OpenFolder.IsEnabled = !String.IsNullOrEmpty(LyricsSearcher.FilePath);
         }
 
         private void Maximize_Click(object sender, RoutedEventArgs e)
