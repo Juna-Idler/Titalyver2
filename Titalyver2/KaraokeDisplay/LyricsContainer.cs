@@ -176,7 +176,7 @@ namespace Titalyver2
                 Words = words.ToArray();
 
                 TimeTagElement[] elements = TimeTagElement.Parse(textline);
-                StartTime = (elements[0].StartTime >= 0) ? elements[0].StartTime : Words[0].StartTime;
+                StartTime = (elements[0].StartTime >= 0) ? elements[0].StartTime : (Words.Length > 0 ? Words[0].StartTime : -1);
                 EndTime = (elements.Length > 1 && elements[^1].Text == "" && elements[^2].Text == "") ? elements[^1].StartTime : -1;
                 if (elements.Length == 1 && elements[0].StartTime >= 0)
                     Sync = SyncMode.Line;

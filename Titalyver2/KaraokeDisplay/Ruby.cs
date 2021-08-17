@@ -12,6 +12,8 @@ namespace Titalyver2
         public Unit this[int index] => Units[index];
         public Unit[] Units { get; }
 
+        public RubyString(Unit[] units) { Units = units; }
+
         public RubyString(string text, string parent = "｜", string begin = "《", string end = "》", IEnumerable<RubyingWord> rubyings = null)
         {
             List<Unit> result = new();
@@ -140,6 +142,54 @@ namespace Titalyver2
                 ParentLength = (length < 0 || length > TargetText.Length - ParentOffset) ? (TargetText.Length - ParentOffset) : length;
             }
         };
+
+        public RubyString AddString(RubyString other)
+        {
+            return new RubyString(Units.Concat(other.Units).ToArray());
+        }
+
+        public RubyString Substring(int startIndex, int length)
+        {
+            if (Units.Length == 0 || startIndex < 0)
+                return null;
+
+            int uindex = -1;
+            int offset = 0;
+            for (int i = 0; i < Units.Length; i++)
+            {
+                if (startIndex < offset + Units[i].BaseText.Length)
+                {
+                    uindex = i;
+                    offset = startIndex - offset;
+                    break;
+                }
+                offset += Units[i].BaseText.Length;
+            }
+            if (uindex < 0)
+                return null;
+            if (Units[uindex].HasRuby && offset != 0)
+                return null;
+
+            List<Unit> units = new List<Unit>();
+            units.Add(new Unit(Units[uindex].BaseText[offset..], Units[uindex].RubyText));
+            if (length < 0)
+                length = int.MaxValue;
+            length -= Units[uindex].BaseText.Length - offset;
+            for (int i = uindex + 1; i < Units.Length; i++)
+            {
+                if (length <= Units[i].BaseText.Length)
+                {
+                    if (Units[i].HasRuby)
+                        units.Add(new Unit(Units[i].BaseText, Units[i].RubyText));
+                    else
+                        units.Add(new Unit(Units[i].BaseText[..length]));
+                    break;
+                }
+                units.Add(new Unit(Units[i].BaseText, Units[i].RubyText));
+                length -= Units[i].BaseText.Length;
+            }
+            return new RubyString(units.ToArray());
+        }
 
     }
 
