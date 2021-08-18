@@ -175,6 +175,7 @@
 
                             </TextBox>
                         </GroupBox>
+                        <CheckBox x:Name="IgnoreKaraoke" Click="CheckBox_Click" >Ignore Karaoke Tags</CheckBox>
                         <Grid>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*"/>

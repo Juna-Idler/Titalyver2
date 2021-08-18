@@ -386,6 +386,12 @@ namespace Titalyver2
             MainWindow.LyricsSearcher.NoLyricsFormatText = NoLyricsFormat.Text;
             Properties.Settings.Default.NoLyricsFormat = NoLyricsFormat.Text;
         }
+        private void CheckBox_Click(object sender, RoutedEventArgs e)
+        {
+            MainWindow.KaraokeDisplay.IgnoreKaraokeTag = (bool)IgnoreKaraoke.IsChecked;
+            Properties.Settings.Default.IgnoreKaraoke = MainWindow.KaraokeDisplay.IgnoreKaraokeTag;
+        }
+
         #endregion Lyrics
 
         private void Window_StateChanged(object sender, EventArgs e)
@@ -406,8 +412,6 @@ namespace Titalyver2
         {
             this.Close();
         }
-
-
 
     }
 }

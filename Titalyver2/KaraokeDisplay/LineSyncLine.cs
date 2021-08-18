@@ -83,8 +83,6 @@ namespace Titalyver2
 
         [Description("入り時間"), Category("Karaoke Line")]
         public double FadeInTime { get; set; } = 0.5;
-        [Description("終わった後の余韻"), Category("Karaoke Line")]
-        public double FadeOutTime { get; set; } = 0.25;
 
         public bool BackColorFade { get; set; } = true;
 
@@ -151,7 +149,7 @@ namespace Titalyver2
             SolidColorBrush activeFill, SolidColorBrush activeStroke, double strokeTickness,
             SolidColorBrush sleepFillColor, SolidColorBrush sleepStrokeColor, SolidColorBrush activeBackColor,
             Thickness padding, double rubyBottom, double noRubyTop,
-            LyricsContainer.Line line, double width)
+            LyricsContainer.Line line, double width,TextAlignment textAlignment)
         {
             IsHitTestVisible = false;
             Width = width;
@@ -176,6 +174,8 @@ namespace Titalyver2
             Padding = padding;
             RubyBottomSpace = rubyBottom;
             NoRubyTopSpace = noRubyTop;
+
+            TextAlignment = textAlignment;
 
             SetLyricsLine(line);
         }
@@ -325,9 +325,9 @@ namespace Titalyver2
 
         public bool NeedRender(double time)
         {
-            return (StartTime - FadeInTime < time && time < StartTime) || (EndTime < time && time < EndTime + FadeOutTime) || LastRenderState == EnumLastRenderState.Fade ||
-                   (!((LastRenderState == EnumLastRenderState.Active) && StartTime < time && time < EndTime) &&
-                    !((LastRenderState == EnumLastRenderState.Sleep) && (time < StartTime - FadeInTime || EndTime + FadeOutTime < time)));
+            return (StartTime - FadeInTime < time && time < StartTime) || (EndTime - FadeInTime < time && time < EndTime) || LastRenderState == EnumLastRenderState.Fade ||
+                   (!((LastRenderState == EnumLastRenderState.Active) && StartTime < time && time < EndTime - FadeInTime) &&
+                    !((LastRenderState == EnumLastRenderState.Sleep) && (time < StartTime - FadeInTime || EndTime < time)));
         }
 
         protected override void OnRender(DrawingContext drawingContext)
@@ -354,7 +354,8 @@ namespace Titalyver2
                     }
                     else if (EndTime - FadeInTime < Time && Time < EndTime)
                     {
-                        double rate = (Time - (EndTime - FadeInTime)) / FadeInTime;
+                        double duration = Math.Min(FadeInTime, EndTime - StartTime);
+                        double rate = (Time - (EndTime - duration)) / duration;
                         Color c = ActiveBackColor.Color;
                         c.A = (byte)(c.A * (1 - rate));
                         FadeBackBrush.Color = c;
@@ -391,14 +392,14 @@ namespace Titalyver2
             Pen wordPen = null;
             Pen rubyPen = null;
 
-            if (StartTime < Time && Time < EndTime)
+            if (StartTime < Time && Time < EndTime - FadeInTime)
             {
                 brush = ActiveFillColor;
                 wordPen = ActivePen;
                 rubyPen = ActiveRubyPen;
                 LastRenderState = EnumLastRenderState.Active;
             }
-            else if (Time < StartTime && Time > StartTime - FadeInTime)
+            else if (StartTime - FadeInTime < Time && Time < StartTime)
             {
                 double rate = (Time - (StartTime - FadeInTime)) / FadeInTime;
                 FadeFillBrush.Color = (ActiveFillColor.Color * (float)rate) + (SleepFillColor.Color * (float)(1 - rate));
@@ -410,9 +411,10 @@ namespace Titalyver2
                 rubyPen = FadeRubyPen;
                 LastRenderState = EnumLastRenderState.Fade;
             }
-            else if (Time > EndTime && Time < EndTime + FadeOutTime)
+            else if (EndTime - FadeInTime < Time && Time < EndTime)
             {
-                double rate = (Time - EndTime) / FadeOutTime;
+                double duration = Math.Min(FadeInTime, EndTime - StartTime);
+                double rate = (Time - (EndTime - duration)) / duration;
                 FadeFillBrush.Color = (SleepFillColor.Color * (float)rate) + (ActiveFillColor.Color * (float)(1 - rate));
                 FadeStrokeBrush.Color = (SleepStrokeColor.Color * (float)rate) + (ActiveStrokeColor.Color * (float)(1 - rate));
                 FadePen.Brush = FadeStrokeBrush;

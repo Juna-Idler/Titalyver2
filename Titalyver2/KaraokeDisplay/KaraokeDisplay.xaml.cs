@@ -173,6 +173,8 @@ namespace Titalyver2
 
         public double VerticalOffsetY { get; set; }
 
+        public bool IgnoreKaraokeTag { get; set; } = false;
+
 
         public void Start()
         {
@@ -199,7 +201,7 @@ namespace Titalyver2
 
         public void SetAutoScrollY(double time)
         {
-            if (Lyrics.Sync != LyricsContainer.SyncMode.None)
+            if (SyncMode != LyricsContainer.SyncMode.None)
             {
                 AutoScrollY = GetAutoScroolY(time);
                 return;
@@ -235,7 +237,7 @@ namespace Titalyver2
                 {
                     if (Lyrics == null)
                         return;
-                    switch (Lyrics.Sync)
+                    switch (SyncMode)
                     {
                         case LyricsContainer.SyncMode.None:
                             foreach (TextBlock tb in List.Children)
@@ -272,6 +274,7 @@ namespace Titalyver2
         {
             LyricsText = lyrics;
             Lyrics = new LyricsContainer(lyrics);
+            SyncMode = (IgnoreKaraokeTag && Lyrics.Sync == LyricsContainer.SyncMode.Karaoke) ? LyricsContainer.SyncMode.Line : Lyrics.Sync;
             AtTagTimeOffset = Lyrics.AtTagContainer.Offset;
             MakeKaraokeLines();
         }
@@ -280,7 +283,7 @@ namespace Titalyver2
             if (Lyrics == null)
                 return;
 
-            switch (Lyrics.Sync)
+            switch (SyncMode)
             {
                 case LyricsContainer.SyncMode.None:
 //                    foreach (TextBlock tb in List.Children)
@@ -315,7 +318,7 @@ namespace Titalyver2
             SleepStrokeColor.Freeze();
             ActiveBackColor.Freeze();
 
-            switch (Lyrics.Sync)
+            switch (SyncMode)
             {
                 case LyricsContainer.SyncMode.None:
 //                    foreach (TextBlock tb in List.Children)
@@ -357,7 +360,7 @@ namespace Titalyver2
         private void MakeKaraokeLines()
         {
             List.Children.Clear();
-            switch (Lyrics.Sync)
+            switch (SyncMode)
             {
                 case LyricsContainer.SyncMode.None:
                     {
@@ -385,8 +388,7 @@ namespace Titalyver2
                                                  ActiveFillColor, ActiveStrokeColor,
                                                  StrokeThickness, SleepFillColor, SleepStrokeColor, ActiveBackColor,
                                                  LinePadding, RubyBottomSpace, NoRubyTopSpace,
-                                                 l, ActualWidth);
-                            sl.TextAlignment = TextAlignment;
+                                                 l, ActualWidth,TextAlignment);
                             _ = List.Children.Add(sl);
                         }
                         UpdateFrame();
@@ -413,7 +415,7 @@ namespace Titalyver2
 
         private double GetAutoScroolY(double time)
         {
-            switch (Lyrics.Sync)
+            switch (SyncMode)
             {
                 case LyricsContainer.SyncMode.Line:
                     {
@@ -532,7 +534,7 @@ namespace Titalyver2
         private void UpdateFrame()
         {
             double time = Time - AtTagTimeOffset + UserTimeOffset;
-            switch (Lyrics.Sync)
+            switch (SyncMode)
             {
                 case LyricsContainer.SyncMode.None:
                     Canvas.SetTop(List, ManualScrollY);
@@ -576,7 +578,7 @@ namespace Titalyver2
             if (Lyrics == null)
                 return;
 
-            switch (Lyrics.Sync)
+            switch (SyncMode)
             {
                 case LyricsContainer.SyncMode.None:
                     foreach (TextBlock tb in List.Children)
@@ -609,7 +611,7 @@ namespace Titalyver2
             if (Lyrics == null)
                 return;
 
-            switch (Lyrics.Sync)
+            switch (SyncMode)
             {
                 case LyricsContainer.SyncMode.None:
                     foreach (TextBlock tb in List.Children)
@@ -643,7 +645,7 @@ namespace Titalyver2
             if (Lyrics == null)
                 return;
 
-            switch (Lyrics.Sync)
+            switch (SyncMode)
             {
                 case LyricsContainer.SyncMode.None:
                     foreach (TextBlock tb in List.Children)
@@ -673,7 +675,7 @@ namespace Titalyver2
             if (Lyrics == null)
                 return;
 
-            switch (Lyrics.Sync)
+            switch (SyncMode)
             {
                 case LyricsContainer.SyncMode.None:
 //                    foreach (TextBlock tb in List.Children)
@@ -704,6 +706,9 @@ namespace Titalyver2
         private LyricsContainer Lyrics;
         private string LyricsText;
         private double AtTagTimeOffset;
+
+        private LyricsContainer.SyncMode SyncMode;
+
 
         private readonly Stopwatch Stopwatch = new();
 

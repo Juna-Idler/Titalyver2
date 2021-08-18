@@ -83,5 +83,8 @@ string:&lt;lyrics&gt;</Value>
 &lt;album&gt;
 </Value>
     </Setting>
+    <Setting Name="IgnoreKaraoke" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

@@ -111,6 +111,8 @@ namespace Titalyver2
 
             LyricsSearcher.SetSearchList(set.LyricsSearchList);
             LyricsSearcher.NoLyricsFormatText = set.NoLyricsFormat;
+
+            KaraokeDisplay.IgnoreKaraokeTag = set.IgnoreKaraoke;
         }
 
         private string GetLyrics(ITitalyverReceiver.Data data)

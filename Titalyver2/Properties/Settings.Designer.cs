@@ -323,5 +323,17 @@ namespace Titalyver2.Properties {
                 this["NoLyricsFormat"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool IgnoreKaraoke {
+            get {
+                return ((bool)(this["IgnoreKaraoke"]));
+            }
+            set {
+                this["IgnoreKaraoke"] = value;
+            }
+        }
     }
 }
