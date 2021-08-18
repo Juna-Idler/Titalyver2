@@ -16,7 +16,7 @@ namespace Titalyver2
         private static readonly Typeface system_typeface;
         static LineSyncLine()
         {
-            DefaultStyleKeyProperty.OverrideMetadata(typeof(KaraokeLineClip), new FrameworkPropertyMetadata(typeof(KaraokeLineClip)));
+            DefaultStyleKeyProperty.OverrideMetadata(typeof(LineSyncLine), new FrameworkPropertyMetadata(typeof(LineSyncLine)));
 
             foreach (Typeface typeface in SystemFonts.MessageFontFamily.GetTypefaces())
             {
@@ -77,7 +77,7 @@ namespace Titalyver2
 
         public bool RenderSwich { get => (bool)GetValue(RenderSwichProperty); set => SetValue(RenderSwichProperty, value); }
         public static readonly DependencyProperty RenderSwichProperty = DependencyProperty.Register(
-            "RenderSwich", typeof(bool), typeof(KaraokeLineClip), new FrameworkPropertyMetadata(false, FrameworkPropertyMetadataOptions.AffectsRender));
+            "RenderSwich", typeof(bool), typeof(LineSyncLine), new FrameworkPropertyMetadata(false, FrameworkPropertyMetadataOptions.AffectsRender));
         public void Update() { RenderSwich = !RenderSwich; }
 
 
@@ -155,6 +155,7 @@ namespace Titalyver2
         {
             IsHitTestVisible = false;
             Width = width;
+            Height = 0;
             Typeface = typeface;
             FontSize = fontSize;
             ActiveFillColor = activeFill;
@@ -232,7 +233,7 @@ namespace Titalyver2
             StartTime = Line.StartTime / 1000.0;
             EndTime = Line.EndTime / 1000.0;
 
-            LayoutWords();
+            UpdateWordsLayout();
         }
 
         protected override Size MeasureOverride(Size availableSize)
@@ -248,13 +249,19 @@ namespace Titalyver2
         }
 
 
-
-        private void LayoutWords()
+        //外部からWidthやTextAlignmentが変更された際にも呼ぶ必要がある
+        public void UpdateWordsLayout()
         {
             if (Words == null || Words.Length == 0)
-                return;
+            {
+                WordsWidth = new double[1] { 0 };
+                AlignmentX = new double[1] { 0 };
 
-//            double y = Line.HasRuby ? Typeface.CapsHeight * FontSize / 2 + RubyBottomSpace : NoRubyTopSpace;
+                WordsHeight = NoRubyTopSpace + 1.25 * FontSize;
+                Height = WordsHeight + Padding.Top + Padding.Bottom;
+                return;
+            }
+
 
             Words[0].OffsetX = 0;
             Words[0].LineNumber = 0;
@@ -274,7 +281,7 @@ namespace Titalyver2
                     x += -(ruby_padding + ubw.RubyStartOffsetX);
                 }
 
-                if (x + ubw.Width > Width)
+                if (x + ubw.Width > Width - (Padding.Left + Padding.Right))
                 {
                     widths.Add(x);
                     ubw.LineNumber = ++lineNumber;
@@ -320,7 +327,7 @@ namespace Titalyver2
         {
             return (StartTime - FadeInTime < time && time < StartTime) || (EndTime < time && time < EndTime + FadeOutTime) || LastRenderState == EnumLastRenderState.Fade ||
                    (!((LastRenderState == EnumLastRenderState.Active) && StartTime < time && time < EndTime) &&
-                   (!((LastRenderState == EnumLastRenderState.Sleep) && time < StartTime - FadeInTime && EndTime + FadeOutTime < time)));
+                    !((LastRenderState == EnumLastRenderState.Sleep) && (time < StartTime - FadeInTime || EndTime + FadeOutTime < time)));
         }
 
         protected override void OnRender(DrawingContext drawingContext)

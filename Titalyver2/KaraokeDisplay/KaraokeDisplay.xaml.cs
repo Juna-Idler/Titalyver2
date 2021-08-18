@@ -235,19 +235,27 @@ namespace Titalyver2
                 {
                     if (Lyrics == null)
                         return;
-                    if (Lyrics.Sync == LyricsContainer.SyncMode.None)
+                    switch (Lyrics.Sync)
                     {
-                        foreach (TextBlock tb in List.Children)
-                        {
-                            tb.Width = ActualWidth;
-                        }
-
-                        return;
-                    }
-
-                    foreach (KaraokeLineClip kl in List.Children)
-                    {
-                        kl.Width = ActualWidth;
+                        case LyricsContainer.SyncMode.None:
+                            foreach (TextBlock tb in List.Children)
+                            {
+                                tb.Width = ActualWidth;
+                            }
+                            break;
+                        case LyricsContainer.SyncMode.Line:
+                            foreach (LineSyncLine sl in List.Children)
+                            {
+                                sl.Width = ActualWidth;
+                                sl.UpdateWordsLayout();
+                            }
+                            break;
+                        case LyricsContainer.SyncMode.Karaoke:
+                            foreach (KaraokeLineClip kl in List.Children)
+                            {
+                                kl.Width = ActualWidth;
+                            }
+                            break;
                     }
                 }
             };
@@ -271,18 +279,34 @@ namespace Titalyver2
         {
             if (Lyrics == null)
                 return;
-            if (Lyrics.Sync == LyricsContainer.SyncMode.None)
-                return;
-            foreach (KaraokeLineClip kl in List.Children) { kl.Update(); }
+
+            switch (Lyrics.Sync)
+            {
+                case LyricsContainer.SyncMode.None:
+//                    foreach (TextBlock tb in List.Children)
+                    {
+                    }
+                    break;
+                case LyricsContainer.SyncMode.Line:
+                    foreach (LineSyncLine sl in List.Children)
+                    {
+                        sl.Update();
+                    }
+                    break;
+                case LyricsContainer.SyncMode.Karaoke:
+                    foreach (KaraokeLineClip kl in List.Children)
+                    {
+                        kl.Update();
+                    }
+                    break;
+            }
+
         }
         public void ResetLineColors()
         {
             if (Lyrics == null)
                 return;
-            if (Lyrics.Sync == LyricsContainer.SyncMode.None)
-            {
-                return;
-            }
+
             ActiveFillColor.Freeze();
             ActiveStrokeColor.Freeze();
             StandbyFillColor.Freeze();
@@ -291,139 +315,249 @@ namespace Titalyver2
             SleepStrokeColor.Freeze();
             ActiveBackColor.Freeze();
 
-            foreach (KaraokeLineClip kl in List.Children)
+            switch (Lyrics.Sync)
             {
-                kl.ActiveFillColor = ActiveFillColor;
-                kl.StandbyFillColor = StandbyFillColor;
-                kl.SleepFillColor = SleepFillColor;
-                kl.ActiveBackColor = ActiveBackColor;
+                case LyricsContainer.SyncMode.None:
+//                    foreach (TextBlock tb in List.Children)
+                    {
+                    }
+                    break;
+                case LyricsContainer.SyncMode.Line:
+                    foreach (LineSyncLine sl in List.Children)
+                    {
+                        sl.ActiveFillColor = ActiveFillColor;
+                        sl.SleepFillColor = SleepFillColor;
+                        sl.ActiveBackColor = ActiveBackColor;
 
-                kl.ActiveStrokeColor = ActiveStrokeColor;
-                kl.StandbyStrokeColor = StandbyStrokeColor;
-                kl.SleepStrokeColor = SleepStrokeColor;
-                kl.SetStrokeColor();
+                        sl.ActiveStrokeColor = ActiveStrokeColor;
+                        sl.SleepStrokeColor = SleepStrokeColor;
+                        sl.SetStrokeColor();
 
-                kl.Update();
+                        sl.Update();                    }
+                    break;
+                case LyricsContainer.SyncMode.Karaoke:
+                    foreach (KaraokeLineClip kl in List.Children)
+                    {
+                        kl.ActiveFillColor = ActiveFillColor;
+                        kl.StandbyFillColor = StandbyFillColor;
+                        kl.SleepFillColor = SleepFillColor;
+                        kl.ActiveBackColor = ActiveBackColor;
+
+                        kl.ActiveStrokeColor = ActiveStrokeColor;
+                        kl.StandbyStrokeColor = StandbyStrokeColor;
+                        kl.SleepStrokeColor = SleepStrokeColor;
+                        kl.SetStrokeColor();
+
+                        kl.Update();
+                    }
+                    break;
             }
-
         }
 
         private void MakeKaraokeLines()
         {
             List.Children.Clear();
-            if (Lyrics.Sync == LyricsContainer.SyncMode.None)
+            switch (Lyrics.Sync)
             {
-                using System.IO.StringReader sr = new(LyricsText);
-                for (string line = sr.ReadLine(); line != null; line = sr.ReadLine())
-                {
-                    TextBlock tb = new()
+                case LyricsContainer.SyncMode.None:
                     {
-                        FontSize = FontSize,
-                        Foreground = ActiveFillColor,
-                        Text = line,
-                        Padding = LinePadding,
-                        TextAlignment = TextAlignment,
-                        Width = ActualWidth,
-                    };
-                    _ = List.Children.Add(tb);
-                }
-            }
-            else
-            {
-                foreach (LyricsContainer.Line l in Lyrics.Lines)
-                {
-                    KaraokeLineClip kl = new(Typeface, FontSize,
-                                         ActiveFillColor, ActiveStrokeColor,
-                                         StandbyFillColor, StandbyStrokeColor,
-                                         StrokeThickness, SleepFillColor, SleepStrokeColor, ActiveBackColor,
-                                         LinePadding, RubyBottomSpace, NoRubyTopSpace,
-                                         l, ActualWidth);
-                    kl.TextAlignment = TextAlignment;
-                    _ = List.Children.Add(kl);
-                }
-                UpdateFrame();
+                        using System.IO.StringReader sr = new(LyricsText);
+                        for (string line = sr.ReadLine(); line != null; line = sr.ReadLine())
+                        {
+                            TextBlock tb = new()
+                            {
+                                FontSize = FontSize,
+                                Foreground = ActiveFillColor,
+                                Text = line,
+                                Padding = LinePadding,
+                                TextAlignment = TextAlignment,
+                                Width = ActualWidth,
+                            };
+                            _ = List.Children.Add(tb);
+                        }
+                    }
+                    break;
+                case LyricsContainer.SyncMode.Line:
+                    {
+                        foreach (LyricsContainer.Line l in Lyrics.Lines)
+                        {
+                           LineSyncLine sl = new(Typeface, FontSize,
+                                                 ActiveFillColor, ActiveStrokeColor,
+                                                 StrokeThickness, SleepFillColor, SleepStrokeColor, ActiveBackColor,
+                                                 LinePadding, RubyBottomSpace, NoRubyTopSpace,
+                                                 l, ActualWidth);
+                            sl.TextAlignment = TextAlignment;
+                            _ = List.Children.Add(sl);
+                        }
+                        UpdateFrame();
+                    }
+                    break;
+                case LyricsContainer.SyncMode.Karaoke:
+                    {
+                        foreach (LyricsContainer.Line l in Lyrics.Lines)
+                        {
+                            KaraokeLineClip kl = new(Typeface, FontSize,
+                                                 ActiveFillColor, ActiveStrokeColor,
+                                                 StandbyFillColor, StandbyStrokeColor,
+                                                 StrokeThickness, SleepFillColor, SleepStrokeColor, ActiveBackColor,
+                                                 LinePadding, RubyBottomSpace, NoRubyTopSpace,
+                                                 l, ActualWidth);
+                            kl.TextAlignment = TextAlignment;
+                            _ = List.Children.Add(kl);
+                        }
+                        UpdateFrame();
+                    }
+                    break;
             }
         }
 
         private double GetAutoScroolY(double time)
         {
-            int prev = 0;
-            for (int i = 1;i < List.Children.Count;i++)
+            switch (Lyrics.Sync)
             {
-                if (time >= ((KaraokeLineClip)List.Children[i]).StartTime)
-                {
-                    prev = i;
-                    continue;
-                }
-                double prevheight = 0;
-                while (prev - 1 >= 0 && ((KaraokeLineClip)List.Children[prev - 1]).StartTime == ((KaraokeLineClip)List.Children[prev]).StartTime)
-                {
-                    prevheight += ((KaraokeLineClip)List.Children[prev]).Height;
-                    prev--;
-                }
-                prevheight += ((KaraokeLineClip)List.Children[prev]).Height;
+                case LyricsContainer.SyncMode.Line:
+                    {
+                        int prev = 0;
+                        for (int i = 1; i < List.Children.Count; i++)
+                        {
+                            if (time >= ((LineSyncLine)List.Children[i]).StartTime)
+                            {
+                                prev = i;
+                                continue;
+                            }
 
-                KaraokeLineClip prevkl = (KaraokeLineClip)List.Children[prev];
-                KaraokeLineClip kl = (KaraokeLineClip)List.Children[i];
+                            LineSyncLine prevsl = (LineSyncLine)List.Children[prev];
+                            LineSyncLine sl = (LineSyncLine)List.Children[i];
 
-                double height = 0;
-                while (i + 1 < List.Children.Count && ((KaraokeLineClip)List.Children[i+1]).StartTime == ((KaraokeLineClip)List.Children[i]).StartTime)
-                {
-                    height += ((KaraokeLineClip)List.Children[i]).Height;
-                    i++;
-                }
-                height += ((KaraokeLineClip)List.Children[i]).Height;
+                            Point zero = new(0, 0);
+                            Point prevp = prevsl.TranslatePoint(zero, List);
+                            double y;
+                            double lineheight;
+                            if (time < sl.StartTime - sl.FadeInTime)
+                            {
+                                y = -prevp.Y;
+                                lineheight = prevsl.Height;
+                            }
+                            else
+                            {
+                                Point p = sl.TranslatePoint(zero, List);
+                                double duration = Math.Min(sl.FadeInTime, sl.StartTime - prevsl.StartTime);
+                                double rate = (time - (sl.StartTime - duration)) / duration;
+                                y = -((p.Y - prevp.Y) * rate + prevp.Y);
+                                lineheight = sl.Height * rate + prevsl.Height * (1 - rate);
+                            }
+                            switch (KaraokeVerticalAlignment)
+                            {
+                                case VerticalAlignment.Top:
+                                    y += 0;
+                                    break;
+                                case VerticalAlignment.Center:
+                                    y += (Height - lineheight) / 2;
+                                    break;
+                                case VerticalAlignment.Bottom:
+                                    y += Height - lineheight;
+                                    break;
+                            }
+                            return y;
+                        }
 
-                Point zero = new (0, 0);
-                Point prevp = prevkl.TranslatePoint(zero, List);
-                double y;
-                double lineheight;
-                if (time < kl.StartTime - kl.FadeInTime)
-                {
-                    y = -prevp.Y;
-                    lineheight = prevheight;
-                }
-                else
-                {
-                    Point p = kl.TranslatePoint(zero, List);
-                    double duration = Math.Min(kl.FadeInTime, kl.StartTime - prevkl.StartTime);
-                    double rate = (time - (kl.StartTime - duration)) / duration;
-                    y = -((p.Y - prevp.Y) * rate + prevp.Y);
-                    lineheight = height * rate + prevheight * (1 - rate);
-                }
-                switch (KaraokeVerticalAlignment)
-                {
-                    case VerticalAlignment.Top:
-                        y += 0;
-                        break;
-                    case VerticalAlignment.Center:
-                        y += (Height - lineheight) / 2;
-                        break;
-                    case VerticalAlignment.Bottom:
-                        y += Height - lineheight;
-                        break;
-                }
-                return y;
+
+                    }
+                    break;
+                case LyricsContainer.SyncMode.Karaoke:
+                    {
+                        int prev = 0;
+                        for (int i = 1; i < List.Children.Count; i++)
+                        {
+                            if (time >= ((KaraokeLineClip)List.Children[i]).StartTime)
+                            {
+                                prev = i;
+                                continue;
+                            }
+                            double prevheight = 0;
+                            while (prev - 1 >= 0 && ((KaraokeLineClip)List.Children[prev - 1]).StartTime == ((KaraokeLineClip)List.Children[prev]).StartTime)
+                            {
+                                prevheight += ((KaraokeLineClip)List.Children[prev]).Height;
+                                prev--;
+                            }
+                            prevheight += ((KaraokeLineClip)List.Children[prev]).Height;
+
+                            KaraokeLineClip prevkl = (KaraokeLineClip)List.Children[prev];
+                            KaraokeLineClip kl = (KaraokeLineClip)List.Children[i];
+
+                            double height = 0;
+                            while (i + 1 < List.Children.Count && ((KaraokeLineClip)List.Children[i + 1]).StartTime == ((KaraokeLineClip)List.Children[i]).StartTime)
+                            {
+                                height += ((KaraokeLineClip)List.Children[i]).Height;
+                                i++;
+                            }
+                            height += ((KaraokeLineClip)List.Children[i]).Height;
+
+                            Point zero = new(0, 0);
+                            Point prevp = prevkl.TranslatePoint(zero, List);
+                            double y;
+                            double lineheight;
+                            if (time < kl.StartTime - kl.FadeInTime)
+                            {
+                                y = -prevp.Y;
+                                lineheight = prevheight;
+                            }
+                            else
+                            {
+                                Point p = kl.TranslatePoint(zero, List);
+                                double duration = Math.Min(kl.FadeInTime, kl.StartTime - prevkl.StartTime);
+                                double rate = (time - (kl.StartTime - duration)) / duration;
+                                y = -((p.Y - prevp.Y) * rate + prevp.Y);
+                                lineheight = height * rate + prevheight * (1 - rate);
+                            }
+                            switch (KaraokeVerticalAlignment)
+                            {
+                                case VerticalAlignment.Top:
+                                    y += 0;
+                                    break;
+                                case VerticalAlignment.Center:
+                                    y += (Height - lineheight) / 2;
+                                    break;
+                                case VerticalAlignment.Bottom:
+                                    y += Height - lineheight;
+                                    break;
+                            }
+                            return y;
+                        }
+                    }
+                    break;
             }
             return 0;
         }
         private void UpdateFrame()
         {
-            if (Lyrics.Sync == LyricsContainer.SyncMode.None)
-            {
-                Canvas.SetTop(List, ManualScrollY);
-                return;
-            }
             double time = Time - AtTagTimeOffset + UserTimeOffset;
-
-            foreach (KaraokeLineClip kl in List.Children)
+            switch (Lyrics.Sync)
             {
-                kl.SetTime(time);
-                if (kl.NeedRender(time))
-                {
-                    kl.Update();
-//                    kl.Time = time;
-                }
+                case LyricsContainer.SyncMode.None:
+                    Canvas.SetTop(List, ManualScrollY);
+                    return;
+                    break;
+                case LyricsContainer.SyncMode.Line:
+                    foreach (LineSyncLine sl in List.Children)
+                    {
+                        sl.SetTime(time);
+                        if (sl.NeedRender(time))
+                        {
+                            sl.Update();
+                        }
+                    }
+                    break;
+                case LyricsContainer.SyncMode.Karaoke:
+                    foreach (KaraokeLineClip kl in List.Children)
+                    {
+                        kl.SetTime(time);
+                        if (kl.NeedRender(time))
+                        {
+                            kl.Update();
+                        }
+                    }
+                    break;
             }
             AutoScrollY = GetAutoScroolY(time);
             Canvas.SetTop(List, AutoScrollY + ManualScrollY + VerticalOffsetY);
@@ -441,15 +575,28 @@ namespace Titalyver2
         {
             if (Lyrics == null)
                 return;
-            if (Lyrics.Sync == LyricsContainer.SyncMode.None)
+
+            switch (Lyrics.Sync)
             {
-                foreach (TextBlock tb in List.Children)
-                    tb.TextAlignment = TextAlignment;
-                return;
-            }
-            foreach (KaraokeLineClip kl in List.Children)
-            {
-                kl.TextAlignment = TextAlignment;
+                case LyricsContainer.SyncMode.None:
+                    foreach (TextBlock tb in List.Children)
+                    {
+                        tb.TextAlignment = TextAlignment;
+                    }
+                    break;
+                case LyricsContainer.SyncMode.Line:
+                    foreach (LineSyncLine sl in List.Children)
+                    {
+                        sl.TextAlignment = TextAlignment;
+                        sl.UpdateWordsLayout();
+                    }
+                    break;
+                case LyricsContainer.SyncMode.Karaoke:
+                    foreach (KaraokeLineClip kl in List.Children)
+                    {
+                        kl.TextAlignment = TextAlignment;
+                    }
+                    break;
             }
         }
         private void OnChangeKVAlignment()
@@ -461,18 +608,33 @@ namespace Titalyver2
         {
             if (Lyrics == null)
                 return;
-            if (Lyrics.Sync == LyricsContainer.SyncMode.None)
+
+            switch (Lyrics.Sync)
             {
-                foreach (TextBlock tb in List.Children)
-                    tb.Padding = LinePadding;
-                return;
-            }
-            foreach (KaraokeLineClip kl in List.Children)
-            {
-                kl.Padding = LinePadding;
-                kl.NoRubyTopSpace = NoRubyTopSpace;
-                kl.UpdateHeight();
-                kl.Update();
+                case LyricsContainer.SyncMode.None:
+                    foreach (TextBlock tb in List.Children)
+                    {
+                        tb.Padding = LinePadding;
+                    }
+                    break;
+                case LyricsContainer.SyncMode.Line:
+                    foreach (LineSyncLine sl in List.Children)
+                    {
+                        sl.Padding = LinePadding;
+                        sl.NoRubyTopSpace = NoRubyTopSpace;
+                        sl.UpdateHeight();
+                        sl.Update();
+                    }
+                    break;
+                case LyricsContainer.SyncMode.Karaoke:
+                    foreach (KaraokeLineClip kl in List.Children)
+                    {
+                        kl.Padding = LinePadding;
+                        kl.NoRubyTopSpace = NoRubyTopSpace;
+                        kl.UpdateHeight();
+                        kl.Update();
+                    }
+                    break;
             }
             UpdateLayout();
         }
@@ -480,14 +642,28 @@ namespace Titalyver2
         {
             if (Lyrics == null)
                 return;
-            if (Lyrics.Sync == LyricsContainer.SyncMode.None)
+
+            switch (Lyrics.Sync)
             {
-                return;
-            }
-            foreach (KaraokeLineClip kl in List.Children)
-            {
-                kl.RubyBottomSpace = RubyBottomSpace;
-                kl.MakeWords();
+                case LyricsContainer.SyncMode.None:
+                    foreach (TextBlock tb in List.Children)
+                    {
+                    }
+                    break;
+                case LyricsContainer.SyncMode.Line:
+                    foreach (LineSyncLine sl in List.Children)
+                    {
+                        sl.RubyBottomSpace = RubyBottomSpace;
+                        sl.Update();
+                    }
+                    break;
+                case LyricsContainer.SyncMode.Karaoke:
+                    foreach (KaraokeLineClip kl in List.Children)
+                    {
+                        kl.RubyBottomSpace = RubyBottomSpace;
+                        kl.MakeWords();
+                    }
+                    break;
             }
             UpdateLayout();
         }
@@ -496,15 +672,30 @@ namespace Titalyver2
         {
             if (Lyrics == null)
                 return;
-            if (Lyrics.Sync == LyricsContainer.SyncMode.None)
+
+            switch (Lyrics.Sync)
             {
-                return;
-            }
-            foreach (KaraokeLineClip kl in List.Children)
-            {
-                kl.StrokeThickness = StrokeThickness;
-                kl.SetStrokeThickness();
-                kl.Update();
+                case LyricsContainer.SyncMode.None:
+//                    foreach (TextBlock tb in List.Children)
+                    {
+                    }
+                    break;
+                case LyricsContainer.SyncMode.Line:
+                    foreach (LineSyncLine sl in List.Children)
+                    {
+                        sl.StrokeThickness = StrokeThickness;
+                        sl.SetStrokeThickness();
+                        sl.Update();
+                    }
+                    break;
+                case LyricsContainer.SyncMode.Karaoke:
+                    foreach (KaraokeLineClip kl in List.Children)
+                    {
+                        kl.StrokeThickness = StrokeThickness;
+                        kl.SetStrokeThickness();
+                        kl.Update();
+                    }
+                    break;
             }
         }
 
