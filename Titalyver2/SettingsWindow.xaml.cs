@@ -365,6 +365,8 @@ namespace Titalyver2
             LyricsSerchList.Text = string.Join("\n", mainWindow.LyricsSearcher.SearchList);
 
             NoLyricsFormat.Text = mainWindow.LyricsSearcher.NoLyricsFormatText;
+
+            IgnoreKaraoke.IsChecked = mainWindow.KaraokeDisplay.IgnoreKaraokeTag;
         }
 
 
@@ -388,6 +390,7 @@ namespace Titalyver2
         }
         private void CheckBox_Click(object sender, RoutedEventArgs e)
         {
+            if (MainWindow == null) return;
             MainWindow.KaraokeDisplay.IgnoreKaraokeTag = (bool)IgnoreKaraoke.IsChecked;
             Properties.Settings.Default.IgnoreKaraoke = MainWindow.KaraokeDisplay.IgnoreKaraokeTag;
         }

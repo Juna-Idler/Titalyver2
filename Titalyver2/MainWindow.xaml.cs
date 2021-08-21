@@ -20,7 +20,7 @@ namespace Titalyver2
 
         private ITitalyverReceiver Receiver;
 
-        public readonly LyricsSearcher LyricsSearcher;
+        public readonly LyricsSearchers LyricsSearcher;
 
 
         public MainWindow()
@@ -28,7 +28,7 @@ namespace Titalyver2
             InitializeComponent();
 
             KaraokeDisplay.SetLyrics("");
-            LyricsSearcher = new LyricsSearcher();
+            LyricsSearcher = new LyricsSearchers();
 
             RestoreSettings();
 
@@ -120,11 +120,11 @@ namespace Titalyver2
             string lp = "";
             if (!string.IsNullOrEmpty(data.FilePath))
             {
-                Uri u = new Uri(data.FilePath);
+                Uri u = new(data.FilePath);
                 lp = u.LocalPath + Uri.UnescapeDataString(u.Fragment);
             }
             string text = LyricsSearcher.Search(lp, data.MetaData);
-            if (text == "")
+            if (string.IsNullOrEmpty(text))
             {
                 return "";
             }

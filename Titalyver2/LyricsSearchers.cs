@@ -11,10 +11,10 @@ using System.Diagnostics;
 
 namespace Titalyver2
 {
-    public class LyricsSearcher
+    public class LyricsSearchers
     {
 
-        public LyricsSearcher()
+        public LyricsSearchers()
         {
         }
 
@@ -32,6 +32,8 @@ namespace Titalyver2
                 SearchList.Add(line);
             }
         }
+
+        private LyricsSearcherPlugins Plugins = new();
 
         public string NoLyricsFormatText { get; set; }
 
@@ -78,38 +80,79 @@ namespace Titalyver2
             string filename = Path.GetFileNameWithoutExtension(filepath);
             string filename_ext = Path.GetFileName(filepath);
 
+            string title = null;
+            string[] artists = null;
+            string album = null;
             for (int i = 0; i < SearchList.Count;i++)
             {
                 int index = SearchList[i].IndexOf(":");
                 if (index <= 0)
                     continue;
-                Command = SearchList[i][..index];
+                Command = SearchList[i][..index].ToLower(System.Globalization.CultureInfo.InvariantCulture);
                 string r = Replace(SearchList[i], directoryname, filename, filename_ext, filepath, metaData);
 
-                if (Command == "file")
+                switch (Command)
                 {
-                    string path = r[5..];
-                    if (!File.Exists(path))
-                        continue;
-                    try
-                    {
-                        FilePath = path;
-                        Text = File.ReadAllText(path);
-                        return Text;
-                    }
-                    catch (Exception e)
-                    {
-                        Debug.WriteLine(e.Message);
-                    }
-                }
-                else if (Command == "string")
-                {
-                    Text = r[7..];
-                    if (Text != "")
-                    {
-                        FilePath = "";
-                        return Text;
-                    }
+                    case "file":
+                        {
+                            string path = r[5..];
+                            if (!File.Exists(path))
+                                continue;
+                            try
+                            {
+                                FilePath = path;
+                                Text = File.ReadAllText(path);
+                                return Text;
+                            }
+                            catch (Exception e)
+                            {
+                                Debug.WriteLine(e.Message);
+                            }
+                        }
+                        break;
+                    case "string":
+                        Text = r[7..];
+                        if (Text != "")
+                        {
+                            FilePath = "";
+                            return Text;
+                        }
+                        break;
+                    case "plugin":
+                        {
+                            string dll = r[7..];
+                            if (title == null)
+                            {
+                                string[] t;
+                                if (metaData.TryGetValue("title", out t) ||         //foobar2000
+                                    metaData.TryGetValue("tracktitle", out t) ||    //MusicBee
+                                    metaData.TryGetValue("name", out t))            //iTunes
+                                {
+                                    title = t[0];
+                                }
+                            }
+                            if (artists == null)
+                            {
+                                if (!metaData.TryGetValue("artist", out artists))
+                                {
+                                    artists = null;
+                                }
+                            }
+                            if (album == null)
+                            {
+                                if (metaData.TryGetValue("album", out string[] a))
+                                {
+                                    album = a[0];
+                                }
+                            }
+                            string[] lyrics = Plugins.GetLyrics(dll, title, artists, album, filepath);
+                            if (lyrics != null && lyrics.Length > 0 && !string.IsNullOrEmpty(lyrics[0]))
+                            {
+                                return lyrics[0];
+                            }
+                        }
+
+                        break;
                 }
             }
 

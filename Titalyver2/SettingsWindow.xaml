@@ -170,7 +170,7 @@
             <TabItem Header="Lyrics">
                 <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" >
                     <StackPanel Background="{DynamicResource {x:Static SystemColors.ControlBrushKey}}">
-                        <GroupBox Header="Serch List" >
+                        <GroupBox Header="Search List" >
                             <TextBox x:Name="LyricsSerchList" VerticalScrollBarVisibility="Visible" HorizontalScrollBarVisibility="Auto" TextChanged="LyricsSerchList_TextChanged" AcceptsReturn="True">
 
                             </TextBox>
