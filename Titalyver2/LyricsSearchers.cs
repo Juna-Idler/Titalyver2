@@ -18,9 +18,12 @@ namespace Titalyver2
         {
         }
 
-        public string Command { get; private set; }
-        public string FilePath { get; private set; }
-        public string Text { get; private set; }
+        public string Command { get; private set; } = "";
+        public string Parameter { get; private set; } = "";
+        public string ReplacedParameter { get; private set; } = "";
+
+        public string FilePath { get; private set; } = "";
+        public string Text { get; private set; } = "";
 
         public List<string> SearchList { get; private set; } = new();
         public void SetSearchList(string list)
@@ -33,7 +36,7 @@ namespace Titalyver2
             }
         }
 
-        private LyricsSearcherPlugins Plugins = new();
+        private readonly LyricsSearcherPlugins Plugins = new();
 
         public string NoLyricsFormatText { get; set; }
 
@@ -89,19 +92,19 @@ namespace Titalyver2
                 if (index <= 0)
                     continue;
                 Command = SearchList[i][..index].ToLower(System.Globalization.CultureInfo.InvariantCulture);
-                string r = Replace(SearchList[i], directoryname, filename, filename_ext, filepath, metaData);
+                Parameter = SearchList[i][(index+1)..];
+                ReplacedParameter = Replace(Parameter, directoryname, filename, filename_ext, filepath, metaData);
 
                 switch (Command)
                 {
                     case "file":
                         {
-                            string path = r[5..];
-                            if (!File.Exists(path))
+                            if (!File.Exists(ReplacedParameter))
                                 continue;
                             try
                             {
-                                FilePath = path;
-                                Text = File.ReadAllText(path);
+                                FilePath = ReplacedParameter;
+                                Text = File.ReadAllText(ReplacedParameter);
                                 return Text;
                             }
                             catch (Exception e)
@@ -111,7 +114,7 @@ namespace Titalyver2
                         }
                         break;
                     case "string":
-                        Text = r[7..];
+                        Text = ReplacedParameter;
                         if (Text != "")
                         {
                             FilePath = "";
@@ -120,27 +123,28 @@ namespace Titalyver2
                         break;
                     case "plugin":
                         {
-                            string dll = r[7..];
+                            string dll = ReplacedParameter;
                             if (title == null)
                             {
                                 string[] t;
-                                if (metaData.TryGetValue("title", out t) ||         //foobar2000
-                                    metaData.TryGetValue("tracktitle", out t) ||    //MusicBee
-                                    metaData.TryGetValue("name", out t))            //iTunes
+                                if (metaData != null &&
+                                    (metaData.TryGetValue("title", out t) ||         //foobar2000
+                                     metaData.TryGetValue("tracktitle", out t) ||    //MusicBee
+                                     metaData.TryGetValue("name", out t)))            //iTunes
                                 {
                                     title = t[0];
                                 }
                             }
                             if (artists == null)
                             {
-                                if (!metaData.TryGetValue("artist", out artists))
+                                if (metaData != null && !metaData.TryGetValue("artist", out artists))
                                 {
                                     artists = null;
                                 }
                             }
                             if (album == null)
                             {
-                                if (metaData.TryGetValue("album", out string[] a))
+                                if (metaData != null && metaData.TryGetValue("album", out string[] a))
                                 {
                                     album = a[0];
                                 }
@@ -157,6 +161,7 @@ namespace Titalyver2
             }
 
             Command = "";
+            Parameter = ReplacedParameter = "";
             FilePath = "";
             Text = Replace(NoLyricsFormatText, directoryname, filename, filename_ext, filepath, metaData);
             return Text;

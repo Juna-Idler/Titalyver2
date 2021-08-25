@@ -262,6 +262,10 @@ namespace Titalyver2
         {
             Maximize.IsChecked = WindowState == WindowState.Maximized;
             OpenFolder.IsEnabled = !String.IsNullOrEmpty(LyricsSearcher.FilePath);
+
+            SearchListCommand.Header = string.IsNullOrEmpty(LyricsSearcher.Command) ?
+                "Not Found Lyrics" :
+                LyricsSearcher.Command + ":" + LyricsSearcher.Parameter;
         }
 
         private void Maximize_Click(object sender, RoutedEventArgs e)
