@@ -19,7 +19,7 @@ namespace Titalyver2
 
         private readonly Dictionary<string, dynamic> Plugins = new();
 
-        public string[] GetLyrics(string dll, string title, string[] artists, string album, string path)
+        public string[] GetLyrics(string dll, string title, string[] artists, string album, string path, string param)
         {
             try
             {
@@ -33,7 +33,7 @@ namespace Titalyver2
                         return null;
                     Plugins.Add(dll, searcher);
                 }
-                return searcher.Search(title, artists, album, path);
+                return searcher.Search(title, artists, album, path, param);
             }
             catch (Exception e)
             {

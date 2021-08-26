@@ -16,11 +16,12 @@ namespace Titalyver2
     /// </summary>
     public partial class MainWindow : Window
     {
-
-
         private ITitalyverReceiver Receiver;
 
         public readonly LyricsSearchers LyricsSearcher;
+
+        private LyricsSearchers.ReturnValue[] Lyrics;
+        private int CurrentLyrics;
 
 
         public MainWindow()
@@ -52,9 +53,9 @@ namespace Titalyver2
                 ITitalyverReceiver.Data data = mmfr.GetData();
                 if (!data.IsValid())
                     return;
-                string lyrics = GetLyrics(data);
-                KaraokeDisplay.SetLyrics(lyrics);
-                if (lyrics != "")
+                SearchLyrics(data);
+                KaraokeDisplay.SetLyrics(Lyrics[0].Text);
+                MultiLyricsNumber.Text = (CurrentLyrics + 1).ToString() + "/" + Lyrics.Length;
                 {
                     double delay = (MMFMessage.GetTimeOfDay() - data.TimeOfDay) / 1000.0;
                     KaraokeDisplay.Time = delay + data.SeekTime;
@@ -115,7 +116,7 @@ namespace Titalyver2
             KaraokeDisplay.IgnoreKaraokeTag = set.IgnoreKaraoke;
         }
 
-        private string GetLyrics(ITitalyverReceiver.Data data)
+        private void SearchLyrics(ITitalyverReceiver.Data data)
         {
             string lp = "";
             if (!string.IsNullOrEmpty(data.FilePath))
@@ -123,12 +124,17 @@ namespace Titalyver2
                 Uri u = new(data.FilePath);
                 lp = u.LocalPath + Uri.UnescapeDataString(u.Fragment);
             }
-            string text = LyricsSearcher.Search(lp, data.MetaData);
-            if (string.IsNullOrEmpty(text))
+            Lyrics = LyricsSearcher.Search(lp, data.MetaData);
+            CurrentLyrics = 0;
+            if (Lyrics.Length > 1)
             {
-                return "";
+                MultiLyricsSwitchPanel.Visibility = Visibility.Visible;
+                MultiLyricsNumber.Text = 1 + "/" + Lyrics.Length;
             }
-            return text;
+            else
+            {
+                MultiLyricsSwitchPanel.Visibility = Visibility.Hidden;
+            }
         }
 
         private void PlaybackEvent(ITitalyverReceiver.Data data)
@@ -136,10 +142,11 @@ namespace Titalyver2
 
             if (data.MetaDataUpdated)
             {
-                string text = GetLyrics(data);
+
                 _ = Dispatcher.InvokeAsync(() =>
                 {
-                    KaraokeDisplay.SetLyrics(text);
+                    SearchLyrics(data);
+                    KaraokeDisplay.SetLyrics(Lyrics[0].Text);
                 });
             }
             double time = -1;
@@ -255,17 +262,20 @@ namespace Titalyver2
 
         private void MenuItemReload_Click(object sender, RoutedEventArgs e)
         {
-            KaraokeDisplay.SetLyrics(GetLyrics(Receiver.GetData()));
+            int current = CurrentLyrics;
+            SearchLyrics(Receiver.GetData());
+            if (current < Lyrics.Length)
+                CurrentLyrics = current;
+            KaraokeDisplay.SetLyrics(Lyrics[CurrentLyrics].Text);
+            MultiLyricsNumber.Text = (CurrentLyrics + 1).ToString() + "/" + Lyrics.Length;
         }
 
         private void window_ContextMenuOpening(object sender, System.Windows.Controls.ContextMenuEventArgs e)
         {
             Maximize.IsChecked = WindowState == WindowState.Maximized;
-            OpenFolder.IsEnabled = !String.IsNullOrEmpty(LyricsSearcher.FilePath);
+            OpenFolder.IsEnabled = !string.IsNullOrEmpty(Lyrics[CurrentLyrics].FilePath);
 
-            SearchListCommand.Header = string.IsNullOrEmpty(LyricsSearcher.Command) ?
-                "Not Found Lyrics" :
-                LyricsSearcher.Command + ":" + LyricsSearcher.Parameter;
+            SearchListCommand.Header = Lyrics[CurrentLyrics].Command + ":" + Lyrics[CurrentLyrics].Parameter;
         }
 
         private void Maximize_Click(object sender, RoutedEventArgs e)
@@ -281,8 +291,8 @@ namespace Titalyver2
 
         private void OpenFolder_Click(object sender, RoutedEventArgs e)
         {
-            string directoryname = Path.GetDirectoryName(LyricsSearcher.FilePath);
-            string filename = Path.GetFileName(LyricsSearcher.FilePath);
+            string directoryname = Path.GetDirectoryName(Lyrics[CurrentLyrics].FilePath);
+            string filename = Path.GetFileName(Lyrics[CurrentLyrics].FilePath);
             string filepath = Path.Combine(directoryname, filename);
             _ = System.Diagnostics.Process.Start("EXPLORER.EXE", @"/select," + filepath);
         }
@@ -293,10 +303,27 @@ namespace Titalyver2
             TextViewWindow tvw = new TextViewWindow();
             tvw.MaxHeight = h;
             System.Windows.Controls.TextBox tb = (System.Windows.Controls.TextBox)tvw.Content;
-            tb.Text = LyricsSearcher.Text;
+            tb.Text = Lyrics[CurrentLyrics].Text;
             tvw.Owner = this;
             tvw.Show();
         }
 
+        private void PrevLyricsButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (--CurrentLyrics < 0)
+                CurrentLyrics = Lyrics.Length - 1;
+            KaraokeDisplay.SetLyrics(Lyrics[CurrentLyrics].Text); ;
+
+            MultiLyricsNumber.Text = (CurrentLyrics + 1).ToString() + "/" + Lyrics.Length; 
+        }
+
+        private void NextLyricsButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (++CurrentLyrics >= Lyrics.Length)
+                CurrentLyrics = 0;
+            KaraokeDisplay.SetLyrics(Lyrics[CurrentLyrics].Text); ;
+
+            MultiLyricsNumber.Text = (CurrentLyrics + 1).ToString() + "/" + Lyrics.Length;
+        }
     }
 }

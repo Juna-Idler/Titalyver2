@@ -12,7 +12,7 @@
             <MenuItem Header="Settings" Click="SettingButton_Click"/>
             <Separator/>
             <MenuItem Header="TopMost" Click="MenuItemTopmost_Click" IsCheckable="True" />
-            <MenuItem Header="Reload" Click="MenuItemReload_Click"/>
+            <MenuItem Header="ReSearch" Click="MenuItemReload_Click"/>
             <MenuItem x:Name="Maximize" Header="Maximize" Click="Maximize_Click"/>
             <Separator/>
             <MenuItem x:Name="SearchListCommand" IsEnabled="False" />
@@ -69,6 +69,31 @@
                 </Style>
             </Button.Style>
         </Button>
+        <StackPanel x:Name="MultiLyricsSwitchPanel" Canvas.Left="32" Canvas.Bottom="0" Orientation="Horizontal" Visibility="Visible">
+
+            <Button x:Name="PrevLyricsButton" Width="16" Height="32" Background="#00000000" BorderBrush="{x:Null}" Click="PrevLyricsButton_Click" >
+                <Canvas>
+                    <Path Stroke="white" StrokeThickness="2" Data="M4,-10 L-4,0 M-4,0 L4,10">
+                        <Path.Effect>
+                            <BlurEffect Radius="10"/>
+                        </Path.Effect>
+                    </Path>
+                    <Path Stroke="Black" StrokeThickness="1" Data="M4,-10 L-4,0 M-4,0 L4,10"/>
+                </Canvas>
+            </Button>
+            <TextBlock x:Name="MultiLyricsNumber" Text="1/2" VerticalAlignment="Center" FontSize="16" Background="#3FFFFFFF" />
+            <Button x:Name="NextLyricsButton" Width="16" Height="32" Background="#00000000" BorderBrush="{x:Null}" Click="NextLyricsButton_Click" >
+                <Canvas>
+                    <Path Stroke="white" StrokeThickness="2" Data="M-4,-10 L4,0 M4,0 L-4,10">
+                        <Path.Effect>
+                            <BlurEffect Radius="10"/>
+                        </Path.Effect>
+                    </Path>
+                    <Path Stroke="Black" StrokeThickness="1" Data="M-4,-10 L4,0 M4,0 L-4,10"/>
+                </Canvas>
+            </Button>
+
+        </StackPanel>
         <ToggleButton x:Name="SliderButton" Canvas.Left="0" Canvas.Bottom="0" Width="32" Height="32" Click="SliderButton_Click" Background="#00000000" BorderBrush="{x:Null}" >
             <Canvas>
                 <Path Stroke="white" StrokeThickness="2" Data="M-10,0 l20,0 M0,-5 l0,11">
@@ -87,6 +112,5 @@
                 </LinearGradientBrush>
             </Slider.Background>
         </Slider>
-
     </Canvas>
 </Window>

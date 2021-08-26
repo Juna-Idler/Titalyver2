@@ -18,14 +18,26 @@ namespace Titalyver2
         {
         }
 
-        public string Command { get; private set; } = "";
-        public string Parameter { get; private set; } = "";
-        public string ReplacedParameter { get; private set; } = "";
+        public struct ReturnValue
+        {
+            public string Command { get; private set; }
+            public string Parameter { get; private set; }
+            public string ReplacedParameter { get; private set; }
+            public string FilePath { get; private set; }
+            public string Text { get; private set; }
 
-        public string FilePath { get; private set; } = "";
-        public string Text { get; private set; } = "";
+            public ReturnValue(string command, string parameter, string replacedParameter, string filePath, string text)
+            {
+                Command = command;
+                Parameter = parameter;
+                ReplacedParameter = replacedParameter;
+                FilePath = filePath;
+                Text = text;
+            }
+        }
 
         public List<string> SearchList { get; private set; } = new();
+
         public void SetSearchList(string list)
         {
             SearchList.Clear();
@@ -37,6 +49,8 @@ namespace Titalyver2
         }
 
         private readonly LyricsSearcherPlugins Plugins = new();
+
+        public bool InstantReply;
 
         public string NoLyricsFormatText { get; set; }
 
@@ -77,7 +91,7 @@ namespace Titalyver2
             return r + s;
         }
 
-        public string Search(string filepath, Dictionary<string, string[]> metaData)
+        public ReturnValue[] Search(string filepath, Dictionary<string, string[]> metaData)
         {
             string directoryname = Path.GetDirectoryName(filepath) ?? "";
             string filename = Path.GetFileNameWithoutExtension(filepath);
@@ -86,26 +100,29 @@ namespace Titalyver2
             string title = null;
             string[] artists = null;
             string album = null;
+            List<ReturnValue> Return = new();
             for (int i = 0; i < SearchList.Count;i++)
             {
                 int index = SearchList[i].IndexOf(":");
                 if (index <= 0)
                     continue;
-                Command = SearchList[i][..index].ToLower(System.Globalization.CultureInfo.InvariantCulture);
-                Parameter = SearchList[i][(index+1)..];
-                ReplacedParameter = Replace(Parameter, directoryname, filename, filename_ext, filepath, metaData);
+                string command = SearchList[i][..index].ToLower(System.Globalization.CultureInfo.InvariantCulture);
+                string parameter = SearchList[i][(index+1)..];
+                string replacedParameter = Replace(parameter, directoryname, filename, filename_ext, filepath, metaData);
 
-                switch (Command)
+                switch (command)
                 {
                     case "file":
                         {
-                            if (!File.Exists(ReplacedParameter))
+                            if (!File.Exists(replacedParameter))
                                 continue;
                             try
                             {
-                                FilePath = ReplacedParameter;
-                                Text = File.ReadAllText(ReplacedParameter);
-                                return Text;
+                                ReturnValue value = new ReturnValue(command, parameter, replacedParameter, replacedParameter, File.ReadAllText(replacedParameter));
+                                if (InstantReply)
+                                    return new[] { value };
+                                Return.Add(value);
+
                             }
                             catch (Exception e)
                             {
@@ -114,16 +131,17 @@ namespace Titalyver2
                         }
                         break;
                     case "string":
-                        Text = ReplacedParameter;
-                        if (Text != "")
+
+                        if (replacedParameter != "")
                         {
-                            FilePath = "";
-                            return Text;
+                            ReturnValue value = new ReturnValue(command, parameter, replacedParameter, "", replacedParameter);
+                            if (InstantReply)
+                                return new[] { value };
+                            Return.Add(value);
                         }
                         break;
                     case "plugin":
                         {
-                            string dll = ReplacedParameter;
                             if (title == null)
                             {
                                 string[] t;
@@ -149,22 +167,30 @@ namespace Titalyver2
                                     album = a[0];
                                 }
                             }
-                            string[] lyrics = Plugins.GetLyrics(dll, title, artists, album, filepath);
-                            if (lyrics != null && lyrics.Length > 0 && !string.IsNullOrEmpty(lyrics[0]))
+                            string[] dll = replacedParameter.Split(" ", 2);
+                            string[] lyrics = Plugins.GetLyrics(dll[0], title, artists, album, filepath,dll[1]);
+                            if (lyrics != null && lyrics.Length > 0)
                             {
-                                return lyrics[0];
+                                foreach (string l in lyrics)
+                                {
+                                    if (!string.IsNullOrEmpty(l))
+                                    {
+                                        Return.Add(new ReturnValue(command, parameter, replacedParameter, "", l));
+                                    }
+                                }
+                                if (InstantReply)
+                                   return Return.ToArray();
                             }
                         }
-
                         break;
                 }
             }
+            if (Return.Count > 0)
+            {
+                return Return.ToArray();
+            }
 
-            Command = "";
-            Parameter = ReplacedParameter = "";
-            FilePath = "";
-            Text = Replace(NoLyricsFormatText, directoryname, filename, filename_ext, filepath, metaData);
-            return Text;
+            return new[] { new ReturnValue("No Lyrics", "", "", "", Replace(NoLyricsFormatText, directoryname, filename, filename_ext, filepath, metaData)) };
         }
 
 
