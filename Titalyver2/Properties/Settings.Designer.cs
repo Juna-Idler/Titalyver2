@@ -335,5 +335,197 @@ namespace Titalyver2.Properties {
                 this["IgnoreKaraoke"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string UnsyncFontFamily {
+            get {
+                return ((string)(this["UnsyncFontFamily"]));
+            }
+            set {
+                this["UnsyncFontFamily"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("20")]
+        public double UnsyncFontSize {
+            get {
+                return ((double)(this["UnsyncFontSize"]));
+            }
+            set {
+                this["UnsyncFontSize"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("Normal")]
+        public string UnsyncFontStyle {
+            get {
+                return ((string)(this["UnsyncFontStyle"]));
+            }
+            set {
+                this["UnsyncFontStyle"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("Normal")]
+        public string UnsyncFontWeight {
+            get {
+                return ((string)(this["UnsyncFontWeight"]));
+            }
+            set {
+                this["UnsyncFontWeight"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("Normal")]
+        public string UnsyncFontStretch {
+            get {
+                return ((string)(this["UnsyncFontStretch"]));
+            }
+            set {
+                this["UnsyncFontStretch"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("White")]
+        public string UnsyncFill {
+            get {
+                return ((string)(this["UnsyncFill"]));
+            }
+            set {
+                this["UnsyncFill"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("Black")]
+        public string UnsyncStroke {
+            get {
+                return ((string)(this["UnsyncStroke"]));
+            }
+            set {
+                this["UnsyncStroke"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        public double UnsyncOutline {
+            get {
+                return ((double)(this["UnsyncOutline"]));
+            }
+            set {
+                this["UnsyncOutline"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("Left")]
+        public string UnsyncTextAlignment {
+            get {
+                return ((string)(this["UnsyncTextAlignment"]));
+            }
+            set {
+                this["UnsyncTextAlignment"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("16")]
+        public double UnsyncOffsetLeft {
+            get {
+                return ((double)(this["UnsyncOffsetLeft"]));
+            }
+            set {
+                this["UnsyncOffsetLeft"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("16")]
+        public double UnsyncOffsetRight {
+            get {
+                return ((double)(this["UnsyncOffsetRight"]));
+            }
+            set {
+                this["UnsyncOffsetRight"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("16")]
+        public double UnsyncOffsetVertical {
+            get {
+                return ((double)(this["UnsyncOffsetVertical"]));
+            }
+            set {
+                this["UnsyncOffsetVertical"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        public double UnsyncLineTopSpace {
+            get {
+                return ((double)(this["UnsyncLineTopSpace"]));
+            }
+            set {
+                this["UnsyncLineTopSpace"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        public double UnsyncLineBottomSpace {
+            get {
+                return ((double)(this["UnsyncLineBottomSpace"]));
+            }
+            set {
+                this["UnsyncLineBottomSpace"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        public double UnsyncRubyBottomSpace {
+            get {
+                return ((double)(this["UnsyncRubyBottomSpace"]));
+            }
+            set {
+                this["UnsyncRubyBottomSpace"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        public double UnsyncNoRubySpace {
+            get {
+                return ((double)(this["UnsyncNoRubySpace"]));
+            }
+            set {
+                this["UnsyncNoRubySpace"] = value;
+            }
+        }
     }
 }

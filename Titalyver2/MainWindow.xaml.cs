@@ -114,6 +114,28 @@ namespace Titalyver2
             LyricsSearcher.NoLyricsFormatText = set.NoLyricsFormat;
 
             KaraokeDisplay.IgnoreKaraokeTag = set.IgnoreKaraoke;
+
+
+            ff = new(set.UnsyncFontFamily);
+            try { fsy = (FontStyle)TypeDescriptor.GetConverter(typeof(FontStyle)).ConvertFromString(set.UnsyncFontStyle); }
+            catch (Exception) { fsy = FontStyles.Normal; }
+            try { fw = (FontWeight)TypeDescriptor.GetConverter(typeof(FontWeight)).ConvertFromString(set.UnsyncFontWeight); }
+            catch (Exception) { fw = FontWeights.Normal; }
+            try { fsr = (FontStretch)TypeDescriptor.GetConverter(typeof(FontStretch)).ConvertFromString(set.UnsyncFontStretch); }
+            catch (Exception) { fsr = FontStretches.Normal; }
+            KaraokeDisplay.SetUnsyncFont(new(ff, fsy, fw, fsr), set.UnsyncFontSize);
+
+
+            KaraokeDisplay.UnsyncFillColor = (SolidColorBrush)bc.ConvertFromString(set.UnsyncFill);
+            KaraokeDisplay.UnsyncStrokeColor = (SolidColorBrush)bc.ConvertFromString(set.UnsyncStroke);
+
+            KaraokeDisplay.UnsyncTextAlignment = (TextAlignment)TypeDescriptor.GetConverter(typeof(TextAlignment)).ConvertFromString(set.UnsyncTextAlignment);
+
+            KaraokeDisplay.UnsyncLinePadding = new Thickness(set.UnsyncOffsetLeft, set.UnsyncLineTopSpace, set.UnsyncOffsetRight, set.UnsyncLineBottomSpace);
+            KaraokeDisplay.UnsyncVerticalOffsetY = set.UnsyncOffsetVertical;
+
+            KaraokeDisplay.UnsyncRubyBottomSpace = set.UnsyncRubyBottomSpace;
+            KaraokeDisplay.UnsyncNoRubyTopSpace = set.UnsyncNoRubySpace;
         }
 
         private void SearchLyrics(ITitalyverReceiver.Data data)

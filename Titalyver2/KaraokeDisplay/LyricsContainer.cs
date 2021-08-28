@@ -62,6 +62,8 @@ namespace Titalyver2
             public string Text => string.Join("", Words.Select(w => w.Word.Text));
             public string PhoneticText => string.Join("", Words.Select(w => w.HasRuby ? w.Ruby.Text : w.Word.Text));
 
+            public RubyString RubyStringText => new(Words.Select(w => new RubyString.Unit(w.Word.Text, w.Ruby?.Text)).ToArray());
+
             public bool HasRuby => Words.Sum(w => Convert.ToInt32(w.HasRuby)) != 0;
 
             public struct WordWithRuby

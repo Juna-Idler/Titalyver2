@@ -42,6 +42,7 @@ namespace Titalyver2
 
             InitializeDisplay(mainWindow);
             InitializeLyrics(mainWindow);
+            InitializeUnsync(mainWindow);
 
             MainWindow = mainWindow;
 
@@ -148,7 +149,7 @@ namespace Titalyver2
                 box.Background = brush;
                 Color c = brush.Color;
                 double m = c.R * 0.21 + c.G * 0.72 + c.B * 0.07;
-                box.Foreground = m < 128 ? Brushes.White : Brushes.Black;
+                box.Foreground = m > 128 ? Brushes.Black : Brushes.White;
                 return brush;
             }
             catch (Exception)
@@ -267,11 +268,6 @@ namespace Titalyver2
             MainWindow.KaraokeDisplay.KaraokeVerticalAlignment = VerticalAlignment.Bottom;
             Properties.Settings.Default.VerticalAlignment = TypeDescriptor.GetConverter(typeof(VerticalAlignment)).ConvertToString(VerticalAlignment.Bottom);
 
-        }
-
-        private void window_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
-        {
-            DragMove();
         }
 
         private void OffsetLeft_ValueChanged(object sender, EventArgs e)
@@ -416,5 +412,190 @@ namespace Titalyver2
             this.Close();
         }
 
+        private void window_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            DragMove();
+        }
+
+
+        #region Unsync
+
+        private void InitializeUnsync(MainWindow mainWindow)
+        {
+            UnsyncFontSelect.Content = $"{TypefaceString(mainWindow.KaraokeDisplay.UnsyncTypeface)} {mainWindow.KaraokeDisplay.UnsyncFontSize}";
+            UnsyncOutline.Value = (decimal)mainWindow.KaraokeDisplay.UnsyncStrokeThickness;
+
+
+
+            UnsyncFill.Background = mainWindow.KaraokeDisplay.UnsyncFillColor;
+            UnsyncFill.Text = mainWindow.KaraokeDisplay.UnsyncFillColor.Color.ToString();
+            UnsyncStroke.Background = mainWindow.KaraokeDisplay.UnsyncStrokeColor;
+            UnsyncStroke.Text = mainWindow.KaraokeDisplay.UnsyncStrokeColor.Color.ToString();
+
+
+            switch (mainWindow.KaraokeDisplay.UnsyncTextAlignment)
+            {
+                case TextAlignment.Left:
+                   UnsyncHLeft.IsChecked = true;
+                    break;
+                case TextAlignment.Center:
+                    UnsyncHCenter.IsChecked = true;
+                    break;
+                case TextAlignment.Right:
+                    UnsyncHRight.IsChecked = true;
+                    break;
+            }
+
+            Thickness t = mainWindow.KaraokeDisplay.UnsyncLinePadding;
+            UnsyncOffsetLeft.Value = (decimal)t.Left;
+            UnsyncOffsetRight.Value = (decimal)t.Right;
+            UnsyncOffsetVertical.Value = (decimal)mainWindow.KaraokeDisplay.UnsyncVerticalOffsetY;
+
+            UnsyncLineTop.Value = (decimal)t.Top;
+            UnsyncLineBottom.Value = (decimal)t.Bottom;
+            UnsyncRubyBottom.Value = (decimal)mainWindow.KaraokeDisplay.UnsyncRubyBottomSpace;
+            UnsyncNoRubyTop.Value = (decimal)mainWindow.KaraokeDisplay.UnsyncNoRubyTopSpace;
+        }
+
+
+        private void UnsyncFontSelect_Click(object sender, RoutedEventArgs e)
+        {
+            var dlg = new emanual.Wpf.Dialogs.FontDialogEx();
+
+            dlg.SelectedFontFamily = MainWindow.KaraokeDisplay.UnsyncTypeface.FontFamily;
+            dlg.SelectedFontStyle = MainWindow.KaraokeDisplay.UnsyncTypeface.Style;
+            dlg.SelectedFontWeight = MainWindow.KaraokeDisplay.UnsyncTypeface.Weight;
+            dlg.SelectedFontStretch = MainWindow.KaraokeDisplay.UnsyncTypeface.Stretch;
+            dlg.SelectedFontSize = MainWindow.KaraokeDisplay.UnsyncFontSize;
+
+            dlg.Owner = this;
+
+            if (dlg.ShowDialog() == true)
+            {
+                MainWindow.KaraokeDisplay.SetUnsyncFont(new Typeface(dlg.SelectedFontFamily, dlg.SelectedFontStyle, dlg.SelectedFontWeight, dlg.SelectedFontStretch), dlg.SelectedFontSize);
+
+                Properties.Settings.Default.UnsyncFontFamily = dlg.SelectedFontFamily.Source;
+                Properties.Settings.Default.UnsyncFontSize = dlg.SelectedFontSize;
+                Properties.Settings.Default.UnsyncFontStyle = TypeDescriptor.GetConverter(typeof(FontStyle)).ConvertToString(dlg.SelectedFontStyle);
+                Properties.Settings.Default.UnsyncFontWeight = TypeDescriptor.GetConverter(typeof(FontWeight)).ConvertToString(dlg.SelectedFontWeight);
+                Properties.Settings.Default.UnsyncFontStretch = TypeDescriptor.GetConverter(typeof(FontStretch)).ConvertToString(dlg.SelectedFontStretch);
+
+                UnsyncFontSelect.Content = $"{TypefaceString(MainWindow.KaraokeDisplay.UnsyncTypeface)} {MainWindow.KaraokeDisplay.UnsyncFontSize}";
+            }
+
+        }
+
+        private void UnsyncOutline_ValueChanged(object sender, EventArgs e)
+        {
+            if (MainWindow == null) return;
+            MainWindow.KaraokeDisplay.SetUnsyncThickness((double)UnsyncOutline.Value);
+            Properties.Settings.Default.UnsyncOutline = MainWindow.KaraokeDisplay.UnsyncStrokeThickness;
+        }
+        #endregion Unsync
+
+        private void TextBoxUF_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            if (MainWindow == null) return;
+            MainWindow.KaraokeDisplay.UnsyncFillColor = ColorTextChanged((TextBox)sender) ?? MainWindow.KaraokeDisplay.UnsyncFillColor;
+            MainWindow.KaraokeDisplay.ResetUnsyncProp();
+            Properties.Settings.Default.UnsyncFill = bc.ConvertToString(MainWindow.KaraokeDisplay.UnsyncFillColor);
+
+        }
+
+        private void TextBoxUS_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            if (MainWindow == null) return;
+            MainWindow.KaraokeDisplay.UnsyncStrokeColor = ColorTextChanged((TextBox)sender) ?? MainWindow.KaraokeDisplay.UnsyncStrokeColor;
+            MainWindow.KaraokeDisplay.ResetUnsyncProp();
+            Properties.Settings.Default.UnsyncStroke = bc.ConvertToString(MainWindow.KaraokeDisplay.UnsyncStrokeColor);
+        }
+
+        private void UnsyncHLeft_Checked(object sender, RoutedEventArgs e)
+        {
+            if (MainWindow == null) return;
+            MainWindow.KaraokeDisplay.UnsyncTextAlignment = TextAlignment.Left;
+            Properties.Settings.Default.UnsyncTextAlignment = TypeDescriptor.GetConverter(typeof(TextAlignment)).ConvertToString(TextAlignment.Left);
+            MainWindow.KaraokeDisplay.ResetUnsyncProp();
+        }
+
+        private void UnsyncHCenter_Checked(object sender, RoutedEventArgs e)
+        {
+            if (MainWindow == null) return;
+            MainWindow.KaraokeDisplay.UnsyncTextAlignment = TextAlignment.Center;
+            Properties.Settings.Default.UnsyncTextAlignment = TypeDescriptor.GetConverter(typeof(TextAlignment)).ConvertToString(TextAlignment.Center);
+            MainWindow.KaraokeDisplay.ResetUnsyncProp();
+        }
+
+        private void UnsyncHRight_Checked(object sender, RoutedEventArgs e)
+        {
+            if (MainWindow == null) return;
+            MainWindow.KaraokeDisplay.UnsyncTextAlignment = TextAlignment.Right;
+            Properties.Settings.Default.UnsyncTextAlignment = TypeDescriptor.GetConverter(typeof(TextAlignment)).ConvertToString(TextAlignment.Right);
+            MainWindow.KaraokeDisplay.ResetUnsyncProp();
+        }
+
+        private void UnsyncOffsetLeft_ValueChanged(object sender, EventArgs e)
+        {
+            if (MainWindow == null) return;
+            Thickness t = MainWindow.KaraokeDisplay.UnsyncLinePadding;
+            t.Left = (double)UnsyncOffsetLeft.Value;
+            MainWindow.KaraokeDisplay.UnsyncLinePadding = t;
+            Properties.Settings.Default.UnsyncOffsetLeft = t.Left;
+            MainWindow.KaraokeDisplay.ResetUnsyncProp();
+        }
+
+        private void UnsyncOffsetVertical_ValueChanged(object sender, EventArgs e)
+        {
+            if (MainWindow == null) return;
+            MainWindow.KaraokeDisplay.UnsyncVerticalOffsetY = (double)UnsyncOffsetVertical.Value;
+            Properties.Settings.Default.UnsyncOffsetVertical = MainWindow.KaraokeDisplay.UnsyncVerticalOffsetY;
+            MainWindow.KaraokeDisplay.ResetUnsyncProp();
+        }
+
+        private void UnsyncOffsetRight_ValueChanged(object sender, EventArgs e)
+        {
+            if (MainWindow == null) return;
+            Thickness t = MainWindow.KaraokeDisplay.UnsyncLinePadding;
+            t.Right = (double)UnsyncOffsetRight.Value;
+            MainWindow.KaraokeDisplay.UnsyncLinePadding = t;
+            Properties.Settings.Default.UnsyncOffsetRight = t.Right;
+            MainWindow.KaraokeDisplay.ResetUnsyncProp();
+        }
+
+        private void UnsyncLineTop_ValueChanged(object sender, EventArgs e)
+        {
+            if (MainWindow == null) return;
+            Thickness t = MainWindow.KaraokeDisplay.UnsyncLinePadding;
+            t.Top = (double)UnsyncLineTop.Value;
+            MainWindow.KaraokeDisplay.UnsyncLinePadding = t;
+            Properties.Settings.Default.UnsyncLineTopSpace = t.Top;
+            MainWindow.KaraokeDisplay.ResetUnsyncProp();
+        }
+
+        private void UnsyncLineBottom_ValueChanged(object sender, EventArgs e)
+        {
+            if (MainWindow == null) return;
+            Thickness t = MainWindow.KaraokeDisplay.UnsyncLinePadding;
+            t.Bottom = (double)UnsyncLineBottom.Value;
+            MainWindow.KaraokeDisplay.UnsyncLinePadding = t;
+            Properties.Settings.Default.UnsyncLineBottomSpace = t.Bottom;
+            MainWindow.KaraokeDisplay.ResetUnsyncProp();
+        }
+
+        private void UnsyncRubyBottom_ValueChanged(object sender, EventArgs e)
+        {
+            if (MainWindow == null) return;
+            MainWindow.KaraokeDisplay.UnsyncRubyBottomSpace = (double)UnsyncRubyBottom.Value;
+            Properties.Settings.Default.UnsyncRubyBottomSpace = MainWindow.KaraokeDisplay.UnsyncRubyBottomSpace;
+            MainWindow.KaraokeDisplay.ResetUnsyncProp();
+        }
+
+        private void UnsyncNoRubyTop_ValueChanged(object sender, EventArgs e)
+        {
+            if (MainWindow == null) return;
+            MainWindow.KaraokeDisplay.UnsyncNoRubyTopSpace = (double)UnsyncNoRubyTop.Value;
+            Properties.Settings.Default.UnsyncNoRubySpace = MainWindow.KaraokeDisplay.UnsyncNoRubyTopSpace;
+            MainWindow.KaraokeDisplay.ResetUnsyncProp();
+        }
     }
 }

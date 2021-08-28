@@ -1,4 +1,4 @@
-﻿
+﻿using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using System.Linq;
@@ -142,6 +142,7 @@ namespace Titalyver2
                 ParentLength = (length < 0 || length > TargetText.Length - ParentOffset) ? (TargetText.Length - ParentOffset) : length;
             }
         };
+        public bool HasRuby => Units.Sum(u => Convert.ToInt32(u.HasRuby)) != 0;
 
         public RubyString AddString(RubyString other)
         {

@@ -54,6 +54,7 @@ namespace Titalyver2
         public SolidColorBrush ActiveBackColor { get; set; } = new(Color.FromArgb(63, 0, 128, 0));
 
 
+
         //縁の太さ
         [Description("縁の太さ"), Category("Karaoke Display"), DefaultValue(2)]
         public double StrokeThickness { get => (double)GetValue(StrokeThicknessProperty); set => SetValue(StrokeThicknessProperty, value); }
@@ -176,6 +177,45 @@ namespace Titalyver2
         public bool IgnoreKaraokeTag { get; set; } = false;
 
 
+        public Typeface Typeface { get; private set; }
+        public void SetFont(Typeface typeface, double size)
+        {
+            FontSize = size;
+            Typeface = typeface;
+            MakeKaraokeLines();
+        }
+
+        public SolidColorBrush UnsyncFillColor { get; set; } = new(Color.FromArgb(255, 255, 255, 255));
+        public SolidColorBrush UnsyncStrokeColor { get; set; } = new(Color.FromArgb(255, 0, 0, 0));
+        public double UnsyncStrokeThickness { get; private set; } = 0;
+
+        public void SetUnsyncThickness(double thickness)
+        {
+            UnsyncStrokeThickness = thickness;
+            if (SyncMode == LyricsContainer.SyncMode.None)
+                foreach (UnsyncLine ul in List.Children)
+                {
+                    ul.SetStrokeThickness(thickness);
+                    ul.Update();
+                }
+        }
+        public TextAlignment UnsyncTextAlignment { get; set; } = TextAlignment.Left;
+        public double UnsyncVerticalOffsetY { get; set; } = 0;
+        public Thickness UnsyncLinePadding { get; set; } = new(4);
+        public double UnsyncNoRubyTopSpace { get; set; } = 0;
+        public double UnsyncRubyBottomSpace { get; set; } = 0;
+        public Typeface UnsyncTypeface { get; private set; }
+        public double UnsyncFontSize { get; private set; } = 10;
+
+        public void SetUnsyncFont(Typeface typeface,double size)
+        {
+            UnsyncFontSize = size;
+            UnsyncTypeface = typeface;
+            MakeKaraokeLines();
+        }
+
+
+
         public void Start()
         {
             if (!Stopwatch.IsRunning)
@@ -209,15 +249,6 @@ namespace Titalyver2
         }
 
 
-        public Typeface Typeface { get; private set; }
-
-        public void SetFont(Typeface typeface,double size)
-        {
-            FontSize = size;
-            Typeface = typeface;
-            MakeKaraokeLines();
-        }
-
 
         public KaraokeDisplay()
         {
@@ -226,10 +257,11 @@ namespace Titalyver2
 
             foreach (Typeface typeface in FontFamily.GetTypefaces())
             {
-                this.Typeface = typeface;
+                Typeface = typeface;
                 break;
             }
             Typeface = new Typeface(Typeface.FontFamily, FontStyles.Italic, FontWeights.Bold, FontStretches.Condensed);
+            UnsyncTypeface = Typeface;
 
             SizeChanged += (s,e) =>
             {
@@ -240,9 +272,10 @@ namespace Titalyver2
                     switch (SyncMode)
                     {
                         case LyricsContainer.SyncMode.None:
-                            foreach (TextBlock tb in List.Children)
+                            foreach (UnsyncLine ul in List.Children)
                             {
-                                tb.Width = ActualWidth;
+                                ul.Width = ActualWidth;
+                                ul.UpdateWordsLayout();
                             }
                             break;
                         case LyricsContainer.SyncMode.Line:
@@ -286,8 +319,9 @@ namespace Titalyver2
             switch (SyncMode)
             {
                 case LyricsContainer.SyncMode.None:
-//                    foreach (TextBlock tb in List.Children)
+                    foreach (UnsyncLine ul in List.Children)
                     {
+                        ul.Update();
                     }
                     break;
                 case LyricsContainer.SyncMode.Line:
@@ -305,6 +339,29 @@ namespace Titalyver2
             }
 
         }
+
+        public void ResetUnsyncProp()
+        {
+            if (SyncMode == LyricsContainer.SyncMode.None)
+            {
+                UnsyncFillColor.Freeze();
+                UnsyncStrokeColor.Freeze();
+
+                foreach (UnsyncLine ul in List.Children)
+                {
+                    ul.TextFillColor = UnsyncFillColor;
+                    ul.TextStrokeColor = UnsyncStrokeColor;
+                    ul.SetStrokeThickness(UnsyncStrokeThickness);
+                    ul.Padding = UnsyncLinePadding;
+                    ul.NoRubyTopSpace = UnsyncNoRubyTopSpace;
+                    ul.RubyBottomSpace = UnsyncRubyBottomSpace;
+                    ul.TextAlignment = UnsyncTextAlignment;
+                    ul.UpdateWordsLayout();
+                    ul.Update();
+                }
+            }
+        }
+
         public void ResetLineColors()
         {
             if (Lyrics == null)
@@ -321,7 +378,7 @@ namespace Titalyver2
             switch (SyncMode)
             {
                 case LyricsContainer.SyncMode.None:
-//                    foreach (TextBlock tb in List.Children)
+//                    foreach (UnsyncLine ul in List.Children)
                     {
                     }
                     break;
@@ -367,16 +424,12 @@ namespace Titalyver2
                         using System.IO.StringReader sr = new(LyricsText);
                         for (string line = sr.ReadLine(); line != null; line = sr.ReadLine())
                         {
-                            TextBlock tb = new()
-                            {
-                                FontSize = FontSize,
-                                Foreground = ActiveFillColor,
-                                Text = line,
-                                Padding = LinePadding,
-                                TextAlignment = TextAlignment,
-                                Width = ActualWidth,
-                            };
-                            _ = List.Children.Add(tb);
+                            RubyString rs = new(line, Lyrics.AtTagContainer.RubyParent, Lyrics.AtTagContainer.RubyBegin, Lyrics.AtTagContainer.RubyEnd, Lyrics.AtTagContainer.Ruby);
+                            UnsyncLine ul = new(UnsyncTypeface, UnsyncFontSize,
+                                                UnsyncFillColor, UnsyncStrokeColor, UnsyncStrokeThickness,
+                                                UnsyncLinePadding, UnsyncRubyBottomSpace, UnsyncNoRubyTopSpace,
+                                                rs, ActualWidth, UnsyncTextAlignment);
+                            _ = List.Children.Add(ul);
                         }
                     }
                     break;
@@ -537,9 +590,8 @@ namespace Titalyver2
             switch (SyncMode)
             {
                 case LyricsContainer.SyncMode.None:
-                    Canvas.SetTop(List, ManualScrollY);
+                    Canvas.SetTop(List, ManualScrollY + UnsyncVerticalOffsetY);
                     return;
-                    break;
                 case LyricsContainer.SyncMode.Line:
                     foreach (LineSyncLine sl in List.Children)
                     {
@@ -581,9 +633,8 @@ namespace Titalyver2
             switch (SyncMode)
             {
                 case LyricsContainer.SyncMode.None:
-                    foreach (TextBlock tb in List.Children)
+//                    foreach (UnsyncLine ul in List.Children)
                     {
-                        tb.TextAlignment = TextAlignment;
                     }
                     break;
                 case LyricsContainer.SyncMode.Line:
@@ -614,9 +665,8 @@ namespace Titalyver2
             switch (SyncMode)
             {
                 case LyricsContainer.SyncMode.None:
-                    foreach (TextBlock tb in List.Children)
+//                    foreach (UnsyncLine ul in List.Children)
                     {
-                        tb.Padding = LinePadding;
                     }
                     break;
                 case LyricsContainer.SyncMode.Line:
@@ -648,7 +698,7 @@ namespace Titalyver2
             switch (SyncMode)
             {
                 case LyricsContainer.SyncMode.None:
-                    foreach (TextBlock tb in List.Children)
+//                    foreach (UnsyncLine ul in List.Children)
                     {
                     }
                     break;
@@ -678,7 +728,7 @@ namespace Titalyver2
             switch (SyncMode)
             {
                 case LyricsContainer.SyncMode.None:
-//                    foreach (TextBlock tb in List.Children)
+//                    foreach (UnsyncLine ul in List.Children)
                     {
                     }
                     break;
