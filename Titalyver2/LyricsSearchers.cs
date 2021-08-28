@@ -101,14 +101,23 @@ namespace Titalyver2
             string[] artists = null;
             string album = null;
             List<ReturnValue> Return = new();
-            for (int i = 0; i < SearchList.Count;i++)
+            foreach (string searchText in SearchList)
             {
-                int index = SearchList[i].IndexOf(":");
+                int index = searchText.IndexOf(":");
                 if (index <= 0)
                     continue;
-                string command = SearchList[i][..index].ToLower(System.Globalization.CultureInfo.InvariantCulture);
-                string parameter = SearchList[i][(index+1)..];
+                string command = searchText[..index].ToLower(System.Globalization.CultureInfo.InvariantCulture).Trim();
+                string parameter = searchText[(index+1)..].Trim();
                 string replacedParameter = Replace(parameter, directoryname, filename, filename_ext, filepath, metaData);
+
+                //制御コマンド
+                if (command == "shortcut")  //ここまでに一つ以上の有効な歌詞があるならこの時点で切り上げる
+                {
+                    if (Return.Count> 0)
+                    {
+                        return Return.ToArray();
+                    }
+                }
 
                 switch (command)
                 {
@@ -168,7 +177,7 @@ namespace Titalyver2
                                 }
                             }
                             string[] dll = replacedParameter.Split(" ", 2);
-                            string[] lyrics = Plugins.GetLyrics(dll[0], title, artists, album, filepath,dll[1]);
+                            string[] lyrics = Plugins.GetLyrics(dll[0], title, artists, album, filepath, dll.Length >= 2 ? dll[1] : "");
                             if (lyrics != null && lyrics.Length > 0)
                             {
                                 foreach (string l in lyrics)
