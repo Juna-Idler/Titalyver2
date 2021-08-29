@@ -15,7 +15,7 @@ namespace Titalyver2
     //interface DLLを別に作るのが面倒なのでdynamicで
     public class LyricsSearcherPlugins
     {
-        private static readonly string Directory = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "plugin");
+        private static readonly string Directory = Path.Combine(AppContext.BaseDirectory, "plugin");
 
         private readonly Dictionary<string, dynamic> Plugins = new();
 

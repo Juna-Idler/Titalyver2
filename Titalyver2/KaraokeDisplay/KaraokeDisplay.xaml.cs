@@ -310,6 +310,7 @@ namespace Titalyver2
             SyncMode = (IgnoreKaraokeTag && Lyrics.Sync == LyricsContainer.SyncMode.Karaoke) ? LyricsContainer.SyncMode.Line : Lyrics.Sync;
             AtTagTimeOffset = Lyrics.AtTagContainer.Offset;
             MakeKaraokeLines();
+            ManualScrollY = 0;
         }
         public void UpdateAll()
         {
