@@ -527,5 +527,53 @@ namespace Titalyver2.Properties {
                 this["UnsyncNoRubySpace"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("%mydocuments%/Lyrics/<artist>/<album>/<title>\r\n%directoryname%/%filename%")]
+        public string SavePathList {
+            get {
+                return ((string)(this["SavePathList"]));
+            }
+            set {
+                this["SavePathList"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        public int SaveExtension {
+            get {
+                return ((int)(this["SaveExtension"]));
+            }
+            set {
+                this["SaveExtension"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        public int SaveOverwrite {
+            get {
+                return ((int)(this["SaveOverwrite"]));
+            }
+            set {
+                this["SaveOverwrite"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool AutoSave {
+            get {
+                return ((bool)(this["AutoSave"]));
+            }
+            set {
+                this["AutoSave"] = value;
+            }
+        }
     }
 }

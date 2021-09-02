@@ -97,12 +97,12 @@ namespace Titalyver2
         private readonly SolidColorBrush FadeStrokeBrush = new();
         private readonly SolidColorBrush FadeBackBrush = new();
 
-        private Pen ActivePen;
-        private Pen ActiveRubyPen;
-        private Pen SleepPen;
-        private Pen SleepRubyPen;
-        private Pen FadePen;
-        private Pen FadeRubyPen;
+        private readonly Pen ActivePen;
+        private readonly Pen ActiveRubyPen;
+        private readonly Pen SleepPen;
+        private readonly Pen SleepRubyPen;
+        private readonly Pen FadePen;
+        private readonly Pen FadeRubyPen;
 
         private UnbreakableWord[] Words;
         private double[] WordsWidth;
@@ -183,7 +183,7 @@ namespace Titalyver2
 
         public void SetLyricsLine(LyricsContainer.Line line)
         {
-            if (line.Sync == LyricsContainer.SyncMode.None)
+            if (line.Sync == LyricsContainer.SyncMode.Unsync)
                 return;
             StartTime = line.StartTime;
             Line = line;

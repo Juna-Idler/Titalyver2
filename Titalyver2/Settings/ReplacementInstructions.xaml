@@ -1,0 +1,21 @@
+﻿<Window x:Class="Titalyver2.ReplacementInstructions"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Titalyver2"
+        mc:Ignorable="d"
+        Title="Instructions" Height="300" Width="200" ShowInTaskbar="False" WindowStartupLocation="CenterOwner" WindowStyle="ToolWindow" SizeToContent="WidthAndHeight">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition  Height="auto"/>
+            <RowDefinition Height="*"/>
+            
+        </Grid.RowDefinitions>
+
+        <Button Grid.Row="0" Click="Button_Click" >Insert</Button>
+        <ListBox x:Name="ReplacementList" Grid.Row="1">
+        </ListBox>
+        
+    </Grid>
+</Window>

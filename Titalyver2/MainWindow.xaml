@@ -12,8 +12,10 @@
             <MenuItem Header="Settings" Click="SettingButton_Click"/>
             <Separator/>
             <MenuItem Header="TopMost" Click="MenuItemTopmost_Click" IsCheckable="True" />
-            <MenuItem Header="ReSearch" Click="MenuItemReload_Click"/>
             <MenuItem x:Name="Maximize" Header="Maximize" Click="Maximize_Click"/>
+            <Separator/>
+            <MenuItem Header="Save" Click="MenuItemSave_Click" />
+            <MenuItem Header="ReSearch" Click="MenuItemReload_Click"/>
             <Separator/>
             <MenuItem x:Name="SearchListCommand" IsEnabled="False" />
             <MenuItem Header="View Lyrics Text" Click="MenuItemText_Click"/>

@@ -134,5 +134,18 @@ string:&lt;lyrics&gt;</Value>
     <Setting Name="UnsyncNoRubySpace" Type="System.Double" Scope="User">
       <Value Profile="(Default)">0</Value>
     </Setting>
+    <Setting Name="SavePathList" Type="System.String" Scope="User">
+      <Value Profile="(Default)">%mydocuments%/Lyrics/&lt;artist&gt;/&lt;album&gt;/&lt;title&gt;
+%directoryname%/%filename%</Value>
+    </Setting>
+    <Setting Name="SaveExtension" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">0</Value>
+    </Setting>
+    <Setting Name="SaveOverwrite" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">0</Value>
+    </Setting>
+    <Setting Name="AutoSave" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

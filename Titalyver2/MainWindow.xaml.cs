@@ -18,7 +18,10 @@ namespace Titalyver2
     {
         private ITitalyverReceiver Receiver;
 
-        public readonly LyricsSearchers LyricsSearcher;
+        public LyricsSearchers LyricsSearcher { get; private set; } = new();
+        public LyricsSaver LyricsSaver { get; private set; } = new();
+
+        public bool AutoSave { get; set; }
 
         private LyricsSearchers.ReturnValue[] Lyrics;
         private int CurrentLyrics;
@@ -29,14 +32,13 @@ namespace Titalyver2
             InitializeComponent();
 
             KaraokeDisplay.SetLyrics("");
-            LyricsSearcher = new LyricsSearchers();
 
             RestoreSettings();
 
         }
         private void window_Loaded(object sender, RoutedEventArgs e)
         {
-            iTunesReceiverDll iTunesDll = new iTunesReceiverDll();
+            iTunesReceiverDll iTunesDll = new();
             if (iTunesDll.Load())
             {
                 Receiver = iTunesDll.GetReceiver();
@@ -47,7 +49,7 @@ namespace Titalyver2
             }
             if (Receiver == null)
             {
-                MMFReceiver mmfr = new MMFReceiver(PlaybackEvent);
+                MMFReceiver mmfr = new(PlaybackEvent);
                 Receiver = mmfr;
                 mmfr.ReadData();
                 ITitalyverReceiver.Data data = mmfr.GetData();
@@ -55,6 +57,8 @@ namespace Titalyver2
                     return;
                 SearchLyrics(data);
                 KaraokeDisplay.SetLyrics(Lyrics[0].Text);
+                SaveLyrics(data);
+
                 MultiLyricsNumber.Text = (CurrentLyrics + 1).ToString() + "/" + Lyrics.Length;
                 {
                     double delay = (MMFMessage.GetTimeOfDay() - data.TimeOfDay) / 1000.0;
@@ -136,6 +140,11 @@ namespace Titalyver2
 
             KaraokeDisplay.UnsyncRubyBottomSpace = set.UnsyncRubyBottomSpace;
             KaraokeDisplay.UnsyncNoRubyTopSpace = set.UnsyncNoRubySpace;
+
+            LyricsSaver.SetSaveList(set.SavePathList);
+            LyricsSaver.Extension = (LyricsSaver.EnumExtension)set.SaveExtension;
+            LyricsSaver.Overwrite = (LyricsSaver.EnumOverwrite)set.SaveOverwrite;
+            AutoSave = set.AutoSave;
         }
 
         private void SearchLyrics(ITitalyverReceiver.Data data)
@@ -147,6 +156,7 @@ namespace Titalyver2
                 lp = u.LocalPath + Uri.UnescapeDataString(u.Fragment);
             }
             Lyrics = LyricsSearcher.Search(lp, data.MetaData);
+
             CurrentLyrics = 0;
             if (Lyrics.Length > 1)
             {
@@ -156,6 +166,24 @@ namespace Titalyver2
             else
             {
                 MultiLyricsSwitchPanel.Visibility = Visibility.Hidden;
+            }
+        }
+        private void SaveLyrics(ITitalyverReceiver.Data data, bool manual = false)
+        {
+            if ((AutoSave && Lyrics[CurrentLyrics].Command == "plugin") || manual)
+            {
+                string lp = "";
+                if (!string.IsNullOrEmpty(data.FilePath))
+                {
+                    Uri u = new(data.FilePath);
+                    lp = u.LocalPath + Uri.UnescapeDataString(u.Fragment);
+                }
+
+                if (LyricsSaver.Save(KaraokeDisplay.LyricsText, KaraokeDisplay.Lyrics.Sync,
+                                     lp, data.MetaData, out string saved_path))
+                {
+
+                }
             }
         }
 
@@ -169,6 +197,7 @@ namespace Titalyver2
                 {
                     SearchLyrics(data);
                     KaraokeDisplay.SetLyrics(Lyrics[0].Text);
+                    SaveLyrics(data);
                 });
             }
             double time = -1;
@@ -285,11 +314,20 @@ namespace Titalyver2
         private void MenuItemReload_Click(object sender, RoutedEventArgs e)
         {
             int current = CurrentLyrics;
-            SearchLyrics(Receiver.GetData());
+            var data = Receiver.GetData();
+            SearchLyrics(data);
             if (current < Lyrics.Length)
                 CurrentLyrics = current;
             KaraokeDisplay.SetLyrics(Lyrics[CurrentLyrics].Text);
+            SaveLyrics(data);
+
             MultiLyricsNumber.Text = (CurrentLyrics + 1).ToString() + "/" + Lyrics.Length;
+        }
+        private void MenuItemSave_Click(object sender, RoutedEventArgs e)
+        {
+            ITitalyverReceiver.Data data = Receiver.GetData();
+
+            SaveLyrics(data, true);
         }
 
         private void window_ContextMenuOpening(object sender, System.Windows.Controls.ContextMenuEventArgs e)
@@ -322,7 +360,7 @@ namespace Titalyver2
         private void MenuItemText_Click(object sender, RoutedEventArgs e)
         {
             double h = System.Windows.SystemParameters.WorkArea.Height;
-            TextViewWindow tvw = new TextViewWindow();
+            TextViewWindow tvw = new();
             tvw.MaxHeight = h;
             System.Windows.Controls.TextBox tb = (System.Windows.Controls.TextBox)tvw.Content;
             tb.Text = Lyrics[CurrentLyrics].Text;
@@ -347,5 +385,6 @@ namespace Titalyver2
 
             MultiLyricsNumber.Text = (CurrentLyrics + 1).ToString() + "/" + Lyrics.Length;
         }
+
     }
 }

@@ -46,6 +46,9 @@ namespace Titalyver2
 
             MainWindow = mainWindow;
 
+
+            TabItemSave.Content = new SaveSettings(mainWindow);
+
         }
 
         #region Display
@@ -116,15 +119,16 @@ namespace Titalyver2
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            var dlg = new emanual.Wpf.Dialogs.FontDialogEx();
+            var dlg = new FontDialogEx
+            {
+                SelectedFontFamily = MainWindow.KaraokeDisplay.Typeface.FontFamily,
+                SelectedFontStyle = MainWindow.KaraokeDisplay.Typeface.Style,
+                SelectedFontWeight = MainWindow.KaraokeDisplay.Typeface.Weight,
+                SelectedFontStretch = MainWindow.KaraokeDisplay.Typeface.Stretch,
+                SelectedFontSize = MainWindow.KaraokeDisplay.FontSize,
 
-            dlg.SelectedFontFamily = MainWindow.KaraokeDisplay.Typeface.FontFamily;
-            dlg.SelectedFontStyle = MainWindow.KaraokeDisplay.Typeface.Style;
-            dlg.SelectedFontWeight = MainWindow.KaraokeDisplay.Typeface.Weight;
-            dlg.SelectedFontStretch = MainWindow.KaraokeDisplay.Typeface.Stretch;
-            dlg.SelectedFontSize = MainWindow.KaraokeDisplay.FontSize;
-
-            dlg.Owner = this;
+                Owner = this
+            };
 
             if (dlg.ShowDialog() == true)
             {
@@ -342,22 +346,8 @@ namespace Titalyver2
 
         #region Lyrics
 
-        private static readonly string[] Example = new string[] {
-            "%directoryname%",
-            "%filename%",
-            "%filename_ext%",
-            "%path%",
-            "",
-            "<title>",
-            "<artist>",
-            "<album>",
-            "Other <tagname>",
-        };
-
         private void InitializeLyrics(MainWindow mainWindow)
         {
-            ReplacerList.ItemsSource = Example;
-
             LyricsSerchList.Text = string.Join("\n", mainWindow.LyricsSearcher.SearchList);
 
             NoLyricsFormat.Text = mainWindow.LyricsSearcher.NoLyricsFormatText;
@@ -369,12 +359,8 @@ namespace Titalyver2
         private void LyricsSerchList_TextChanged(object sender, TextChangedEventArgs e)
         {
             if (MainWindow == null) return;
-            MainWindow.LyricsSearcher.SearchList.Clear();
-            using StringReader sr = new(LyricsSerchList.Text);
-            for (string line = sr.ReadLine(); line != null; line = sr.ReadLine())
-            {
-                MainWindow.LyricsSearcher.SearchList.Add(line);
-            }
+
+            MainWindow.LyricsSearcher.SetSearchList(LyricsSerchList.Text);
             Properties.Settings.Default.LyricsSearchList = LyricsSerchList.Text;
         }
 
@@ -389,6 +375,24 @@ namespace Titalyver2
             if (MainWindow == null) return;
             MainWindow.KaraokeDisplay.IgnoreKaraokeTag = (bool)IgnoreKaraoke.IsChecked;
             Properties.Settings.Default.IgnoreKaraoke = MainWindow.KaraokeDisplay.IgnoreKaraokeTag;
+        }
+
+        ReplacementInstructions SearcherInstruction;
+        private void Button_Click_1(object sender, RoutedEventArgs e)
+        {
+            if (SearcherInstruction != null)
+            {
+                SearcherInstruction.Activate();
+                return;
+            }
+
+            SearcherInstruction = new(ins =>
+            {
+                LyricsSerchList.SelectedText = ins;
+            });
+            SearcherInstruction.Owner = this;
+            SearcherInstruction.Closed += (s, e) => { SearcherInstruction = null; };
+            SearcherInstruction.Show();
         }
 
         #endregion Lyrics
@@ -460,15 +464,16 @@ namespace Titalyver2
 
         private void UnsyncFontSelect_Click(object sender, RoutedEventArgs e)
         {
-            var dlg = new emanual.Wpf.Dialogs.FontDialogEx();
+            var dlg = new FontDialogEx
+            {
+                SelectedFontFamily = MainWindow.KaraokeDisplay.UnsyncTypeface.FontFamily,
+                SelectedFontStyle = MainWindow.KaraokeDisplay.UnsyncTypeface.Style,
+                SelectedFontWeight = MainWindow.KaraokeDisplay.UnsyncTypeface.Weight,
+                SelectedFontStretch = MainWindow.KaraokeDisplay.UnsyncTypeface.Stretch,
+                SelectedFontSize = MainWindow.KaraokeDisplay.UnsyncFontSize,
 
-            dlg.SelectedFontFamily = MainWindow.KaraokeDisplay.UnsyncTypeface.FontFamily;
-            dlg.SelectedFontStyle = MainWindow.KaraokeDisplay.UnsyncTypeface.Style;
-            dlg.SelectedFontWeight = MainWindow.KaraokeDisplay.UnsyncTypeface.Weight;
-            dlg.SelectedFontStretch = MainWindow.KaraokeDisplay.UnsyncTypeface.Stretch;
-            dlg.SelectedFontSize = MainWindow.KaraokeDisplay.UnsyncFontSize;
-
-            dlg.Owner = this;
+                Owner = this
+            };
 
             if (dlg.ShowDialog() == true)
             {
@@ -597,5 +602,6 @@ namespace Titalyver2
             Properties.Settings.Default.UnsyncNoRubySpace = MainWindow.KaraokeDisplay.UnsyncNoRubyTopSpace;
             MainWindow.KaraokeDisplay.ResetUnsyncProp();
         }
+
     }
 }

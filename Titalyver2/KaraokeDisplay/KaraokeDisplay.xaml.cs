@@ -60,7 +60,7 @@ namespace Titalyver2
         public double StrokeThickness { get => (double)GetValue(StrokeThicknessProperty); set => SetValue(StrokeThicknessProperty, value); }
         public static readonly DependencyProperty StrokeThicknessProperty = DependencyProperty.Register(
             "StrokeThickness", typeof(double), typeof(KaraokeDisplay),
-            new FrameworkPropertyMetadata(2.0,OnChangeThickness));
+            new FrameworkPropertyMetadata(2.0, OnChangeThickness));
         private static void OnChangeThickness(DependencyObject dependencyObject, DependencyPropertyChangedEventArgs e)
         {
             KaraokeDisplay _this = (KaraokeDisplay)dependencyObject;
@@ -192,7 +192,7 @@ namespace Titalyver2
         public void SetUnsyncThickness(double thickness)
         {
             UnsyncStrokeThickness = thickness;
-            if (SyncMode == LyricsContainer.SyncMode.None)
+            if (SyncMode == LyricsContainer.SyncMode.Unsync)
                 foreach (UnsyncLine ul in List.Children)
                 {
                     ul.SetStrokeThickness(thickness);
@@ -207,7 +207,7 @@ namespace Titalyver2
         public Typeface UnsyncTypeface { get; private set; }
         public double UnsyncFontSize { get; private set; } = 10;
 
-        public void SetUnsyncFont(Typeface typeface,double size)
+        public void SetUnsyncFont(Typeface typeface, double size)
         {
             UnsyncFontSize = size;
             UnsyncTypeface = typeface;
@@ -241,7 +241,7 @@ namespace Titalyver2
 
         public void SetAutoScrollY(double time)
         {
-            if (SyncMode != LyricsContainer.SyncMode.None)
+            if (SyncMode != LyricsContainer.SyncMode.Unsync)
             {
                 AutoScrollY = GetAutoScroolY(time);
                 return;
@@ -263,7 +263,7 @@ namespace Titalyver2
             Typeface = new Typeface(Typeface.FontFamily, FontStyles.Italic, FontWeights.Bold, FontStretches.Condensed);
             UnsyncTypeface = Typeface;
 
-            SizeChanged += (s,e) =>
+            SizeChanged += (s, e) =>
             {
                 if (e.WidthChanged)
                 {
@@ -271,7 +271,7 @@ namespace Titalyver2
                         return;
                     switch (SyncMode)
                     {
-                        case LyricsContainer.SyncMode.None:
+                        case LyricsContainer.SyncMode.Unsync:
                             foreach (UnsyncLine ul in List.Children)
                             {
                                 ul.Width = ActualWidth;
@@ -319,7 +319,7 @@ namespace Titalyver2
 
             switch (SyncMode)
             {
-                case LyricsContainer.SyncMode.None:
+                case LyricsContainer.SyncMode.Unsync:
                     foreach (UnsyncLine ul in List.Children)
                     {
                         ul.Update();
@@ -343,7 +343,7 @@ namespace Titalyver2
 
         public void ResetUnsyncProp()
         {
-            if (SyncMode == LyricsContainer.SyncMode.None)
+            if (SyncMode == LyricsContainer.SyncMode.Unsync)
             {
                 UnsyncFillColor.Freeze();
                 UnsyncStrokeColor.Freeze();
@@ -378,8 +378,8 @@ namespace Titalyver2
 
             switch (SyncMode)
             {
-                case LyricsContainer.SyncMode.None:
-//                    foreach (UnsyncLine ul in List.Children)
+                case LyricsContainer.SyncMode.Unsync:
+                    //                    foreach (UnsyncLine ul in List.Children)
                     {
                     }
                     break;
@@ -394,7 +394,8 @@ namespace Titalyver2
                         sl.SleepStrokeColor = SleepStrokeColor;
                         sl.SetStrokeColor();
 
-                        sl.Update();                    }
+                        sl.Update();
+                    }
                     break;
                 case LyricsContainer.SyncMode.Karaoke:
                     foreach (KaraokeLineClip kl in List.Children)
@@ -420,7 +421,7 @@ namespace Titalyver2
             List.Children.Clear();
             switch (SyncMode)
             {
-                case LyricsContainer.SyncMode.None:
+                case LyricsContainer.SyncMode.Unsync:
                     {
                         using System.IO.StringReader sr = new(LyricsText);
                         for (string line = sr.ReadLine(); line != null; line = sr.ReadLine())
@@ -438,11 +439,11 @@ namespace Titalyver2
                     {
                         foreach (LyricsContainer.Line l in Lyrics.Lines)
                         {
-                           LineSyncLine sl = new(Typeface, FontSize,
-                                                 ActiveFillColor, ActiveStrokeColor,
-                                                 StrokeThickness, SleepFillColor, SleepStrokeColor, ActiveBackColor,
-                                                 LinePadding, RubyBottomSpace, NoRubyTopSpace,
-                                                 l, ActualWidth,TextAlignment);
+                            LineSyncLine sl = new(Typeface, FontSize,
+                                                  ActiveFillColor, ActiveStrokeColor,
+                                                  StrokeThickness, SleepFillColor, SleepStrokeColor, ActiveBackColor,
+                                                  LinePadding, RubyBottomSpace, NoRubyTopSpace,
+                                                  l, ActualWidth, TextAlignment);
                             _ = List.Children.Add(sl);
                         }
                         UpdateFrame();
@@ -590,7 +591,7 @@ namespace Titalyver2
             double time = Time - AtTagTimeOffset + UserTimeOffset;
             switch (SyncMode)
             {
-                case LyricsContainer.SyncMode.None:
+                case LyricsContainer.SyncMode.Unsync:
                     Canvas.SetTop(List, ManualScrollY + UnsyncVerticalOffsetY);
                     return;
                 case LyricsContainer.SyncMode.Line:
@@ -623,7 +624,7 @@ namespace Titalyver2
         private void CompositionTarget_Rendering(object sender, EventArgs e)
         {
             Time = Stopwatch.Elapsed.TotalSeconds + TimeOffset;
-//            UpdateFrame();
+            //            UpdateFrame();
         }
 
         private void OnChangeTextAlignment()
@@ -633,8 +634,8 @@ namespace Titalyver2
 
             switch (SyncMode)
             {
-                case LyricsContainer.SyncMode.None:
-//                    foreach (UnsyncLine ul in List.Children)
+                case LyricsContainer.SyncMode.Unsync:
+                    //                    foreach (UnsyncLine ul in List.Children)
                     {
                     }
                     break;
@@ -665,8 +666,8 @@ namespace Titalyver2
 
             switch (SyncMode)
             {
-                case LyricsContainer.SyncMode.None:
-//                    foreach (UnsyncLine ul in List.Children)
+                case LyricsContainer.SyncMode.Unsync:
+                    //                    foreach (UnsyncLine ul in List.Children)
                     {
                     }
                     break;
@@ -698,8 +699,8 @@ namespace Titalyver2
 
             switch (SyncMode)
             {
-                case LyricsContainer.SyncMode.None:
-//                    foreach (UnsyncLine ul in List.Children)
+                case LyricsContainer.SyncMode.Unsync:
+                    //                    foreach (UnsyncLine ul in List.Children)
                     {
                     }
                     break;
@@ -728,8 +729,8 @@ namespace Titalyver2
 
             switch (SyncMode)
             {
-                case LyricsContainer.SyncMode.None:
-//                    foreach (UnsyncLine ul in List.Children)
+                case LyricsContainer.SyncMode.Unsync:
+                    //                    foreach (UnsyncLine ul in List.Children)
                     {
                     }
                     break;
@@ -752,10 +753,9 @@ namespace Titalyver2
             }
         }
 
+        public LyricsContainer Lyrics { get; private set; }
+        public string LyricsText { get; private set; }
 
-
-        private LyricsContainer Lyrics;
-        private string LyricsText;
         private double AtTagTimeOffset;
 
         private LyricsContainer.SyncMode SyncMode;

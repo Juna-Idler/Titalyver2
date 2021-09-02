@@ -171,8 +171,10 @@ namespace Titalyver2
             if (Units[uindex].HasRuby && offset != 0)
                 return null;
 
-            List<Unit> units = new List<Unit>();
-            units.Add(new Unit(Units[uindex].BaseText[offset..], Units[uindex].RubyText));
+            List<Unit> units = new()
+            {
+                new Unit(Units[uindex].BaseText[offset..], Units[uindex].RubyText)
+            };
             if (length < 0)
                 length = int.MaxValue;
             length -= Units[uindex].BaseText.Length - offset;

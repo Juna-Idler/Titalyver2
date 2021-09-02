@@ -11,7 +11,7 @@ namespace Titalyver2
 
     public class LyricsContainer
     {
-        public enum SyncMode { None = 0, Line = 1, Karaoke = 3 }
+        public enum SyncMode { Null = 0, Line = 1, Karaoke = 3, Unsync = 4 }
 
         public AtTagContainer AtTagContainer { get; }
 
@@ -23,7 +23,7 @@ namespace Titalyver2
         {
             AtTagContainer = new(lyrics);
 
-            SyncMode sync = SyncMode.None;
+            SyncMode sync = SyncMode.Unsync;
             List<Line> lines = new();
             using StringReader sr = new(lyrics);
             for (string line = sr.ReadLine(); line != null; line = sr.ReadLine())
@@ -183,7 +183,7 @@ namespace Titalyver2
                 if (elements.Length == 1 && elements[0].StartTime >= 0)
                     Sync = SyncMode.Line;
                 else if (elements.Length <= 1)
-                    Sync = SyncMode.None;
+                    Sync = SyncMode.Unsync;
                 else
                     Sync = SyncMode.Karaoke;
             }

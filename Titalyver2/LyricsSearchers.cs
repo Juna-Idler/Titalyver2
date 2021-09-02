@@ -54,17 +54,20 @@ namespace Titalyver2
 
         public string NoLyricsFormatText { get; set; }
 
-        private string default_separator = ",";
+        private static string default_separator = ",";
 
 
-        private readonly Regex MetaTagNameRegex = new(@"<(.+?)(\|([^>]*))?>");
-        private string Replace(string s, string directoryname, string filename, string filename_ext, string filepath, Dictionary<string, string[]> metaData)
+        private static readonly Regex MetaTagNameRegex = new(@"<(.+?)(\|([^>]*))?>");
+        public static string Replace(string s, string directoryname, string filename, string filename_ext, string filepath, Dictionary<string, string[]> metaData)
         {
-            s = Regex.Replace(s, "%directoryname%", directoryname);
-            s = Regex.Replace(s, "%filename%", filename);
-            s = Regex.Replace(s, "%filename_ext%", filename_ext);
-            s = Regex.Replace(s, "%path%", filepath);
+            StringBuilder sb = new(s);
+            sb.Replace("%directoryname%", directoryname);
+            sb.Replace("%filename%", filename);
+            sb.Replace("%filename_ext%", filename_ext);
+            sb.Replace("%path%", filepath);
+            sb.Replace("%mydocuments%", System.Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments));
 
+            s = sb.ToString();
             string r = "";
 
             Match m;
@@ -73,22 +76,38 @@ namespace Titalyver2
                 r += s[..m.Index];
                 s = s[(m.Index + m.Value.Length)..];
 
-                foreach (KeyValuePair<string, string[]> d in metaData)
+                if (metaData != null)
                 {
-                    if (d.Key == m.Groups[1].Value)
+                    foreach (KeyValuePair<string, string[]> d in metaData)
                     {
-                        if (d.Value.Length == 1)
-                            r += d.Value[0];
-                        else
+                        if (d.Key == m.Groups[1].Value)
                         {
-                            string separator = m.Groups[3].Success ? m.Groups[3].Value : default_separator;
-                            r += string.Join(separator, d.Value);
-
+                            if (d.Value.Length == 1)
+                                r += ReplaceInvalidFileNameChars(d.Value[0]);
+                            else
+                            {
+                                string separator = m.Groups[3].Success ? m.Groups[3].Value : default_separator;
+                                r += ReplaceInvalidFileNameChars(string.Join(separator, d.Value));
+                            }
                         }
                     }
                 }
             }
             return r + s;
+        }
+        private static string ReplaceInvalidFileNameChars(string filename)
+        {
+            filename = filename.Replace("\\", "");
+            filename = filename.Replace('/', '／');
+
+            filename = filename.Replace(':', '：');
+            filename = filename.Replace('*', '＊');
+            filename = filename.Replace('?', '？');
+            filename = filename.Replace('"', '”');
+            filename = filename.Replace('<', '＜');
+            filename = filename.Replace('>', '＞');
+            filename = filename.Replace('|', '｜');
+            return filename;
         }
 
         public ReturnValue[] Search(string filepath, Dictionary<string, string[]> metaData)
@@ -127,7 +146,7 @@ namespace Titalyver2
                                 continue;
                             try
                             {
-                                ReturnValue value = new ReturnValue(command, parameter, replacedParameter, replacedParameter, File.ReadAllText(replacedParameter));
+                                ReturnValue value = new(command, parameter, replacedParameter, replacedParameter, File.ReadAllText(replacedParameter));
                                 if (InstantReply)
                                     return new[] { value };
                                 Return.Add(value);
@@ -143,7 +162,7 @@ namespace Titalyver2
 
                         if (replacedParameter != "")
                         {
-                            ReturnValue value = new ReturnValue(command, parameter, replacedParameter, "", replacedParameter);
+                            ReturnValue value = new(command, parameter, replacedParameter, "", replacedParameter);
                             if (InstantReply)
                                 return new[] { value };
                             Return.Add(value);

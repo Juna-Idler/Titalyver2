@@ -175,7 +175,17 @@
 
                             </TextBox>
                         </GroupBox>
-                        <CheckBox x:Name="IgnoreKaraoke" Click="CheckBox_Click" >Ignore Karaoke Tags</CheckBox>
+                       
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition/>
+                                <ColumnDefinition/>
+                                <ColumnDefinition/>
+                            </Grid.ColumnDefinitions>
+
+                            <CheckBox Grid.Column="0" x:Name="IgnoreKaraoke" Click="CheckBox_Click" >Ignore Karaoke Tags</CheckBox>
+                            <Button Grid.Column="2" Content="Replacement words" Click="Button_Click_1" />
+                        </Grid>
                         <Grid>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*"/>
@@ -185,10 +195,6 @@
                                 <TextBox x:Name="NoLyricsFormat" TextChanged="NoLyricsFormat_TextChanged" AcceptsReturn="True">
 
                                 </TextBox>
-                            </GroupBox>
-                            <GroupBox Header="Replacer" Grid.Column="1">
-                                <ListBox x:Name="ReplacerList" >
-                                </ListBox>
                             </GroupBox>
                         </Grid>
                     </StackPanel>
@@ -308,6 +314,10 @@
 
                     </StackPanel>
                 </ScrollViewer>
+            </TabItem>
+
+            <TabItem x:Name="TabItemSave" Header="Save" >
+                
             </TabItem>
 
         </TabControl>
