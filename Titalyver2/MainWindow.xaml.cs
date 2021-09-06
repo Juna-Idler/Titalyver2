@@ -333,9 +333,26 @@ namespace Titalyver2
         private void window_ContextMenuOpening(object sender, System.Windows.Controls.ContextMenuEventArgs e)
         {
             Maximize.IsChecked = WindowState == WindowState.Maximized;
-            OpenFolder.IsEnabled = !string.IsNullOrEmpty(Lyrics[CurrentLyrics].FilePath);
 
-            SearchListCommand.Header = Lyrics[CurrentLyrics].Command + ":" + Lyrics[CurrentLyrics].Parameter;
+            if (Lyrics == null)
+            {
+                OpenFolder.Visibility = Visibility.Hidden;
+                Save.Visibility = Visibility.Hidden;
+                ViewText.Visibility = Visibility.Hidden;
+                ReSearch.Visibility = Visibility.Hidden;
+                SearchListCommand.Visibility = Visibility.Hidden;
+            }
+            else
+            {
+                OpenFolder.Visibility = Visibility.Visible;
+                Save.Visibility = Visibility.Visible;
+                ViewText.Visibility = Visibility.Visible;
+                ReSearch.Visibility = Visibility.Visible;
+                SearchListCommand.Visibility = Visibility.Visible;
+
+                OpenFolder.IsEnabled = !string.IsNullOrEmpty(Lyrics[CurrentLyrics].FilePath);
+                SearchListCommand.Header = Lyrics[CurrentLyrics].Command + ":" + Lyrics[CurrentLyrics].Parameter;
+            }
         }
 
         private void Maximize_Click(object sender, RoutedEventArgs e)

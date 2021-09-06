@@ -758,7 +758,7 @@ namespace Titalyver2
 
         private double AtTagTimeOffset;
 
-        private LyricsContainer.SyncMode SyncMode;
+        private LyricsContainer.SyncMode SyncMode = LyricsContainer.SyncMode.Null;
 
 
         private readonly Stopwatch Stopwatch = new();

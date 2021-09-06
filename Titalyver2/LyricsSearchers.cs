@@ -50,6 +50,8 @@ namespace Titalyver2
 
         private readonly LyricsSearcherPlugins Plugins = new();
 
+        private readonly HashSet<string> EmptyFlag = new();
+
         public bool InstantReply;
 
         public string NoLyricsFormatText { get; set; }
@@ -135,6 +137,20 @@ namespace Titalyver2
                     if (Return.Count> 0)
                     {
                         return Return.ToArray();
+                    }
+                    //パラメータの文字列のEmptyフラグが設定されていても切り上げる
+                    if (!string.IsNullOrEmpty(replacedParameter) && EmptyFlag.Contains(replacedParameter))
+                    {
+                        return new[] { new ReturnValue(command, parameter, replacedParameter, "", Replace(NoLyricsFormatText, directoryname, filename, filename_ext, filepath, metaData)) };
+                    }
+                }
+                else if (command == "set_empty")
+                {
+                    //この時点で探索歌詞が空ならパラメータの文字列にEmptyフラグを設定する
+                    if (Return.Count == 0)
+                    {
+                        if (!string.IsNullOrEmpty(replacedParameter))
+                            _ = EmptyFlag.Add(replacedParameter);
                     }
                 }
 

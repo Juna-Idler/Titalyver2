@@ -14,11 +14,11 @@
             <MenuItem Header="TopMost" Click="MenuItemTopmost_Click" IsCheckable="True" />
             <MenuItem x:Name="Maximize" Header="Maximize" Click="Maximize_Click"/>
             <Separator/>
-            <MenuItem Header="Save" Click="MenuItemSave_Click" />
-            <MenuItem Header="ReSearch" Click="MenuItemReload_Click"/>
+            <MenuItem x:Name="Save" Header="Save" Click="MenuItemSave_Click" />
+            <MenuItem x:Name="ReSearch" Header="ReSearch" Click="MenuItemReload_Click"/>
             <Separator/>
             <MenuItem x:Name="SearchListCommand" IsEnabled="False" />
-            <MenuItem Header="View Lyrics Text" Click="MenuItemText_Click"/>
+            <MenuItem x:Name="ViewText" Header="View Lyrics Text" Click="MenuItemText_Click"/>
             <MenuItem x:Name="OpenFolder" Header="Open Lyrics File Folder" Click="OpenFolder_Click"/>
             <Separator/>
             <MenuItem Header="Close" Click="CloseButton_Click"/>
@@ -71,7 +71,7 @@
                 </Style>
             </Button.Style>
         </Button>
-        <StackPanel x:Name="MultiLyricsSwitchPanel" Canvas.Left="32" Canvas.Bottom="0" Orientation="Horizontal" Visibility="Visible">
+        <StackPanel x:Name="MultiLyricsSwitchPanel" Canvas.Right="32" Canvas.Bottom="0" Orientation="Horizontal" Visibility="Visible">
 
             <Button x:Name="PrevLyricsButton" Width="16" Height="32" Background="#00000000" BorderBrush="{x:Null}" Click="PrevLyricsButton_Click" >
                 <Canvas>

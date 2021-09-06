@@ -14,8 +14,16 @@
             </StackPanel>
         </GroupBox>
         <GroupBox Header="Save filepath list without extension" >
-            <TextBox x:Name="SavePath" AcceptsReturn="True" VerticalScrollBarVisibility="Auto" TextChanged="SavePath_TextChanged" />
-            
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="auto"/>
+                </Grid.RowDefinitions>
+                <TextBox Grid.Row="0" x:Name="SavePath" AcceptsReturn="True" VerticalScrollBarVisibility="Visible" TextChanged="SavePath_TextChanged" HorizontalScrollBarVisibility="Auto" />
+                <Button Grid.Row="1" HorizontalAlignment="Right" Padding="4,1,4,1" Click="Button_Click"  >Replacement words</Button> 
+
+            </Grid>
+           
         </GroupBox>
         <GroupBox Header="Extension" >
             <StackPanel Orientation="Horizontal" >

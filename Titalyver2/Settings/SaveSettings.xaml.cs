@@ -123,5 +123,24 @@ namespace Titalyver2
             MainWindow.AutoSave = CheckBoxAutoSave.IsChecked == true;
             Properties.Settings.Default.AutoSave = MainWindow.AutoSave;
         }
+
+        ReplacementInstructions SaverInstruction;
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            if (SaverInstruction != null)
+            {
+                SaverInstruction.Activate();
+                return;
+            }
+
+            SaverInstruction = new(ins =>
+            {
+                SavePath.SelectedText = ins;
+            });
+            SaverInstruction.Owner = Window.GetWindow(this);
+            SaverInstruction.Closed += (s, e) => { SaverInstruction = null; };
+            SaverInstruction.Show();
+        }
     }
 }

@@ -11,7 +11,7 @@ namespace Titalyver2
 
     public class LyricsContainer
     {
-        public enum SyncMode { Null = 0, Line = 1, Karaoke = 3, Unsync = 4 }
+        public enum SyncMode { Null = -1, Unsync = 0, Line = 1, Karaoke = 3 }
 
         public AtTagContainer AtTagContainer { get; }
 
