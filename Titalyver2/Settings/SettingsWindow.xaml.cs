@@ -31,7 +31,7 @@ namespace Titalyver2
     {
         private static readonly BrushConverter bc = new();
 
-        private MainWindow MainWindow;
+        private readonly MainWindow MainWindow;
 
 
         public SettingsWindow(MainWindow mainWindow)

@@ -21,7 +21,7 @@ namespace Titalyver2
     /// </summary>
     public partial class SaveSettings : UserControl
     {
-        private MainWindow MainWindow;
+        private readonly MainWindow MainWindow;
 
         public SaveSettings(MainWindow mainWindow)
         {

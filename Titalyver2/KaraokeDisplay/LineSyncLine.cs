@@ -388,9 +388,9 @@ namespace Titalyver2
 
             double offsetY = Padding.Top + (Line.HasRuby ? Typeface.CapsHeight * FontSize / 2 + RubyBottomSpace : NoRubyTopSpace);
 
-            Brush brush = null;
-            Pen wordPen = null;
-            Pen rubyPen = null;
+            Brush brush;
+            Pen wordPen;
+            Pen rubyPen;
 
             if (StartTime < Time && Time < EndTime - FadeInTime)
             {
