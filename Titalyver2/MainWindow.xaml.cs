@@ -3,6 +3,7 @@ using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.ComponentModel;
+using System.Threading.Tasks;
 
 using System.IO;
 
@@ -36,7 +37,7 @@ namespace Titalyver2
             RestoreSettings();
 
         }
-        private void window_Loaded(object sender, RoutedEventArgs e)
+        private async void window_Loaded(object sender, RoutedEventArgs e)
         {
             iTunesReceiverDll iTunesDll = new();
             if (iTunesDll.Load())
@@ -55,7 +56,7 @@ namespace Titalyver2
                 ITitalyverReceiver.Data data = mmfr.GetData();
                 if (!data.IsValid())
                     return;
-                SearchLyrics(data);
+                await SearchLyrics(data);
                 KaraokeDisplay.SetLyrics(Lyrics[0].Text);
                 SaveLyrics(data);
 
@@ -147,7 +148,7 @@ namespace Titalyver2
             AutoSave = set.AutoSave;
         }
 
-        private void SearchLyrics(ITitalyverReceiver.Data data)
+        private async Task SearchLyrics(ITitalyverReceiver.Data data)
         {
             string lp = "";
             if (!string.IsNullOrEmpty(data.FilePath))
@@ -155,7 +156,11 @@ namespace Titalyver2
                 Uri u = new(data.FilePath);
                 lp = u.LocalPath + Uri.UnescapeDataString(u.Fragment);
             }
-            Lyrics = LyricsSearcher.Search(lp, data.MetaData);
+            KaraokeDisplay.SetLyrics("Searching...");
+            Lyrics = null;
+            MultiLyricsSwitchPanel.Visibility = Visibility.Hidden;
+
+            Lyrics = await LyricsSearcher.Search(lp, data.MetaData);
 
             CurrentLyrics = 0;
             if (Lyrics.Length > 1)
@@ -193,9 +198,9 @@ namespace Titalyver2
             if (data.MetaDataUpdated)
             {
 
-                _ = Dispatcher.InvokeAsync(() =>
+                _ = Dispatcher.InvokeAsync(async () =>
                 {
-                    SearchLyrics(data);
+                    await SearchLyrics(data);
                     KaraokeDisplay.SetLyrics(Lyrics[0].Text);
                     SaveLyrics(data);
                 });
@@ -311,11 +316,11 @@ namespace Titalyver2
             Topmost = i.IsChecked;
         }
 
-        private void MenuItemReload_Click(object sender, RoutedEventArgs e)
+        private async void MenuItemReload_Click(object sender, RoutedEventArgs e)
         {
             int current = CurrentLyrics;
             var data = Receiver.GetData();
-            SearchLyrics(data);
+            await SearchLyrics(data);
             if (current < Lyrics.Length)
                 CurrentLyrics = current;
             KaraokeDisplay.SetLyrics(Lyrics[CurrentLyrics].Text);

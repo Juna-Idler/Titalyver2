@@ -71,7 +71,7 @@
                 </Style>
             </Button.Style>
         </Button>
-        <StackPanel x:Name="MultiLyricsSwitchPanel" Canvas.Right="32" Canvas.Bottom="0" Orientation="Horizontal" Visibility="Visible">
+        <StackPanel x:Name="MultiLyricsSwitchPanel" Canvas.Right="32" Canvas.Bottom="0" Orientation="Horizontal" Visibility="Hidden">
 
             <Button x:Name="PrevLyricsButton" Width="16" Height="32" Background="#00000000" BorderBrush="{x:Null}" Click="PrevLyricsButton_Click" >
                 <Canvas>

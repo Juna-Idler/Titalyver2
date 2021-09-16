@@ -50,9 +50,10 @@ namespace Titalyver2
 
         private readonly LyricsSearcherPlugins Plugins = new();
 
+        public int MillisecondsTimeout { get; set; } = 10000;
+
         private readonly HashSet<string> EmptyFlag = new();
 
-        public bool InstantReply;
 
         public string NoLyricsFormatText { get; set; }
 
@@ -112,7 +113,7 @@ namespace Titalyver2
             return filename;
         }
 
-        public ReturnValue[] Search(string filepath, Dictionary<string, string[]> metaData)
+        public async Task<ReturnValue[]> Search(string filepath, Dictionary<string, string[]> metaData)
         {
             string directoryname = Path.GetDirectoryName(filepath) ?? "";
             string filename = Path.GetFileNameWithoutExtension(filepath);
@@ -122,6 +123,9 @@ namespace Titalyver2
             string[] artists = null;
             string album = null;
             List<ReturnValue> Return = new();
+
+            List<Task<string[]>> pluginTasks = new();
+
             foreach (string searchText in SearchList)
             {
                 int index = searchText.IndexOf(":");
@@ -132,25 +136,52 @@ namespace Titalyver2
                 string replacedParameter = Replace(parameter, directoryname, filename, filename_ext, filepath, metaData);
 
                 //制御コマンド
-                if (command == "shortcut")  //ここまでに一つ以上の有効な歌詞があるならこの時点で切り上げる
+                if (command == "shortcut" || command == "set_empty")
                 {
-                    if (Return.Count> 0)
+                    if (pluginTasks.Count > 0)
                     {
-                        return Return.ToArray();
+                        _ = await Task.WhenAll(pluginTasks.ToArray());
+                        foreach (var t in pluginTasks)
+                        {
+                            int i = Return.FindIndex(r => r.Command == "plugin Reserved");
+                            ReturnValue r = Return[i];
+                            Return.RemoveAt(i);
+                            string[] lyrics = t.Result;
+                            if (lyrics != null && lyrics.Length > 0)
+                            {
+                                List<ReturnValue> ins = new(lyrics.Length);
+                                foreach (string l in lyrics)
+                                {
+                                    if (!string.IsNullOrEmpty(l))
+                                    {
+                                        ins.Add(new ReturnValue("plugin", r.Parameter, r.ReplacedParameter, "", l));
+                                    }
+                                }
+                                Return.InsertRange(i, ins);
+                            }
+                        }
+                        pluginTasks.Clear();
                     }
-                    //パラメータの文字列のEmptyフラグが設定されていても切り上げる
-                    if (!string.IsNullOrEmpty(replacedParameter) && EmptyFlag.Contains(replacedParameter))
+                    if (command == "shortcut")  //ここまでに一つ以上の有効な歌詞があるならこの時点で切り上げる
                     {
-                        return new[] { new ReturnValue(command, parameter, replacedParameter, "", Replace(NoLyricsFormatText, directoryname, filename, filename_ext, filepath, metaData)) };
+                        if (Return.Count> 0)
+                        {
+                            return Return.ToArray();
+                        }
+                        //パラメータの文字列のEmptyフラグが設定されていても切り上げる
+                        if (!string.IsNullOrEmpty(replacedParameter) && EmptyFlag.Contains(replacedParameter))
+                        {
+                            return new[] { new ReturnValue(command, parameter, replacedParameter, "", Replace(NoLyricsFormatText, directoryname, filename, filename_ext, filepath, metaData)) };
+                        }
                     }
-                }
-                else if (command == "set_empty")
-                {
-                    //この時点で探索歌詞が空ならパラメータの文字列にEmptyフラグを設定する
-                    if (Return.Count == 0)
+                    else if (command == "set_empty")
                     {
-                        if (!string.IsNullOrEmpty(replacedParameter))
-                            _ = EmptyFlag.Add(replacedParameter);
+                        //この時点で探索歌詞が空ならパラメータの文字列にEmptyフラグを設定する
+                        if (Return.Count == 0)
+                        {
+                            if (!string.IsNullOrEmpty(replacedParameter))
+                                _ = EmptyFlag.Add(replacedParameter);
+                        }
                     }
                 }
 
@@ -163,8 +194,6 @@ namespace Titalyver2
                             try
                             {
                                 ReturnValue value = new(command, parameter, replacedParameter, replacedParameter, File.ReadAllText(replacedParameter));
-                                if (InstantReply)
-                                    return new[] { value };
                                 Return.Add(value);
 
                             }
@@ -179,8 +208,6 @@ namespace Titalyver2
                         if (replacedParameter != "")
                         {
                             ReturnValue value = new(command, parameter, replacedParameter, "", replacedParameter);
-                            if (InstantReply)
-                                return new[] { value };
                             Return.Add(value);
                         }
                         break;
@@ -212,23 +239,38 @@ namespace Titalyver2
                                 }
                             }
                             string[] dll = replacedParameter.Split(" ", 2);
-                            string[] lyrics = Plugins.GetLyrics(dll[0], title, artists, album, filepath, dll.Length >= 2 ? dll[1] : "");
-                            if (lyrics != null && lyrics.Length > 0)
-                            {
-                                foreach (string l in lyrics)
-                                {
-                                    if (!string.IsNullOrEmpty(l))
-                                    {
-                                        Return.Add(new ReturnValue(command, parameter, replacedParameter, "", l));
-                                    }
-                                }
-                                if (InstantReply)
-                                   return Return.ToArray();
-                            }
+
+                            pluginTasks.Add(Plugins.GetLyrics(dll[0], title, artists, album, filepath, dll.Length >= 2 ? dll[1] : "", MillisecondsTimeout));
+                            Return.Add(new ReturnValue("plugin Reserved", parameter, replacedParameter, "", null));
                         }
                         break;
                 }
             }
+            if (pluginTasks.Count > 0)
+            {
+                _ = await Task.WhenAll(pluginTasks.ToArray());
+                foreach (var t in pluginTasks)
+                {
+                    int i = Return.FindIndex(r => r.Command == "plugin Reserved");
+                    ReturnValue r = Return[i];
+                    Return.RemoveAt(i);
+                    string[] lyrics = t.Result;
+                    if (lyrics != null && lyrics.Length > 0)
+                    {
+                        List<ReturnValue> ins = new(lyrics.Length);
+                        foreach (string l in lyrics)
+                        {
+                            if (!string.IsNullOrEmpty(l))
+                            {
+                                ins.Add(new ReturnValue("plugin", r.Parameter, r.ReplacedParameter, "", l));
+                            }
+                        }
+                        Return.InsertRange(i, ins);
+                    }
+                }
+                pluginTasks.Clear();
+            }
+
             if (Return.Count > 0)
             {
                 return Return.ToArray();
