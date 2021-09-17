@@ -52,6 +52,9 @@ namespace Titalyver2
 
         public int MillisecondsTimeout { get; set; } = 10000;
 
+        public LyricsSearcherPlugins.TimeoutReport[] GetTimeoutList() { return Plugins.TimeoutList.ToArray(); }
+
+
         private readonly HashSet<string> EmptyFlag = new();
 
 

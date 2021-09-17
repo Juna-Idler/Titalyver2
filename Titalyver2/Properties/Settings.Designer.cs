@@ -575,5 +575,17 @@ namespace Titalyver2.Properties {
                 this["AutoSave"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("10000")]
+        public int PluginTimeout {
+            get {
+                return ((int)(this["PluginTimeout"]));
+            }
+            set {
+                this["PluginTimeout"] = value;
+            }
+        }
     }
 }

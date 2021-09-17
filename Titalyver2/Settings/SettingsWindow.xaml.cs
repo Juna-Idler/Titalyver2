@@ -41,11 +41,11 @@ namespace Titalyver2
             Language = Language = XmlLanguage.GetLanguage(CultureInfo.CurrentUICulture.Name);
 
             InitializeDisplay(mainWindow);
-            InitializeLyrics(mainWindow);
             InitializeUnsync(mainWindow);
 
             MainWindow = mainWindow;
 
+            TabItemLyrics.Content = new LyricsSettings(mainWindow);
 
             TabItemSave.Content = new SaveSettings(mainWindow);
 
@@ -344,58 +344,6 @@ namespace Titalyver2
 
         #endregion Display
 
-        #region Lyrics
-
-        private void InitializeLyrics(MainWindow mainWindow)
-        {
-            LyricsSerchList.Text = string.Join("\n", mainWindow.LyricsSearcher.SearchList);
-
-            NoLyricsFormat.Text = mainWindow.LyricsSearcher.NoLyricsFormatText;
-
-            IgnoreKaraoke.IsChecked = mainWindow.KaraokeDisplay.IgnoreKaraokeTag;
-        }
-
-
-        private void LyricsSerchList_TextChanged(object sender, TextChangedEventArgs e)
-        {
-            if (MainWindow == null) return;
-
-            MainWindow.LyricsSearcher.SetSearchList(LyricsSerchList.Text);
-            Properties.Settings.Default.LyricsSearchList = LyricsSerchList.Text;
-        }
-
-        private void NoLyricsFormat_TextChanged(object sender, TextChangedEventArgs e)
-        {
-            if (MainWindow == null) return;
-            MainWindow.LyricsSearcher.NoLyricsFormatText = NoLyricsFormat.Text;
-            Properties.Settings.Default.NoLyricsFormat = NoLyricsFormat.Text;
-        }
-        private void CheckBox_Click(object sender, RoutedEventArgs e)
-        {
-            if (MainWindow == null) return;
-            MainWindow.KaraokeDisplay.IgnoreKaraokeTag = (bool)IgnoreKaraoke.IsChecked;
-            Properties.Settings.Default.IgnoreKaraoke = MainWindow.KaraokeDisplay.IgnoreKaraokeTag;
-        }
-
-        ReplacementInstructions SearcherInstruction;
-        private void Button_Click_1(object sender, RoutedEventArgs e)
-        {
-            if (SearcherInstruction != null)
-            {
-                SearcherInstruction.Activate();
-                return;
-            }
-
-            SearcherInstruction = new(ins =>
-            {
-                LyricsSerchList.SelectedText = ins;
-            });
-            SearcherInstruction.Owner = this;
-            SearcherInstruction.Closed += (s, e) => { SearcherInstruction = null; };
-            SearcherInstruction.Show();
-        }
-
-        #endregion Lyrics
 
         private void Window_StateChanged(object sender, EventArgs e)
         {

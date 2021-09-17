@@ -167,41 +167,8 @@
                 </ScrollViewer>
             </TabItem>
 
-            <TabItem Header="Lyrics">
-                <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" >
-                    <StackPanel Background="{DynamicResource {x:Static SystemColors.ControlBrushKey}}">
-                        <GroupBox Header="Search List" >
-                            <Grid>
-                                <Grid.RowDefinitions>
-                                    <RowDefinition/>
-                                    <RowDefinition/>
-                                </Grid.RowDefinitions>
-                                <TextBox Grid.Row="0" x:Name="LyricsSerchList" VerticalScrollBarVisibility="Visible" HorizontalScrollBarVisibility="Auto" TextChanged="LyricsSerchList_TextChanged" AcceptsReturn="True" />
-                                <Button Grid.Row="1" Grid.Column="2" Content="Replacement words" Click="Button_Click_1" HorizontalAlignment="Right" Padding="4,1,4,1" />
-                            </Grid>
-                        </GroupBox>
-                       
-                        <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition/>
-                                <ColumnDefinition/>
-                            </Grid.ColumnDefinitions>
-
-                            <CheckBox Grid.Column="0" x:Name="IgnoreKaraoke" Click="CheckBox_Click" Margin="8,0,0,0" >Ignore Karaoke Tags</CheckBox>
-                        </Grid>
-                        <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="auto"/>
-                            </Grid.ColumnDefinitions>
-                            <GroupBox Header="No Lyrics Format">
-                                <TextBox x:Name="NoLyricsFormat" TextChanged="NoLyricsFormat_TextChanged" AcceptsReturn="True">
-
-                                </TextBox>
-                            </GroupBox>
-                        </Grid>
-                    </StackPanel>
-                </ScrollViewer>
+            <TabItem x:Name="TabItemLyrics" Header="Lyrics">
+                
             </TabItem>
 
             <TabItem Header="Unsync">

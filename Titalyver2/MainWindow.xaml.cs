@@ -120,6 +120,8 @@ namespace Titalyver2
 
             KaraokeDisplay.IgnoreKaraokeTag = set.IgnoreKaraoke;
 
+            LyricsSearcher.MillisecondsTimeout = set.PluginTimeout;
+
 
             ff = new(set.UnsyncFontFamily);
             try { fsy = (FontStyle)TypeDescriptor.GetConverter(typeof(FontStyle)).ConvertFromString(set.UnsyncFontStyle); }
