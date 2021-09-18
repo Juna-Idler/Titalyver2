@@ -587,5 +587,29 @@ namespace Titalyver2.Properties {
                 this["PluginTimeout"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("30")]
+        public int WheelDelta {
+            get {
+                return ((int)(this["WheelDelta"]));
+            }
+            set {
+                this["WheelDelta"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool SpecifyWheelDelta {
+            get {
+                return ((bool)(this["SpecifyWheelDelta"]));
+            }
+            set {
+                this["SpecifyWheelDelta"] = value;
+            }
+        }
     }
 }

@@ -1,16 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 
 using System.IO;
 
@@ -48,6 +40,8 @@ namespace Titalyver2
             TabItemLyrics.Content = new LyricsSettings(mainWindow);
 
             TabItemSave.Content = new SaveSettings(mainWindow);
+
+            TabItemOthers.Content = new OthersSettings(mainWindow);
 
         }
 
@@ -355,8 +349,13 @@ namespace Titalyver2
         private void ButtonSave_Click(object sender, RoutedEventArgs e)
         {
             Properties.Settings.Default.Save();
-//            System.Configuration.Configuration config = System.Configuration.ConfigurationManager.OpenExeConfiguration(System.Configuration.ConfigurationUserLevel.PerUserRoamingAndLocal);
-//            config.FilePath;
+
+        }
+        private void ButtonFolder_Click(object sender, RoutedEventArgs e)
+        {
+            System.Configuration.Configuration config = System.Configuration.ConfigurationManager.OpenExeConfiguration(System.Configuration.ConfigurationUserLevel.PerUserRoamingAndLocal);
+            _ = System.Diagnostics.Process.Start("EXPLORER.EXE", @"/select," + config.FilePath);
+
         }
 
         private void ButtonClose_Click(object sender, RoutedEventArgs e)

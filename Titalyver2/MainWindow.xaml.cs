@@ -27,6 +27,9 @@ namespace Titalyver2
         private LyricsSearchers.ReturnValue[] Lyrics;
         private int CurrentLyrics;
 
+        public bool SpecifyWheelDelta { get; set; }
+        public int WheelDelta { get; set; }
+
 
         public MainWindow()
         {
@@ -148,6 +151,9 @@ namespace Titalyver2
             LyricsSaver.Extension = (LyricsSaver.EnumExtension)set.SaveExtension;
             LyricsSaver.Overwrite = (LyricsSaver.EnumOverwrite)set.SaveOverwrite;
             AutoSave = set.AutoSave;
+
+            SpecifyWheelDelta = set.SpecifyWheelDelta;
+            WheelDelta = set.WheelDelta;
         }
 
         private async Task SearchLyrics(ITitalyverReceiver.Data data)
@@ -248,7 +254,7 @@ namespace Titalyver2
 
         private void Window_MouseWheel(object sender, MouseWheelEventArgs e)
         {
-            KaraokeDisplay.ManualScrollY += e.Delta;
+            KaraokeDisplay.ManualScrollY += SpecifyWheelDelta ? e.Delta / Mouse.MouseWheelDeltaForOneLine * WheelDelta : e.Delta;
         }
 
         private void Window_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
