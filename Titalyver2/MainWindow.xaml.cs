@@ -23,6 +23,7 @@ namespace Titalyver2
         public LyricsSaver LyricsSaver { get; private set; } = new();
 
         public bool AutoSave { get; set; }
+        public string LastSaveFile { get; set; }
 
         private LyricsSearchers.ReturnValue[] Lyrics;
         private int CurrentLyrics;
@@ -195,7 +196,7 @@ namespace Titalyver2
                 if (LyricsSaver.Save(KaraokeDisplay.LyricsText, KaraokeDisplay.Lyrics.Sync,
                                      lp, data.MetaData, out string saved_path))
                 {
-
+                    LastSaveFile = saved_path;
                 }
             }
         }
@@ -342,6 +343,17 @@ namespace Titalyver2
 
             SaveLyrics(data, true);
         }
+        private void Delete_Click(object sender, RoutedEventArgs e)
+        {
+            if (string.IsNullOrEmpty(LastSaveFile))
+                return;
+            var result = MessageBox.Show($"{LastSaveFile}", "Delete last saved file", MessageBoxButton.OKCancel);
+            if (result == MessageBoxResult.OK)
+            {
+                File.Delete(LastSaveFile);
+                LastSaveFile = null;
+            }
+        }
 
         private void window_ContextMenuOpening(object sender, System.Windows.Controls.ContextMenuEventArgs e)
         {
@@ -366,6 +378,8 @@ namespace Titalyver2
                 OpenFolder.IsEnabled = !string.IsNullOrEmpty(Lyrics[CurrentLyrics].FilePath);
                 SearchListCommand.Header = Lyrics[CurrentLyrics].Command + ":" + Lyrics[CurrentLyrics].Parameter;
             }
+            Delete.IsEnabled = !string.IsNullOrEmpty(LastSaveFile);
+
         }
 
         private void Maximize_Click(object sender, RoutedEventArgs e)
