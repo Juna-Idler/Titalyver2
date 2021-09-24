@@ -87,7 +87,7 @@ namespace Titalyver2
                 }
                 if (Result)
                 {
-                    Mutex.ReleaseMutex();
+                    Mutex?.ReleaseMutex();
                     Result = false;
                 }
             }
