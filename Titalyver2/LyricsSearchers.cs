@@ -113,6 +113,7 @@ namespace Titalyver2
             filename = filename.Replace('<', '＜');
             filename = filename.Replace('>', '＞');
             filename = filename.Replace('|', '｜');
+            filename = filename.Replace('.', '．');
             return filename;
         }
 
