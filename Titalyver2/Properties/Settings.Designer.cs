@@ -304,8 +304,8 @@ namespace Titalyver2.Properties {
         [global::System.Configuration.DefaultSettingValueAttribute(@"file:%directoryname%/%filename%.kra
 file:%directoryname%/%filename%.lrc
 file:%directoryname%/%filename%.txt
-file:%mydocuments%/Lyrics/%artists%/%album%/%title%.lrc
-file:%mydocuments%/Lyrics/%artists%/%album%/%title%.txt
+file:%mydocuments%/Lyrics/%artists%/%album%-%title%.lrc
+file:%mydocuments%/Lyrics/%artists%/%album%-%title%.txt
 string:<lyrics>
 shortcut:%path%%artists%%album%%title%
  plugin:
@@ -537,7 +537,7 @@ set_empty:%path%%artists%%album%%title%")]
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("%mydocuments%/Lyrics/%artists%/%album%/%title%\r\n%directoryname%/%filename%")]
+        [global::System.Configuration.DefaultSettingValueAttribute("%mydocuments%/Lyrics/%artists%/%album%-%title%\r\n%directoryname%/%filename%")]
         public string SavePathList {
             get {
                 return ((string)(this["SavePathList"]));

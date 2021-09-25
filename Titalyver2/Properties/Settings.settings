@@ -75,8 +75,8 @@
       <Value Profile="(Default)">file:%directoryname%/%filename%.kra
 file:%directoryname%/%filename%.lrc
 file:%directoryname%/%filename%.txt
-file:%mydocuments%/Lyrics/%artists%/%album%/%title%.lrc
-file:%mydocuments%/Lyrics/%artists%/%album%/%title%.txt
+file:%mydocuments%/Lyrics/%artists%/%album%-%title%.lrc
+file:%mydocuments%/Lyrics/%artists%/%album%-%title%.txt
 string:&lt;lyrics&gt;
 shortcut:%path%%artists%%album%%title%
  plugin:
@@ -141,7 +141,7 @@ set_empty:%path%%artists%%album%%title%</Value>
       <Value Profile="(Default)">0</Value>
     </Setting>
     <Setting Name="SavePathList" Type="System.String" Scope="User">
-      <Value Profile="(Default)">%mydocuments%/Lyrics/%artists%/%album%/%title%
+      <Value Profile="(Default)">%mydocuments%/Lyrics/%artists%/%album%-%title%
 %directoryname%/%filename%</Value>
     </Setting>
     <Setting Name="SaveExtension" Type="System.Int32" Scope="User">

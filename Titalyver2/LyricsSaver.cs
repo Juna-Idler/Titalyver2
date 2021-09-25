@@ -46,6 +46,23 @@ namespace Titalyver2
 
             foreach (string l in SaveList)
             {
+                if ((l.Contains("%artists%",StringComparison.InvariantCultureIgnoreCase) &&
+                    (data.Artists.Length == 0 || (data.Artists.Length == 1 && string.IsNullOrWhiteSpace(data.Artists[0])))) ||
+                    (l.Contains("%album%",StringComparison.InvariantCultureIgnoreCase) && string.IsNullOrWhiteSpace(data.Album)) ||
+                    (l.Contains("%title%",StringComparison.InvariantCultureIgnoreCase) && string.IsNullOrWhiteSpace(data.Title)))
+                {
+                    continue;
+                }
+                if (string.IsNullOrWhiteSpace(data.FilePath) &&
+                    (l.Contains("%path%",StringComparison.InvariantCultureIgnoreCase) ||
+                    l.Contains("%directoryname%", StringComparison.InvariantCultureIgnoreCase) ||
+                    l.Contains("%filename%", StringComparison.InvariantCultureIgnoreCase) ||
+                    l.Contains("%filename_ext%", StringComparison.InvariantCultureIgnoreCase)))
+                {
+                    continue;
+                }
+
+
                 string savename = LyricsSearchers.Replace(l, musicfilepath, data.Title, data.Artists, ",", data.Album, data.MetaData);
                 string ext = "";
                 switch (Extension)
