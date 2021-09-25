@@ -159,17 +159,12 @@ namespace Titalyver2
 
         private async Task SearchLyrics(ITitalyverReceiver.Data data)
         {
-            string lp = "";
-            if (!string.IsNullOrEmpty(data.FilePath))
-            {
-                Uri u = new(data.FilePath);
-                lp = u.LocalPath + Uri.UnescapeDataString(u.Fragment);
-            }
+
             KaraokeDisplay.SetLyrics("Searching...");
             Lyrics = null;
             MultiLyricsSwitchPanel.Visibility = Visibility.Hidden;
 
-            Lyrics = await LyricsSearcher.Search(lp, data.MetaData);
+            Lyrics = await LyricsSearcher.Search(data);
 
             CurrentLyrics = 0;
             if (Lyrics.Length > 1)
@@ -186,15 +181,9 @@ namespace Titalyver2
         {
             if ((AutoSave && Lyrics[CurrentLyrics].Command == "plugin") || manual)
             {
-                string lp = "";
-                if (!string.IsNullOrEmpty(data.FilePath))
-                {
-                    Uri u = new(data.FilePath);
-                    lp = u.LocalPath + Uri.UnescapeDataString(u.Fragment);
-                }
 
                 if (LyricsSaver.Save(KaraokeDisplay.LyricsText, KaraokeDisplay.Lyrics.Sync,
-                                     lp, data.MetaData, out string saved_path))
+                                     data, out string saved_path))
                 {
                     LastSaveFile = saved_path;
                 }

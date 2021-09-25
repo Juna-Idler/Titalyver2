@@ -44,8 +44,7 @@ namespace iTunesReceiver
         {
             if (iTunes.App == null)
                 return;
-            iTunesLib.IITTrack track = iTrack as iTunesLib.IITTrack;
-            if (track == null)
+            if (iTrack is not iTunesLib.IITTrack track)
                 return;
 
             data.PlaybackEvent = playbackEvent;
@@ -69,8 +68,7 @@ namespace iTunesReceiver
             data.UpdateTimeOfDay = data.TimeOfDay;
             data.MetaDataUpdated = true;
 
-            iTunesLib.IITFileOrCDTrack file = track as iTunesLib.IITFileOrCDTrack;
-            if (file != null)
+            if (track is iTunesLib.IITFileOrCDTrack file)
             {
                 data.FilePath = file.Location;
                 if (!string.IsNullOrEmpty(file.Lyrics))
@@ -98,6 +96,11 @@ namespace iTunesReceiver
             data.MetaData.Add("trackcount", new string[] { track.TrackCount.ToString() });
             data.MetaData.Add("tracknumber", new string[] { track.TrackNumber.ToString() });
             data.MetaData.Add("year", new string[] { track.Year.ToString() });
+
+            data.Title = track.Name;
+            data.Artists = new string[] { track.Artist };
+            data.Album = track.Album;
+            data.Duration = track.Duration;
 
             OnPlaybackEventChanged?.Invoke(data);
         }

@@ -64,14 +64,19 @@ namespace Titalyver2
 
 
         private static readonly Regex MetaTagNameRegex = new(@"<(.+?)(\|([^>]*))?>");
-        public static string Replace(string s, string directoryname, string filename, string filename_ext, string filepath, Dictionary<string, string[]> metaData)
+        public static string Replace(string s, string filepath,
+                                     string title, string[] artists, string artists_separator, string album,
+                                     Dictionary<string, string[]> metaData)
         {
+            string directoryname = Path.GetDirectoryName(filepath) ?? "";
+            string filename = Path.GetFileNameWithoutExtension(filepath);
+            string filename_ext = Path.GetFileName(filepath);
+
             StringBuilder sb = new(s);
-            sb.Replace("%directoryname%", directoryname);
-            sb.Replace("%filename%", filename);
-            sb.Replace("%filename_ext%", filename_ext);
-            sb.Replace("%path%", filepath);
-            sb.Replace("%mydocuments%", System.Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments));
+            _ = sb.Replace("%directoryname%", directoryname);
+            _ = sb.Replace("%filename%", filename).Replace("%filename_ext%", filename_ext).Replace("%path%", filepath);
+            _ = sb.Replace("%mydocuments%", Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments));
+            _ = sb.Replace("%title%", title).Replace("%artist%", string.Join(artists_separator, artists)).Replace("%album%", album);
 
             s = sb.ToString();
             string r = "";
@@ -117,15 +122,16 @@ namespace Titalyver2
             return filename;
         }
 
-        public async Task<ReturnValue[]> Search(string filepath, Dictionary<string, string[]> metaData)
+        public async Task<ReturnValue[]> Search(ITitalyverReceiver.Data data)
         {
-            string directoryname = Path.GetDirectoryName(filepath) ?? "";
-            string filename = Path.GetFileNameWithoutExtension(filepath);
-            string filename_ext = Path.GetFileName(filepath);
+            string filepath = "";
+            if (!string.IsNullOrEmpty(data.FilePath))
+            {
+                Uri u = new(data.FilePath);
+                filepath = u.LocalPath + Uri.UnescapeDataString(u.Fragment);
+            }
 
-            string title = null;
-            string[] artists = null;
-            string album = null;
+
             List<ReturnValue> Return = new();
 
             List<Task<string[]>> pluginTasks = new();
@@ -137,7 +143,8 @@ namespace Titalyver2
                     continue;
                 string command = searchText[..index].ToLower(System.Globalization.CultureInfo.InvariantCulture).Trim();
                 string parameter = searchText[(index+1)..].Trim();
-                string replacedParameter = Replace(parameter, directoryname, filename, filename_ext, filepath, metaData);
+                string replacedParameter = Replace(parameter, filepath,
+                                                   data.Title, data.Artists, ",", data.Album, data.MetaData);
 
                 //制御コマンド
                 if (command == "shortcut" || command == "set_empty")
@@ -175,7 +182,9 @@ namespace Titalyver2
                         //パラメータの文字列のEmptyフラグが設定されていても切り上げる
                         if (!string.IsNullOrEmpty(replacedParameter) && EmptyFlag.Contains(replacedParameter))
                         {
-                            return new[] { new ReturnValue(command, parameter, replacedParameter, "", Replace(NoLyricsFormatText, directoryname, filename, filename_ext, filepath, metaData)) };
+                            string text = Replace(NoLyricsFormatText, filepath,
+                                                  data.Title, data.Artists, ",", data.Album, data.MetaData);
+                            return new[] { new ReturnValue(command, parameter, replacedParameter, "", text) };
                         }
                     }
                     else if (command == "set_empty")
@@ -217,34 +226,9 @@ namespace Titalyver2
                         break;
                     case "plugin":
                         {
-                            if (title == null)
-                            {
-                                string[] t;
-                                if (metaData != null &&
-                                    (metaData.TryGetValue("title", out t) ||         //foobar2000
-                                     metaData.TryGetValue("tracktitle", out t) ||    //MusicBee
-                                     metaData.TryGetValue("name", out t)))            //iTunes
-                                {
-                                    title = t[0];
-                                }
-                            }
-                            if (artists == null)
-                            {
-                                if (metaData != null && !metaData.TryGetValue("artist", out artists))
-                                {
-                                    artists = null;
-                                }
-                            }
-                            if (album == null)
-                            {
-                                if (metaData != null && metaData.TryGetValue("album", out string[] a))
-                                {
-                                    album = a[0];
-                                }
-                            }
                             string[] dll = replacedParameter.Split(" ", 2);
 
-                            pluginTasks.Add(Plugins.GetLyrics(dll[0], title, artists, album, filepath, dll.Length >= 2 ? dll[1] : "", MillisecondsTimeout));
+                            pluginTasks.Add(Plugins.GetLyrics(dll[0],data.Title, data.Artists, data.Album, filepath, dll.Length >= 2 ? dll[1] : "", MillisecondsTimeout));
                             Return.Add(new ReturnValue("plugin Reserved", parameter, replacedParameter, "", null));
                         }
                         break;
@@ -279,8 +263,11 @@ namespace Titalyver2
             {
                 return Return.ToArray();
             }
-
-            return new[] { new ReturnValue("No Lyrics", "", "", "", Replace(NoLyricsFormatText, directoryname, filename, filename_ext, filepath, metaData)) };
+            {
+                string text = Replace(NoLyricsFormatText, filepath,
+                          data.Title, data.Artists, ",", data.Album, data.MetaData);
+                return new[] { new ReturnValue("No Lyrics", "", "", "", text) };
+            }
         }
 
 

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Linq;
 
 using System.IO;
 using System.IO.MemoryMappedFiles;
@@ -269,6 +270,11 @@ namespace Titalyver2
                     return false;
                 }
                 data.FilePath = document.RootElement.GetProperty("path").GetString();
+                data.Title = document.RootElement.GetProperty("title").GetString();
+                data.Artists = document.RootElement.GetProperty("artists").EnumerateArray().Select(a => a.GetString()).ToArray();
+                data.Album = document.RootElement.GetProperty("album").GetString();
+                data.Duration = document.RootElement.GetProperty("duration").GetDouble();
+
                 JsonElement meta = document.RootElement.GetProperty("meta");
                 foreach (JsonProperty e in meta.EnumerateObject())
                 {
@@ -278,12 +284,7 @@ namespace Titalyver2
                             data.MetaData.Add(e.Name.ToLower(null), new string[] { e.Value.GetString() });
                             break;
                         case JsonValueKind.Array:
-                            string[] array = new string[e.Value.GetArrayLength()];
-                            int i = 0;
-                            foreach (JsonElement a in e.Value.EnumerateArray())
-                            {
-                                array[i++] = a.ValueKind == JsonValueKind.String ? a.GetString() : a.GetRawText();
-                            }
+                            string[] array = e.Value.EnumerateArray().Select(a => a.ValueKind == JsonValueKind.String ? a.GetString() : a.GetRawText()).ToArray();
                             data.MetaData.Add(e.Name.ToLower(null), array);
                             break;
                         default:

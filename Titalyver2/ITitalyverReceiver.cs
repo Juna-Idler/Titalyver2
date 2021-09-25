@@ -37,6 +37,11 @@ namespace Titalyver2
             //おそらく音楽ファイルの多分フルパス
             public string FilePath;
 
+            public string Title;
+            public string[] Artists;
+            public string Album;
+            public double Duration;
+
             public bool MetaDataUpdated;//Metadataに変更があるか？
             public bool IsValid() => MetaData != null;
         }

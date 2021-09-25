@@ -29,11 +29,14 @@ namespace Titalyver2
             }
         }
 
-        public bool Save(string lyrics, LyricsContainer.SyncMode sync, string musicfilepath, Dictionary<string, string[]> metaData, out string saved_path)
+        public bool Save(string lyrics, LyricsContainer.SyncMode sync, ITitalyverReceiver.Data data, out string saved_path)
         {
-            string directoryname = Path.GetDirectoryName(musicfilepath) ?? "";
-            string filename = Path.GetFileNameWithoutExtension(musicfilepath);
-            string filename_ext = Path.GetFileName(musicfilepath);
+            string musicfilepath = "";
+            if (!string.IsNullOrEmpty(data.FilePath))
+            {
+                Uri u = new(data.FilePath);
+                musicfilepath = u.LocalPath + Uri.UnescapeDataString(u.Fragment);
+            }
 
             if (sync == LyricsContainer.SyncMode.Null)
             {
@@ -43,7 +46,7 @@ namespace Titalyver2
 
             foreach (string l in SaveList)
             {
-                string savename = LyricsSearchers.Replace(l, directoryname, filename, filename_ext, musicfilepath, metaData);
+                string savename = LyricsSearchers.Replace(l, musicfilepath, data.Title, data.Artists, ",", data.Album, data.MetaData);
                 string ext = "";
                 switch (Extension)
                 {
