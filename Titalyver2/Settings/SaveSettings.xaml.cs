@@ -71,7 +71,7 @@ namespace Titalyver2
             if (MainWindow == null) return;
 
             MainWindow.LyricsSaver.SetSaveList(SavePath.Text);
-            Properties.Settings.Default.LyricsSearchList = SavePath.Text;
+            Properties.Settings.Default.SavePathList = SavePath.Text;
         }
 
         private void RadioButtonSaveExt_Click(object sender, RoutedEventArgs e)

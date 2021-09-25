@@ -32,17 +32,20 @@ namespace Titalyver2
 
         private static readonly Dictionary<string, string> Replacements = new()
         {
-            { "%directoryname%", "Music file directory"},
-            { "%filename%", "Music file name"},
-            { "%filename_ext%", "Music file name with extension"},
-            { "%path%", "Music file full path"},
-            { "%mydocments%","My Documents folder" },
-
-            {"", ""},
-            {"<title><tracktitle><name>", "Track title name"},
-            {"<artist>", "Artist(s)"},
-            {"<album>", "Album"},
-            {"Other <tagname>", ""},
+            { "%title%", "Track title name" },
+            { "%artists%", "Artist(s) name" },
+            { "%album%", "Album name" },
+            { "%directoryname%", "Music file directory" },
+            { "%filename%", "Music file name" },
+            { "%filename_ext%", "Music file name with extension" },
+            { "%path%", "Music file full path" },
+            { "%mydocments%", "My Documents folder" },
+            { "", "" },
+            { "<Player dependent tagname>", "" },
+            { "example", "" },
+            { "<title><tracktitle><name>", "Track title name" },
+            { "<artist>", "Artist(s)" },
+            { "<album>", "Album" },
         };
 
         private void Button_Click(object sender, RoutedEventArgs e)

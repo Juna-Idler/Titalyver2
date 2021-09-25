@@ -75,12 +75,18 @@
       <Value Profile="(Default)">file:%directoryname%/%filename%.kra
 file:%directoryname%/%filename%.lrc
 file:%directoryname%/%filename%.txt
-string:&lt;lyrics&gt;</Value>
+file:%mydocuments%/Lyrics/%artists%/%album%/%title%.lrc
+file:%mydocuments%/Lyrics/%artists%/%album%/%title%.txt
+string:&lt;lyrics&gt;
+shortcut:%path%%artists%%album%%title%
+ plugin:
+set_empty:%path%%artists%%album%%title%</Value>
     </Setting>
     <Setting Name="NoLyricsFormat" Type="System.String" Scope="User">
-      <Value Profile="(Default)">&lt;artist&gt;
-&lt;title&gt;&lt;tracktitle&gt;&lt;name&gt;
-&lt;album&gt;
+      <Value Profile="(Default)">%artists%
+%title%
+%album%
+%path%
 </Value>
     </Setting>
     <Setting Name="IgnoreKaraoke" Type="System.Boolean" Scope="User">
@@ -135,7 +141,7 @@ string:&lt;lyrics&gt;</Value>
       <Value Profile="(Default)">0</Value>
     </Setting>
     <Setting Name="SavePathList" Type="System.String" Scope="User">
-      <Value Profile="(Default)">%mydocuments%/Lyrics/&lt;artist&gt;/&lt;album&gt;/&lt;title&gt;
+      <Value Profile="(Default)">%mydocuments%/Lyrics/%artists%/%album%/%title%
 %directoryname%/%filename%</Value>
     </Setting>
     <Setting Name="SaveExtension" Type="System.Int32" Scope="User">

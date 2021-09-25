@@ -301,8 +301,15 @@ namespace Titalyver2.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("file:%directoryname%/%filename%.kra\r\nfile:%directoryname%/%filename%.lrc\r\nfile:%d" +
-            "irectoryname%/%filename%.txt\r\nstring:<lyrics>")]
+        [global::System.Configuration.DefaultSettingValueAttribute(@"file:%directoryname%/%filename%.kra
+file:%directoryname%/%filename%.lrc
+file:%directoryname%/%filename%.txt
+file:%mydocuments%/Lyrics/%artists%/%album%/%title%.lrc
+file:%mydocuments%/Lyrics/%artists%/%album%/%title%.txt
+string:<lyrics>
+shortcut:%path%%artists%%album%%title%
+ plugin:
+set_empty:%path%%artists%%album%%title%")]
         public string LyricsSearchList {
             get {
                 return ((string)(this["LyricsSearchList"]));
@@ -314,7 +321,7 @@ namespace Titalyver2.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("<artist>\r\n<title><tracktitle><name>\r\n<album>\r\n")]
+        [global::System.Configuration.DefaultSettingValueAttribute("%artists%\r\n%title%\r\n%album%\r\n%path%\r\n")]
         public string NoLyricsFormat {
             get {
                 return ((string)(this["NoLyricsFormat"]));
@@ -530,7 +537,7 @@ namespace Titalyver2.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("%mydocuments%/Lyrics/<artist>/<album>/<title>\r\n%directoryname%/%filename%")]
+        [global::System.Configuration.DefaultSettingValueAttribute("%mydocuments%/Lyrics/%artists%/%album%/%title%\r\n%directoryname%/%filename%")]
         public string SavePathList {
             get {
                 return ((string)(this["SavePathList"]));
