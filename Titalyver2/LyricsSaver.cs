@@ -53,7 +53,7 @@ namespace Titalyver2
                 {
                     continue;
                 }
-                if (string.IsNullOrWhiteSpace(data.FilePath) &&
+                if (string.IsNullOrWhiteSpace(musicfilepath) &&
                     (l.Contains("%path%",StringComparison.InvariantCultureIgnoreCase) ||
                     l.Contains("%directoryname%", StringComparison.InvariantCultureIgnoreCase) ||
                     l.Contains("%filename%", StringComparison.InvariantCultureIgnoreCase) ||
