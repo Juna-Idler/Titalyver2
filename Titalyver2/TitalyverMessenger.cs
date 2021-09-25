@@ -269,13 +269,19 @@ namespace Titalyver2
                     data.MetaData = null;
                     return false;
                 }
+                JsonElement meta = document.RootElement.GetProperty("meta");
                 data.FilePath = document.RootElement.GetProperty("path").GetString();
                 data.Title = document.RootElement.GetProperty("title").GetString();
-                data.Artists = document.RootElement.GetProperty("artists").EnumerateArray().Select(a => a.GetString()).ToArray();
+                {
+                    JsonElement artists = document.RootElement.GetProperty("artists");
+                    if (artists.ValueKind == JsonValueKind.Array)
+                        data.Artists = artists.EnumerateArray().Select(a => a.GetString()).ToArray();
+                    else
+                        data.Artists = new string[] { artists.GetString() };
+                }
                 data.Album = document.RootElement.GetProperty("album").GetString();
                 data.Duration = document.RootElement.GetProperty("duration").GetDouble();
 
-                JsonElement meta = document.RootElement.GetProperty("meta");
                 foreach (JsonProperty e in meta.EnumerateObject())
                 {
                     switch (e.Value.ValueKind)
