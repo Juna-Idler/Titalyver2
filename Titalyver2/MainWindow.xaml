@@ -15,9 +15,10 @@
             <MenuItem x:Name="Maximize" Header="Maximize" Click="Maximize_Click"/>
             <Separator/>
             <MenuItem x:Name="Save" Header="Save" Click="MenuItemSave_Click" />
-            <MenuItem x:Name="Delete" Header="DeleteLastSave" Click="Delete_Click" />
+            <MenuItem x:Name="OpenLastSaveFolder" Header="Open Last Save Folder" Click="OpenSaveFolder_Click" />
             <MenuItem x:Name="ReSearch" Header="ReSearch" Click="MenuItemReload_Click"/>
             <Separator/>
+            <MenuItem x:Name="MusicData" Header="Music Data" Click="MusicData_Click" />
             <MenuItem x:Name="SearchListCommand" IsEnabled="False" />
             <MenuItem x:Name="ViewText" Header="View Lyrics Text" Click="MenuItemText_Click"/>
             <MenuItem x:Name="OpenFolder" Header="Open Lyrics File Folder" Click="OpenFolder_Click"/>

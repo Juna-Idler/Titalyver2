@@ -10,6 +10,9 @@ using System.IO;
 using System.Windows.Data;
 using System.Globalization;
 
+using System.Text.Json;
+
+
 namespace Titalyver2
 {
     /// <summary>
@@ -332,16 +335,15 @@ namespace Titalyver2
 
             SaveLyrics(data, true);
         }
-        private void Delete_Click(object sender, RoutedEventArgs e)
+        private void OpenSaveFolder_Click(object sender, RoutedEventArgs e)
         {
             if (string.IsNullOrEmpty(LastSaveFile))
                 return;
-            var result = MessageBox.Show($"{LastSaveFile}", "Delete last saved file", MessageBoxButton.OKCancel);
-            if (result == MessageBoxResult.OK)
-            {
-                File.Delete(LastSaveFile);
-                LastSaveFile = null;
-            }
+
+            string directoryname = Path.GetDirectoryName(LastSaveFile);
+            string filename = Path.GetFileName(LastSaveFile);
+            string filepath = Path.Combine(directoryname, filename);
+            _ = System.Diagnostics.Process.Start("EXPLORER.EXE", @"/select," + filepath);
         }
 
         private void window_ContextMenuOpening(object sender, System.Windows.Controls.ContextMenuEventArgs e)
@@ -350,24 +352,25 @@ namespace Titalyver2
 
             if (Lyrics == null)
             {
-                OpenFolder.Visibility = Visibility.Hidden;
-                Save.Visibility = Visibility.Hidden;
-                ViewText.Visibility = Visibility.Hidden;
-                ReSearch.Visibility = Visibility.Hidden;
-                SearchListCommand.Visibility = Visibility.Hidden;
+                OpenFolder.IsEnabled = false;
+                Save.IsEnabled = false;
+                ViewText.IsEnabled = false;
+                ReSearch.IsEnabled = false;
+                SearchListCommand.IsEnabled = false;
+                MusicData.IsEnabled = false;
             }
             else
             {
-                OpenFolder.Visibility = Visibility.Visible;
-                Save.Visibility = Visibility.Visible;
-                ViewText.Visibility = Visibility.Visible;
-                ReSearch.Visibility = Visibility.Visible;
-                SearchListCommand.Visibility = Visibility.Visible;
+                Save.IsEnabled = true;
+                ViewText.IsEnabled = true;
+                ReSearch.IsEnabled = true;
+                SearchListCommand.IsEnabled = true;
+                MusicData.IsEnabled = true;
 
                 OpenFolder.IsEnabled = !string.IsNullOrEmpty(Lyrics[CurrentLyrics].FilePath);
                 SearchListCommand.Header = Lyrics[CurrentLyrics].Command + ":" + Lyrics[CurrentLyrics].Parameter;
             }
-            Delete.IsEnabled = !string.IsNullOrEmpty(LastSaveFile);
+            OpenLastSaveFolder.IsEnabled = !string.IsNullOrEmpty(LastSaveFile);
 
         }
 
@@ -397,6 +400,24 @@ namespace Titalyver2
             tvw.MaxHeight = h;
             System.Windows.Controls.TextBox tb = (System.Windows.Controls.TextBox)tvw.Content;
             tb.Text = Lyrics[CurrentLyrics].Text;
+            tvw.Owner = this;
+            tvw.Show();
+        }
+        private void MusicData_Click(object sender, RoutedEventArgs e)
+        {
+            double h = System.Windows.SystemParameters.WorkArea.Height;
+            TextViewWindow tvw = new();
+            tvw.MaxHeight = h;
+            System.Windows.Controls.TextBox tb = (System.Windows.Controls.TextBox)tvw.Content;
+            var data = Receiver.GetData();
+            tb.Text = $"Title={data.Title}\nArtists={string.Join(',', data.Artists)}\nAlbum={data.Album}\nPath={data.FilePath}\nDuration={data.Duration}\n";
+
+            JsonSerializerOptions options = new()
+            {
+                WriteIndented = true,
+                Encoder = System.Text.Encodings.Web.JavaScriptEncoder.Create( System.Text.Unicode.UnicodeRanges.All)
+            };
+            tb.Text += System.Text.RegularExpressions.Regex.Unescape(JsonSerializer.Serialize(data.MetaData, options));
             tvw.Owner = this;
             tvw.Show();
         }
