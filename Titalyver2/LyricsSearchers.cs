@@ -76,7 +76,9 @@ namespace Titalyver2
             _ = sb.Replace("%directoryname%", directoryname);
             _ = sb.Replace("%filename%", filename).Replace("%filename_ext%", filename_ext).Replace("%path%", filepath);
             _ = sb.Replace("%mydocuments%", Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments));
-            _ = sb.Replace("%title%", title).Replace("%artists%", string.Join(artists_separator, artists)).Replace("%album%", album);
+            _ = sb.Replace("%title%", ReplaceInvalidFileNameChars(title))
+                  .Replace("%artists%", ReplaceInvalidFileNameChars(string.Join(artists_separator, artists)))
+                  .Replace("%album%", ReplaceInvalidFileNameChars(album));
 
             s = sb.ToString();
             string r = "";
@@ -118,7 +120,8 @@ namespace Titalyver2
             filename = filename.Replace('<', '＜');
             filename = filename.Replace('>', '＞');
             filename = filename.Replace('|', '｜');
-            filename = filename.Replace('.', '．');
+
+            filename = Regex.Replace(filename,@"\.$","．");
             return filename;
         }
 
