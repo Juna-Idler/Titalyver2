@@ -20,6 +20,8 @@ namespace Titalyver2
     /// </summary>
     public partial class MainWindow : Window
     {
+        private Juna.WindowMoveSize windowMoveSize;
+
         private ITitalyverReceiver Receiver;
 
         public LyricsSearchers LyricsSearcher { get; private set; } = new();
@@ -46,6 +48,8 @@ namespace Titalyver2
         }
         private async void window_Loaded(object sender, RoutedEventArgs e)
         {
+            windowMoveSize = new(this, 12, 16);
+
             iTunesReceiverDll iTunesDll = new();
             if (iTunesDll.Load())
             {
@@ -250,10 +254,10 @@ namespace Titalyver2
             KaraokeDisplay.ManualScrollY += SpecifyWheelDelta ? e.Delta / Mouse.MouseWheelDeltaForOneLine * WheelDelta : e.Delta;
         }
 
-        private void Window_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
-        {
-            DragMove();
-        }
+//        private void Window_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+//        {
+//            DragMove();
+//        }
 
         private void Window_MouseDown(object sender, MouseButtonEventArgs e)
         {
@@ -348,6 +352,12 @@ namespace Titalyver2
 
         private void window_ContextMenuOpening(object sender, System.Windows.Controls.ContextMenuEventArgs e)
         {
+            if (Mouse.LeftButton == MouseButtonState.Pressed)
+            {
+                e.Handled = true;
+                return;
+            }
+
             Maximize.IsChecked = WindowState == WindowState.Maximized;
 
             if (Lyrics == null)

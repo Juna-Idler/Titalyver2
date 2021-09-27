@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:Titalyver2"
         mc:Ignorable="d"
         Title="Titalyver" Height="450" Width="800" WindowStyle="None" AllowsTransparency="True" Background="#7F000000"
-        ResizeMode="CanResizeWithGrip" MouseWheel="Window_MouseWheel" MouseLeftButtonDown="Window_MouseLeftButtonDown" MouseDown="Window_MouseDown" ScrollViewer.VerticalScrollBarVisibility="Disabled" SizeChanged="window_SizeChanged" ContextMenuOpening="window_ContextMenuOpening" MouseDoubleClick="window_MouseDoubleClick" Loaded="window_Loaded" Closed="window_Closed" MinWidth="100" MinHeight="100">
+        ResizeMode="NoResize" MouseWheel="Window_MouseWheel" MouseDown="Window_MouseDown" ScrollViewer.VerticalScrollBarVisibility="Disabled" SizeChanged="window_SizeChanged" ContextMenuOpening="window_ContextMenuOpening" MouseDoubleClick="window_MouseDoubleClick" Loaded="window_Loaded" Closed="window_Closed" MinWidth="100" MinHeight="100">
     <Window.ContextMenu>
         <ContextMenu>
             <MenuItem Header="Settings" Click="SettingButton_Click"/>
@@ -29,7 +29,7 @@
     <Canvas x:Name="Screen" ClipToBounds="True">
         <local:KaraokeDisplay x:Name="KaraokeDisplay" Width="{Binding ActualWidth, ElementName=window, Mode=OneWay}" Height="{Binding ActualHeight, ElementName=window, Mode=OneWay}" />
 
-        <Button x:Name="SettingButton" Canvas.Left="0" Canvas.Top="0" Width="32" Height="32" BorderBrush="{x:Null}" Click="SettingButton_Click" Background="#00000000">
+        <Button x:Name="SettingButton" Canvas.Left="0" Canvas.Top="0" Width="32" Height="32" BorderBrush="{x:Null}" Click="SettingButton_Click" Background="#00000000" BorderThickness="0,0,0,0">
             <Button.Content>
                 <Canvas>
                     <Path Stroke="white" StrokeThickness="2" Data="M-10,-7 l20,0 M-10,0 l20,0 M-10,7 l20,0">
@@ -73,7 +73,8 @@
                 </Style>
             </Button.Style>
         </Button>
-        <StackPanel x:Name="MultiLyricsSwitchPanel" Canvas.Right="32" Canvas.Bottom="0" Orientation="Horizontal" Visibility="Hidden">
+
+        <StackPanel x:Name="MultiLyricsSwitchPanel" Canvas.Right="12" Canvas.Bottom="0" Orientation="Horizontal" Visibility="Hidden">
 
             <Button x:Name="PrevLyricsButton" Width="16" Height="32" Background="#00000000" BorderBrush="{x:Null}" Click="PrevLyricsButton_Click" >
                 <Canvas>
@@ -98,7 +99,7 @@
             </Button>
 
         </StackPanel>
-        <ToggleButton x:Name="SliderButton" Canvas.Left="0" Canvas.Bottom="0" Width="32" Height="32" Click="SliderButton_Click" Background="#00000000" BorderBrush="{x:Null}" >
+        <ToggleButton x:Name="SliderButton" Canvas.Left="0" Canvas.Bottom="0" Width="32" Height="32" Click="SliderButton_Click" Background="#00000000" BorderBrush="{x:Null}" BorderThickness="0,0,0,0" >
             <Canvas>
                 <Path Stroke="white" StrokeThickness="2" Data="M-10,0 l20,0 M0,-5 l0,11">
                     <Path.Effect>
