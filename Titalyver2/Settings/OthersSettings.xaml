@@ -5,7 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:Titalyver2"
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800">
+             d:DesignHeight="300" d:DesignWidth="600">
     <StackPanel Background="{DynamicResource {x:Static SystemColors.ControlBrushKey}}">
         <GroupBox Header="Wheel Delta">
             <StackPanel Orientation="Horizontal">
@@ -14,6 +14,10 @@
             </StackPanel>
 
         </GroupBox>
+        <GroupBox Header="No Lyrics Format">
+            <TextBox x:Name="NoLyricsFormat" TextChanged="NoLyricsFormat_TextChanged" AcceptsReturn="True">
 
+            </TextBox>
+        </GroupBox>
     </StackPanel>
 </UserControl>

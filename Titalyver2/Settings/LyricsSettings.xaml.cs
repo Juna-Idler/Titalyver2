@@ -29,7 +29,6 @@ namespace Titalyver2
 
             LyricsSerchList.Text = string.Join("\n", mainWindow.LyricsSearcher.SearchList);
 
-            NoLyricsFormat.Text = mainWindow.LyricsSearcher.NoLyricsFormatText;
 
             IgnoreKaraoke.IsChecked = mainWindow.KaraokeDisplay.IgnoreKaraokeTag;
 
@@ -47,12 +46,6 @@ namespace Titalyver2
             Properties.Settings.Default.LyricsSearchList = LyricsSerchList.Text;
         }
 
-        private void NoLyricsFormat_TextChanged(object sender, TextChangedEventArgs e)
-        {
-            if (MainWindow == null) return;
-            MainWindow.LyricsSearcher.NoLyricsFormatText = NoLyricsFormat.Text;
-            Properties.Settings.Default.NoLyricsFormat = NoLyricsFormat.Text;
-        }
         private void CheckBox_Click(object sender, RoutedEventArgs e)
         {
             if (MainWindow == null) return;

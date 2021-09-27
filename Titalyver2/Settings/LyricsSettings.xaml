@@ -5,31 +5,23 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:Titalyver2"
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800">
-    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" >
-        <StackPanel Background="{DynamicResource {x:Static SystemColors.ControlBrushKey}}">
-            <GroupBox Header="Search List" >
-                <Grid>
-                    <Grid.RowDefinitions>
-                        <RowDefinition/>
-                        <RowDefinition/>
-                    </Grid.RowDefinitions>
-                    <TextBox Grid.Row="0" x:Name="LyricsSerchList" VerticalScrollBarVisibility="Visible" HorizontalScrollBarVisibility="Auto" TextChanged="LyricsSerchList_TextChanged" AcceptsReturn="True" />
-                    <Button Grid.Row="1" Grid.Column="2" Content="Replacement words" Click="Button_Click_1" HorizontalAlignment="Right" Padding="4,1,4,1" />
-                </Grid>
-            </GroupBox>
-
-            <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="auto"/>
-                </Grid.ColumnDefinitions>
-                <GroupBox Header="No Lyrics Format">
-                    <TextBox x:Name="NoLyricsFormat" TextChanged="NoLyricsFormat_TextChanged" AcceptsReturn="True">
-
-                    </TextBox>
-                </GroupBox>
-            </Grid>
+             d:DesignHeight="300" d:DesignWidth="600">
+    <Grid Background="{DynamicResource {x:Static SystemColors.ControlBrushKey}}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+        </Grid.RowDefinitions>
+            <TextBox Grid.Row="0" x:Name="LyricsSerchList" VerticalScrollBarVisibility="Visible" HorizontalScrollBarVisibility="Auto" TextChanged="LyricsSerchList_TextChanged" AcceptsReturn="True" Margin="2,0,2,0" />
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+            <CheckBox Grid.Column="0" x:Name="IgnoreKaraoke" Click="CheckBox_Click" Margin="8,0,0,0" VerticalAlignment="Center" >Ignore Karaoke Tags</CheckBox>
+            <Button Grid.Column="1" Content="Replacement words" Click="Button_Click_1" HorizontalAlignment="Right" Padding="4,1,4,1" Margin="0,0,2,0" />
+        </Grid>
+        <GroupBox Header="Timeout" Grid.Row="2">
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition/>
@@ -37,13 +29,13 @@
                     <ColumnDefinition/>
                 </Grid.ColumnDefinitions>
 
-                <CheckBox Grid.Column="0" x:Name="IgnoreKaraoke" Click="CheckBox_Click" Margin="8,0,0,0" VerticalAlignment="Center" >Ignore Karaoke Tags</CheckBox>
-                <StackPanel Orientation="Horizontal" Grid.Column="1">
+                <StackPanel Orientation="Horizontal" Grid.Column="0">
                     <Label>Plugin Timeout (sec)</Label>
                     <local:NumericUpDown x:Name="PluginTimeout" Minimum="1" ResetValue="10" Value="10" ValueChanged="PluginTimeout_ValueChanged" Width="64" ButtonPadding="2,0,2,0" TextAlignment="Center" Margin="0,2,0,2" />
                 </StackPanel>
                 <Button x:Name="TimeoutReport" Grid.Column="2" Click="TimeoutReport_Click" Margin="4,2,4,2">Timeout Report</Button>
             </Grid>
-        </StackPanel>
-    </ScrollViewer>
+        </GroupBox>
+    </Grid>
+
 </UserControl>

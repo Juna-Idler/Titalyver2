@@ -29,6 +29,8 @@ namespace Titalyver2
             CheckBoxSpecify.IsChecked = mainWindow.SpecifyWheelDelta;
             WheelDelta.Value = mainWindow.WheelDelta;
 
+            NoLyricsFormat.Text = mainWindow.LyricsSearcher.NoLyricsFormatText;
+
             MainWindow = mainWindow;
         }
 
@@ -47,5 +49,13 @@ namespace Titalyver2
             MainWindow.WheelDelta = (int)WheelDelta.Value;
             Properties.Settings.Default.WheelDelta = MainWindow.WheelDelta;
         }
+
+        private void NoLyricsFormat_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            if (MainWindow == null) return;
+            MainWindow.LyricsSearcher.NoLyricsFormatText = NoLyricsFormat.Text;
+            Properties.Settings.Default.NoLyricsFormat = NoLyricsFormat.Text;
+        }
+
     }
 }
