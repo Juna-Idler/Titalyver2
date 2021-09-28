@@ -7,21 +7,21 @@ using System.Threading.Tasks;
 using Titalyver2;
 namespace iTunesReceiver
 {
-    public class iTunesReceiver : Titalyver2.ITitalyverReceiver
+    public class iTunesReceiver : ITitalyverReceiver
     {
-        public event ITitalyverReceiver.PlaybackEventHandler OnPlaybackEventChanged;
+        public event PlaybackEventHandler OnPlaybackEventChanged;
 
         void ITitalyverReceiver.Terminalize()
         {
             iTunes.Dispose();
         }
 
-        ITitalyverReceiver.Data ITitalyverReceiver.GetData() { return data; }
+        ReceiverData ITitalyverReceiver.GetData() { return data; }
 
         private readonly iTunes iTunes;
-        private ITitalyverReceiver.Data data;
+        private ReceiverData data;
 
-        private int LastUpdateTrackDatabaseID = 0;
+        private int LastUpdateTrackDatabaseID = -1;
 
 
 
@@ -40,78 +40,75 @@ namespace iTunesReceiver
             return ((now.Hour * 60 + now.Minute) * 60 + now.Second) * 1000 + now.Millisecond;
         }
 
-        private void OnPlayerEvent(object iTrack, ITitalyverReceiver.EnumPlaybackEvent playbackEvent)
+        private void OnPlayerEvent(object iTrack, EnumPlaybackEvent playbackEvent)
         {
             if (iTunes.App == null)
                 return;
             if (iTrack is not iTunesLib.IITTrack track)
                 return;
 
-            data.PlaybackEvent = playbackEvent;
-            data.SeekTime = iTunes.App.PlayerPositionMS / 1000.0;
-            data.TimeOfDay = GetTimeOfDay();
+            EnumPlaybackEvent pbevent = playbackEvent;
+            double seekTime = iTunes.App.PlayerPositionMS / 1000.0;
+            int timeOfDay = GetTimeOfDay();
 
-            if (data.MetaData == null)
-                data.MetaData = new Dictionary<string, string[]>();
-            else if (track.TrackDatabaseID == LastUpdateTrackDatabaseID)
+            if (track.TrackDatabaseID == LastUpdateTrackDatabaseID)
             {
-                data.MetaDataUpdated = false;
-
+                data = new ReceiverData(pbevent, seekTime, timeOfDay, data.UpdateTimeOfDay,
+                    data.FilePath, data.Title, data.Artists, data.Album, data.Duration,
+                    data.MetaData, false);
                 OnPlaybackEventChanged?.Invoke(data);
                 return;
             }
-            else
-                data.MetaData.Clear();
+            Dictionary<string, string[]> meta = new();
 
             LastUpdateTrackDatabaseID = track.TrackDatabaseID;
 
-            data.UpdateTimeOfDay = data.TimeOfDay;
-            data.MetaDataUpdated = true;
+            string filePath = "";
 
             if (track is iTunesLib.IITFileOrCDTrack file)
             {
-                data.FilePath = file.Location;
+                filePath = file.Location;
                 if (!string.IsNullOrEmpty(file.Lyrics))
                 {
-                    data.MetaData.Add("lyrics", new string[] { file.Lyrics });
+                   meta.Add("lyrics", new string[] { file.Lyrics });
                 }
             }
-            data.MetaData.Add("album", new string[] { track.Album });
-            data.MetaData.Add("artist", new string[] { track.Artist });
-            data.MetaData.Add("bitrate", new string[] { track.BitRate.ToString() });
-            data.MetaData.Add("bpm", new string[] { track.BPM.ToString() });
-            data.MetaData.Add("comment", new string[] { track.Comment });
-            data.MetaData.Add("composer", new string[] { track.Composer });
-            data.MetaData.Add("disccount", new string[] { track.DiscCount.ToString() });
-            data.MetaData.Add("discnumber", new string[] { track.DiscNumber.ToString() });
-            data.MetaData.Add("duration", new string[] { track.Duration.ToString() });
-            data.MetaData.Add("genre", new string[] { track.Genre });
-            data.MetaData.Add("grouping", new string[] { track.Grouping });
-            data.MetaData.Add("kindasstring", new string[] { track.KindAsString });
-            data.MetaData.Add("name", new string[] { track.Name });
-            data.MetaData.Add("playedcount", new string[] { track.PlayedCount.ToString() });
-            data.MetaData.Add("rating", new string[] { track.Rating.ToString() });
-            data.MetaData.Add("samplerate", new string[] { track.SampleRate.ToString() });
-            data.MetaData.Add("time", new string[] { track.Time });
-            data.MetaData.Add("trackcount", new string[] { track.TrackCount.ToString() });
-            data.MetaData.Add("tracknumber", new string[] { track.TrackNumber.ToString() });
-            data.MetaData.Add("year", new string[] { track.Year.ToString() });
+            meta.Add("album", new string[] { track.Album });
+            meta.Add("artist", new string[] { track.Artist });
+            meta.Add("bitrate", new string[] { track.BitRate.ToString() });
+            meta.Add("bpm", new string[] { track.BPM.ToString() });
+            meta.Add("comment", new string[] { track.Comment });
+            meta.Add("composer", new string[] { track.Composer });
+            meta.Add("disccount", new string[] { track.DiscCount.ToString() });
+            meta.Add("discnumber", new string[] { track.DiscNumber.ToString() });
+            meta.Add("duration", new string[] { track.Duration.ToString() });
+            meta.Add("genre", new string[] { track.Genre });
+            meta.Add("grouping", new string[] { track.Grouping });
+            meta.Add("kindasstring", new string[] { track.KindAsString });
+            meta.Add("name", new string[] { track.Name });
+            meta.Add("playedcount", new string[] { track.PlayedCount.ToString() });
+            meta.Add("rating", new string[] { track.Rating.ToString() });
+            meta.Add("samplerate", new string[] { track.SampleRate.ToString() });
+            meta.Add("time", new string[] { track.Time });
+            meta.Add("trackcount", new string[] { track.TrackCount.ToString() });
+            meta.Add("tracknumber", new string[] { track.TrackNumber.ToString() });
+            meta.Add("year", new string[] { track.Year.ToString() });
 
-            data.Title = track.Name;
-            data.Artists = new string[] { track.Artist };
-            data.Album = track.Album;
-            data.Duration = track.Duration;
+
+            data = new(pbevent, seekTime, timeOfDay, timeOfDay,
+                filePath, track.Name, new string[] { track.Artist }, track.Album, track.Duration,
+                meta, true);
 
             OnPlaybackEventChanged?.Invoke(data);
         }
 
         private void OnPlayerPlayEvent(object iTrack)
         {
-            OnPlayerEvent(iTrack, ITitalyverReceiver.EnumPlaybackEvent.SeekPlay);
+            OnPlayerEvent(iTrack, EnumPlaybackEvent.SeekPlay);
         }
         private void OnPlayerStopEvent(object iTrack)
         {
-            OnPlayerEvent(iTrack, ITitalyverReceiver.EnumPlaybackEvent.SeekStop);
+            OnPlayerEvent(iTrack, EnumPlaybackEvent.SeekStop);
         }
 
 

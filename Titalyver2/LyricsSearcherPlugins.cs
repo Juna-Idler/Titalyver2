@@ -50,7 +50,6 @@ namespace Titalyver2
                 Task<TimedResult> task = Task.Run(() =>
                 {
                     Stopwatch stopwatch = Stopwatch.StartNew();
-                    Thread.Sleep(2000);
                     try
                     {
                         if (!Plugins.TryGetValue(dll, out dynamic searcher))

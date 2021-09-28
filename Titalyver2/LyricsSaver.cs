@@ -29,7 +29,7 @@ namespace Titalyver2
             }
         }
 
-        public bool Save(string lyrics, LyricsContainer.SyncMode sync, ITitalyverReceiver.Data data, out string saved_path)
+        public bool Save(string lyrics, LyricsContainer.SyncMode sync, ReceiverData data, out string saved_path)
         {
             string musicfilepath = "";
             if (!string.IsNullOrEmpty(data.FilePath))

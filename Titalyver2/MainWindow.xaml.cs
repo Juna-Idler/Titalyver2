@@ -4,6 +4,8 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.ComponentModel;
 using System.Threading.Tasks;
+using System.Collections.Generic;
+using System.Linq;
 
 using System.IO;
 
@@ -63,20 +65,17 @@ namespace Titalyver2
             {
                 MMFReceiver mmfr = new(PlaybackEvent);
                 Receiver = mmfr;
-                mmfr.ReadData();
-                ITitalyverReceiver.Data data = mmfr.GetData();
-                if (!data.IsValid())
+                ReceiverData data = mmfr.ReadData();
+                if (data == null)
                     return;
                 await SearchLyrics(data);
-                KaraokeDisplay.SetLyrics(Lyrics[0].Text);
-                SaveLyrics(data);
 
                 MultiLyricsNumber.Text = (CurrentLyrics + 1).ToString() + "/" + Lyrics.Length;
                 {
-                    double delay = (MMFMessage.GetTimeOfDay() - data.TimeOfDay) / 1000.0;
+                    double delay = (MMF_Base.GetTimeOfDay() - data.TimeOfDay) / 1000.0;
                     KaraokeDisplay.Time = delay + data.SeekTime;
                     KaraokeDisplay.SetAutoScrollY(KaraokeDisplay.Time);
-                    if ((data.PlaybackEvent & ITitalyverReceiver.EnumPlaybackEvent.Play) == ITitalyverReceiver.EnumPlaybackEvent.Play)
+                    if ((data.PlaybackEvent & EnumPlaybackEvent.Play) == EnumPlaybackEvent.Play)
                         KaraokeDisplay.Start();
                 }
             }
@@ -164,9 +163,8 @@ namespace Titalyver2
             WheelDelta = set.WheelDelta;
         }
 
-        private async Task SearchLyrics(ITitalyverReceiver.Data data)
+        private async Task SearchLyrics(ReceiverData data)
         {
-
             KaraokeDisplay.SetLyrics("Searching...");
             Lyrics = null;
             MultiLyricsSwitchPanel.Visibility = Visibility.Hidden;
@@ -183,53 +181,66 @@ namespace Titalyver2
             {
                 MultiLyricsSwitchPanel.Visibility = Visibility.Hidden;
             }
-        }
-        private void SaveLyrics(ITitalyverReceiver.Data data, bool manual = false)
-        {
-            if ((AutoSave && Lyrics[CurrentLyrics].Command == "plugin") || manual)
+            KaraokeDisplay.SetLyrics(Lyrics[0].Text);
+            if (AutoSave && Lyrics[0].Command == "plugin")
             {
-
-                if (LyricsSaver.Save(KaraokeDisplay.LyricsText, KaraokeDisplay.Lyrics.Sync,
+                if (LyricsSaver.Save(Lyrics[0].Text, KaraokeDisplay.Lyrics.Sync,
                                      data, out string saved_path))
                 {
                     LastSaveFile = saved_path;
                 }
             }
         }
-
-        private void PlaybackEvent(ITitalyverReceiver.Data data)
+        public async Task ManualSearchLyrics(int plugin_index,string title,string[] artists,string album,string path,string param,int timeout)
         {
+            KaraokeDisplay.SetLyrics("Searching...");
+            Lyrics = null;
+            MultiLyricsSwitchPanel.Visibility = Visibility.Hidden;
 
+            Lyrics = await LyricsSearcher.ManualSearch(plugin_index, title, artists, album, path, param, timeout);
+            CurrentLyrics = 0;
+            if (Lyrics.Length > 1)
+            {
+                MultiLyricsSwitchPanel.Visibility = Visibility.Visible;
+                MultiLyricsNumber.Text = 1 + "/" + Lyrics.Length;
+            }
+            else
+            {
+                MultiLyricsSwitchPanel.Visibility = Visibility.Hidden;
+            }
+            KaraokeDisplay.SetLyrics(Lyrics[0].Text);
+        }
+
+
+        private void PlaybackEvent(ReceiverData data)
+        {
             if (data.MetaDataUpdated)
             {
-
                 _ = Dispatcher.InvokeAsync(async () =>
                 {
                     await SearchLyrics(data);
-                    KaraokeDisplay.SetLyrics(Lyrics[0].Text);
-                    SaveLyrics(data);
                 });
             }
             double time = -1;
-            if ((data.PlaybackEvent & ITitalyverReceiver.EnumPlaybackEvent.Bit_Seek) == ITitalyverReceiver.EnumPlaybackEvent.Bit_Seek)
+            if ((data.PlaybackEvent & EnumPlaybackEvent.Bit_Seek) == EnumPlaybackEvent.Bit_Seek)
             {
                 time = data.SeekTime;
             }
-            switch (data.PlaybackEvent & ~ITitalyverReceiver.EnumPlaybackEvent.Bit_Seek)
+            switch (data.PlaybackEvent & ~EnumPlaybackEvent.Bit_Seek)
             {
-                case ITitalyverReceiver.EnumPlaybackEvent.Play:
+                case EnumPlaybackEvent.Play:
                     _ = Dispatcher.InvokeAsync(() =>
                     {
                         if (time >= 0)
                         {
-                            double delay = (MMFMessage.GetTimeOfDay() - data.TimeOfDay) / 1000.0;
+                            double delay = (MMF_Base.GetTimeOfDay() - data.TimeOfDay) / 1000.0;
                             KaraokeDisplay.Time = time + delay;
                             KaraokeDisplay.SetAutoScrollY(KaraokeDisplay.Time);
                         }
                         KaraokeDisplay.Start();
                     });
                     break;
-                case ITitalyverReceiver.EnumPlaybackEvent.Stop:
+                case EnumPlaybackEvent.Stop:
                     _ = Dispatcher.InvokeAsync(() =>
                     {
                         if (time >= 0)
@@ -323,21 +334,15 @@ namespace Titalyver2
 
         private async void MenuItemReload_Click(object sender, RoutedEventArgs e)
         {
-            int current = CurrentLyrics;
-            var data = Receiver.GetData();
-            await SearchLyrics(data);
-            if (current < Lyrics.Length)
-                CurrentLyrics = current;
-            KaraokeDisplay.SetLyrics(Lyrics[CurrentLyrics].Text);
-            SaveLyrics(data);
-
-            MultiLyricsNumber.Text = (CurrentLyrics + 1).ToString() + "/" + Lyrics.Length;
+            await SearchLyrics(Receiver.GetData());
         }
         private void MenuItemSave_Click(object sender, RoutedEventArgs e)
         {
-            ITitalyverReceiver.Data data = Receiver.GetData();
-
-            SaveLyrics(data, true);
+            if (LyricsSaver.Save(KaraokeDisplay.LyricsText, KaraokeDisplay.Lyrics.Sync,
+                                 Receiver.GetData(), out string saved_path))
+            {
+                LastSaveFile = saved_path;
+            }
         }
         private void OpenSaveFolder_Click(object sender, RoutedEventArgs e)
         {
@@ -366,7 +371,6 @@ namespace Titalyver2
                 Save.IsEnabled = false;
                 ViewText.IsEnabled = false;
                 ReSearch.IsEnabled = false;
-                SearchListCommand.IsEnabled = false;
                 MusicData.IsEnabled = false;
             }
             else
@@ -374,7 +378,6 @@ namespace Titalyver2
                 Save.IsEnabled = true;
                 ViewText.IsEnabled = true;
                 ReSearch.IsEnabled = true;
-                SearchListCommand.IsEnabled = true;
                 MusicData.IsEnabled = true;
 
                 OpenFolder.IsEnabled = !string.IsNullOrEmpty(Lyrics[CurrentLyrics].FilePath);

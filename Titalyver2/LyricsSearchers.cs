@@ -48,6 +48,19 @@ namespace Titalyver2
             }
         }
 
+        public string[] ManualSearchList { get; private set; }
+        public void SetManualSearchList(string list)
+        {
+            ManualSearchList = list.Split('\n', StringSplitOptions.TrimEntries);
+        }
+        public async Task<ReturnValue[]> ManualSearch(int plugin_index, string title, string[] artists, string album, string path, string param,int timeout)
+        {
+            string[] lyrics = await Plugins.GetLyrics(ManualSearchList[plugin_index], title, artists, album, path, param, timeout);
+
+            return lyrics.Select(l => new ReturnValue("manual:", ManualSearchList[plugin_index], "", "", l)).ToArray();
+
+        }
+
         private readonly LyricsSearcherPlugins Plugins = new();
 
         public int MillisecondsTimeout { get; set; } = 10000;
@@ -125,7 +138,7 @@ namespace Titalyver2
             return filename;
         }
 
-        public async Task<ReturnValue[]> Search(ITitalyverReceiver.Data data)
+        public async Task<ReturnValue[]> Search(ReceiverData data)
         {
             string filepath = "";
             if (!string.IsNullOrEmpty(data.FilePath))

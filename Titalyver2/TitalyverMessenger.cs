@@ -13,7 +13,7 @@ using System.Text.Json;
 
 namespace Titalyver2
 {
-    public class MMFMessage
+    public class MMF_Base
     {
         protected const UInt32 MMF_MaxSize = 1024 * 1024 * 64;
 
@@ -61,9 +61,9 @@ namespace Titalyver2
         }
 
 
-        public MMFMessage() {}
+        public MMF_Base() {}
 
-        ~MMFMessage() { Terminalize(); }
+        ~MMF_Base() { Terminalize(); }
 
         protected class MutexLock : IDisposable
         {
@@ -109,7 +109,7 @@ namespace Titalyver2
         }
     };
 
-    public class MMFMessenger : MMFMessage
+    public class MMFMessenger : MMF_Base
     {
 	    private MemoryMappedFile MemoryMappedFile;
         public new bool Initialize()
@@ -159,7 +159,7 @@ namespace Titalyver2
             base.Terminalize();
         }
 
-        public bool Update(ITitalyverReceiver.EnumPlaybackEvent pbevent, double seektime, byte[] json)
+        public bool Update(EnumPlaybackEvent pbevent, double seektime, byte[] json)
         {
             int size = 4 + 8 + 4 + 4 + 4 + json.Length;
 
@@ -183,7 +183,7 @@ namespace Titalyver2
             }
             return true;
         }
-	    public bool Update(ITitalyverReceiver.EnumPlaybackEvent pbevent, double seektime)
+        public bool Update(EnumPlaybackEvent pbevent, double seektime)
         {
             int size = 4 + 8 + 4;
 
@@ -211,106 +211,101 @@ namespace Titalyver2
     }
 
 
-    public class MMFReceiver : MMFMessage,ITitalyverReceiver
+    public class MMFReceiver : MMF_Base, ITitalyverReceiver
     {
-        public event ITitalyverReceiver.PlaybackEventHandler OnPlaybackEventChanged;
-
-        public bool Updated { get { return LastUpdateTimeOfDay != data.UpdateTimeOfDay; } }
+        public event PlaybackEventHandler OnPlaybackEventChanged;
 
         private RegisteredWaitHandle RegisteredWaitHandle;
 
-        private Int32 LastUpdateTimeOfDay = -1;
 
-        public ITitalyverReceiver.Data GetData() { return data; }
+        private ReceiverData LastData = new(EnumPlaybackEvent.NULL, 0, -1, -1, "", "", new string[] { "" }, "", 0, null, false);
 
-        private ITitalyverReceiver.Data data;
-        public bool ReadData()
+        ReceiverData ITitalyverReceiver.GetData() { return LastData; }
+
+        public ReceiverData ReadData()
         {
+            EnumPlaybackEvent pbevent;
+            double seekTime;
+            int timeOfDay;
+            int updateTimeOfDay;
             byte[] buffer;
             try
             {
                 using MutexLock ml = new(Mutex, 100);
                 if (!ml.Result)
-                    return false;
+                    return null;
                 using MemoryMappedFile mmf = MemoryMappedFile.OpenExisting(MMF_Name, MemoryMappedFileRights.Read);
                 using MemoryMappedViewStream stream = mmf.CreateViewStream(0, 0, MemoryMappedFileAccess.Read);
                 byte[] bytes = new byte[24];
                 int read = stream.Read(bytes, 0, 24);
-                data.PlaybackEvent = (ITitalyverReceiver.EnumPlaybackEvent)BitConverter.ToUInt32(bytes, 0);
-                data.SeekTime = BitConverter.ToDouble(bytes, 4);
-                data.TimeOfDay = BitConverter.ToInt32(bytes, 12);
-                data.UpdateTimeOfDay = BitConverter.ToInt32(bytes, 16);
-                Int32 json_size = BitConverter.ToInt32(bytes, 20);
+                pbevent = (EnumPlaybackEvent)BitConverter.ToUInt32(bytes, 0);
+                seekTime = BitConverter.ToDouble(bytes, 4);
+                timeOfDay = BitConverter.ToInt32(bytes, 12);
+                updateTimeOfDay = BitConverter.ToInt32(bytes, 16);
 
-                if (LastUpdateTimeOfDay == data.UpdateTimeOfDay)
+                if (LastData.UpdateTimeOfDay == updateTimeOfDay)
                 {
-                    data.MetaDataUpdated = false;
-                    return true;
+                    return LastData = new ReceiverData(pbevent, seekTime, timeOfDay, updateTimeOfDay,
+                        LastData.FilePath, LastData.Title, LastData.Artists, LastData.Album, LastData.Duration,
+                        LastData.MetaData, false);
                 }
+
+                Int32 json_size = BitConverter.ToInt32(bytes, 20);
                 buffer = new byte[json_size];
                 _ = stream.Read(buffer, 0, json_size);
             }
             catch (Exception e)
             {
                 Debug.WriteLine(e.Message);
-                return false;
+                return null;
             }
 
-            if (data.MetaData == null)
-                data.MetaData = new Dictionary<string, string[]>();
-            else
-                data.MetaData.Clear();
-            data.FilePath = "";
             try
             {
                 using JsonDocument document = JsonDocument.Parse(buffer);
                 if (document.RootElement.ValueKind != JsonValueKind.Object)
                 {
-                    data.MetaData = null;
-                    return false;
+                    return null;
                 }
                 JsonElement meta = document.RootElement.GetProperty("meta");
-                data.FilePath = document.RootElement.GetProperty("path").GetString();
-                data.Title = document.RootElement.GetProperty("title").GetString();
-                {
-                    JsonElement artists = document.RootElement.GetProperty("artists");
-                    if (artists.ValueKind == JsonValueKind.Array)
-                        data.Artists = artists.EnumerateArray().Select(a => a.GetString()).ToArray();
-                    else
-                        data.Artists = new string[] { artists.GetString() };
-                }
-                data.Album = document.RootElement.GetProperty("album").GetString();
-                data.Duration = document.RootElement.GetProperty("duration").GetDouble();
+                string filePath = document.RootElement.GetProperty("path").GetString();
+                string title = document.RootElement.GetProperty("title").GetString();
+                JsonElement artistsj = document.RootElement.GetProperty("artists");
+                string[] artists = (artistsj.ValueKind == JsonValueKind.Array) ?
+                                    artistsj.EnumerateArray().Select(a => a.GetString()).ToArray() :
+                                    new string[] { artistsj.GetString() };
+                string album = document.RootElement.GetProperty("album").GetString();
+                double duration = document.RootElement.GetProperty("duration").GetDouble();
 
+                Dictionary<string, string[]> metaData = new();
                 foreach (JsonProperty e in meta.EnumerateObject())
                 {
                     switch (e.Value.ValueKind)
                     {
                         case JsonValueKind.String:
-                            data.MetaData.Add(e.Name.ToLower(null), new string[] { e.Value.GetString() });
+                            metaData.Add(e.Name.ToLower(null), new string[] { e.Value.GetString() });
                             break;
                         case JsonValueKind.Array:
                             string[] array = e.Value.EnumerateArray().Select(a => a.ValueKind == JsonValueKind.String ? a.GetString() : a.GetRawText()).ToArray();
-                            data.MetaData.Add(e.Name.ToLower(null), array);
+                            metaData.Add(e.Name.ToLower(null), array);
                             break;
                         default:
-                            data.MetaData.Add(e.Name.ToLower(null), new string[] { e.Value.GetRawText() });
+                            metaData.Add(e.Name.ToLower(null), new string[] { e.Value.GetRawText() });
                             break;
                     }
                 }
+                return LastData = new(pbevent, seekTime, timeOfDay, updateTimeOfDay,
+                    filePath, title, artists, album, duration,
+                    metaData, true);
             }
             catch (Exception e)
             {
                 Debug.WriteLine(e.Message);
-                data.MetaData = null;
-                return false;
+                return null;
             }
-            LastUpdateTimeOfDay = data.UpdateTimeOfDay;
-            data.MetaDataUpdated = true;
-            return true;
         }
 
-        public MMFReceiver(ITitalyverReceiver.PlaybackEventHandler playbackEventHandler)
+        public MMFReceiver(PlaybackEventHandler playbackEventHandler)
         {
             if (!base.Initialize())
                 return;
@@ -326,7 +321,8 @@ namespace Titalyver2
         {
             if (!timedOut)
             {
-                if (ReadData())
+                ReceiverData data = ReadData();
+                if (data != null)
                     OnPlaybackEventChanged?.Invoke(data);
             }
         }
