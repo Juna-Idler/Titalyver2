@@ -162,5 +162,8 @@ set_empty:%path%%artists%%album%%title%</Value>
     <Setting Name="SpecifyWheelDelta" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
     </Setting>
+    <Setting Name="ManualSearchList" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
   </Settings>
 </SettingsFile>

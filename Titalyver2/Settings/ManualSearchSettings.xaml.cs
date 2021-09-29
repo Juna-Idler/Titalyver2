@@ -18,11 +18,25 @@ namespace Titalyver2
     /// <summary>
     /// ManualSearch.xaml の相互作用ロジック
     /// </summary>
-    public partial class ManualSearch : UserControl
+    public partial class ManualSearchSettings : UserControl
     {
-        public ManualSearch()
+        private readonly MainWindow MainWindow;
+
+        public ManualSearchSettings(MainWindow mainWindow)
         {
             InitializeComponent();
+
+            ManualSerchList.Text = string.Join("\n", mainWindow.LyricsSearcher.ManualSearchList);
+            MainWindow = mainWindow;
+
+        }
+
+        private void ManualSerchList_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            if (MainWindow == null) return;
+
+            MainWindow.LyricsSearcher.SetManualSearchList(ManualSerchList.Text);
+            Properties.Settings.Default.ManualSearchList = ManualSerchList.Text;
         }
     }
 }

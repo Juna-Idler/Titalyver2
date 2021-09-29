@@ -161,6 +161,8 @@ namespace Titalyver2
 
             SpecifyWheelDelta = set.SpecifyWheelDelta;
             WheelDelta = set.WheelDelta;
+
+            LyricsSearcher.SetManualSearchList(set.ManualSearchList);
         }
 
         private async Task SearchLyrics(ReceiverData data)
@@ -191,7 +193,8 @@ namespace Titalyver2
                 }
             }
         }
-        public async Task ManualSearchLyrics(int plugin_index,string title,string[] artists,string album,string path,string param,int timeout)
+        public async Task ManualSearchLyrics(int plugin_index, string title, string[] artists, string album, string path, string param, int timeout,
+                                             ReceiverData data = null)
         {
             KaraokeDisplay.SetLyrics("Searching...");
             Lyrics = null;
@@ -209,6 +212,14 @@ namespace Titalyver2
                 MultiLyricsSwitchPanel.Visibility = Visibility.Hidden;
             }
             KaraokeDisplay.SetLyrics(Lyrics[0].Text);
+            if (data != null)
+            {
+                if (LyricsSaver.Save(Lyrics[0].Text, KaraokeDisplay.Lyrics.Sync,
+                                     data, out string saved_path))
+                {
+                    LastSaveFile = saved_path;
+                }
+            }
         }
 
 
@@ -344,6 +355,14 @@ namespace Titalyver2
                 LastSaveFile = saved_path;
             }
         }
+        private void ManualSearch_Click(object sender, RoutedEventArgs e)
+        {
+            double h = System.Windows.SystemParameters.WorkArea.Height;
+            ManualSearchWindow msw = new(this, Receiver.GetData());
+            msw.Owner = this;
+            msw.Show();
+        }
+
         private void OpenSaveFolder_Click(object sender, RoutedEventArgs e)
         {
             if (string.IsNullOrEmpty(LastSaveFile))
@@ -352,7 +371,7 @@ namespace Titalyver2
             string directoryname = Path.GetDirectoryName(LastSaveFile);
             string filename = Path.GetFileName(LastSaveFile);
             string filepath = Path.Combine(directoryname, filename);
-            _ = System.Diagnostics.Process.Start("EXPLORER.EXE", @"/select," + filepath);
+            _ = System.Diagnostics.Process.Start("EXPLORER.EXE", $"/select,\"{filepath}\"");
         }
 
         private void window_ContextMenuOpening(object sender, System.Windows.Controls.ContextMenuEventArgs e)
@@ -385,7 +404,10 @@ namespace Titalyver2
             }
             OpenLastSaveFolder.IsEnabled = !string.IsNullOrEmpty(LastSaveFile);
 
+            ManualSearch.IsEnabled = LyricsSearcher.ManualSearchList.Length > 0;
         }
+
+
 
         private void Maximize_Click(object sender, RoutedEventArgs e)
         {
@@ -400,10 +422,7 @@ namespace Titalyver2
 
         private void OpenFolder_Click(object sender, RoutedEventArgs e)
         {
-            string directoryname = Path.GetDirectoryName(Lyrics[CurrentLyrics].FilePath);
-            string filename = Path.GetFileName(Lyrics[CurrentLyrics].FilePath);
-            string filepath = Path.Combine(directoryname, filename);
-            _ = System.Diagnostics.Process.Start("EXPLORER.EXE", @"/select," + filepath);
+            _ = System.Diagnostics.Process.Start("EXPLORER.EXE", $"/select,\"{Lyrics[CurrentLyrics].FilePath}\"");
         }
 
         private void MenuItemText_Click(object sender, RoutedEventArgs e)

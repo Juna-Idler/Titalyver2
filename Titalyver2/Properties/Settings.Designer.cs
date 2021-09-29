@@ -618,5 +618,17 @@ set_empty:%path%%artists%%album%%title%")]
                 this["SpecifyWheelDelta"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string ManualSearchList {
+            get {
+                return ((string)(this["ManualSearchList"]));
+            }
+            set {
+                this["ManualSearchList"] = value;
+            }
+        }
     }
 }

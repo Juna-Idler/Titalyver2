@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Titalyver2"
         mc:Ignorable="d"
-        Title="ManualSearchWindow" Height="300" Width="600" SizeToContent="Height">
+        Title="ManualSearchWindow" Height="300" Width="600" SizeToContent="Height" WindowStartupLocation="CenterOwner">
     <StackPanel>
         <Grid>
             <Grid.ColumnDefinitions>
@@ -19,24 +19,33 @@
                 <RowDefinition/>
                 <RowDefinition/>
             </Grid.RowDefinitions>
+            <Label Grid.Row="0" Grid.Column="0" Content="Title" />
+            <TextBox Grid.Row="0" x:Name="TextBoxTitle" Grid.Column="1" VerticalContentAlignment="Center" />
+            <Label Grid.Row="1" Grid.Column="0" Content="Artists" />
+            <TextBox Grid.Row="1" x:Name="TextBoxArtists" Grid.Column="1" VerticalContentAlignment="Center" AcceptsReturn="True" />
+            <Label Grid.Row="2" Grid.Column="0" Content="Album" />
+            <TextBox Grid.Row="2" x:Name="TextBoxAlbum" Grid.Column="1" VerticalContentAlignment="Center" />
+            <Label Grid.Row="3" Grid.Column="0" Content="Path" />
+            <TextBox Grid.Row="3" x:Name="TextBoxPath" Grid.Column="1" VerticalContentAlignment="Center" />
+            <Label Grid.Row="4" Grid.Column="0" Content="Param" />
+            <TextBox Grid.Row="4" x:Name="TextBoxParam" Grid.Column="1" VerticalContentAlignment="Center" />
+        </Grid>
+        <Button x:Name="ButtonSearch"  Content="Search" Click="ButtonSearch_Click" />
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="auto"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
             <Label Grid.Row="0" Grid.Column="0" Content="Plugin" />
             <ListBox x:Name="ListBoxPlugin"  Grid.Row="0" Grid.Column="1" >
             </ListBox>
-            <Label Grid.Row="1" Grid.Column="0" Content="Title" />
-            <TextBox x:Name="TextBoxTitle" Grid.Row="1" Grid.Column="1" />
-            <Label Grid.Row="2" Grid.Column="0" Content="Artists" />
-            <TextBox x:Name="TextBoxArtists" Grid.Row="2" Grid.Column="1" />
-            <Label Grid.Row="3" Grid.Column="0" Content="Album" />
-            <TextBox x:Name="TextBoxAlbum" Grid.Row="3" Grid.Column="1" />
-            <Label Grid.Row="4" Grid.Column="0" Content="Path" />
-            <TextBox x:Name="TextBoxPath" Grid.Row="4" Grid.Column="1" />
-            <Label Grid.Row="5" Grid.Column="0" Content="Param" />
-            <TextBox x:Name="TextBoxParam" Grid.Row="5" Grid.Column="1" />
         </Grid>
-        <Button Content="Search" Click="ButtonSearch_Click" />
-        <StackPanel Orientation="Horizontal">
-            <CheckBox x:Name="CheckBoxAutoSave" VerticalAlignment="Center" FlowDirection="RightToLeft" Margin="4,0,4,0">AutoSave</CheckBox>
-            <Label VerticalAlignment="Stretch">Timeout</Label><local:NumericUpDown x:Name="Timeout" ButtonPadding="2,0,2,0" ButtonWidth="12" Minimum="10" Maximum="300" Value="30" Margin="0,2,0,2" Width="50" TextAlignment="Right" />
-        </StackPanel>
+        <GroupBox Header="Option">
+            <StackPanel Orientation="Horizontal">
+                <CheckBox x:Name="CheckBoxAutoSave" VerticalAlignment="Center" FlowDirection="RightToLeft" Margin="4,0,4,0">AutoSave</CheckBox>
+                <Label VerticalAlignment="Stretch">Timeout</Label><local:NumericUpDown x:Name="Timeout" ButtonPadding="2,0,2,0" ButtonWidth="12" Minimum="10" Maximum="300" Value="30" Margin="0,2,0,2" Width="50" TextAlignment="Right" />
+                <CheckBox x:Name="CheckBoxKeep" VerticalAlignment="Center" FlowDirection="RightToLeft" Margin="4,0,4,0">Keep this window</CheckBox>
+            </StackPanel>
+        </GroupBox>
     </StackPanel>
 </Window>

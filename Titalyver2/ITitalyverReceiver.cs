@@ -35,7 +35,7 @@ namespace Titalyver2
         public string Album { get; private set; }
         public double Duration { get; private set; }
 
-        public Dictionary<string, string[]> MetaData { get; private set; }    //メタデータ 中身はUTF-8のJSON
+        public Dictionary<string, string[]> MetaData { get; private set; }    //メタデータ
         public bool MetaDataUpdated { get; private set; }//Metadataに変更があるか？
 
         public ReceiverData(EnumPlaybackEvent playbackEvent, double seekTime, Int32 timeOfDay, Int32 updateTimeOfDay,

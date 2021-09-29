@@ -167,7 +167,7 @@
                 </ScrollViewer>
             </TabItem>
 
-            <TabItem x:Name="TabItemLyrics" Header="Lyrics" />
+            <TabItem x:Name="TabItemLyrics" Header="LyricsSearch" />
 
             <TabItem Header="Unsync">
                 <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" >
@@ -285,6 +285,8 @@
             </TabItem>
 
             <TabItem x:Name="TabItemSave" Header="Save" />
+            
+            <TabItem x:Name="TabItemManual" Header="ManualSearch" />
 
             <TabItem x:Name="TabItemOthers" Header="Others" />
 

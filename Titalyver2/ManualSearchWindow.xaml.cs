@@ -20,33 +20,44 @@ namespace Titalyver2
     public partial class ManualSearchWindow : Window
     {
 
-        private MainWindow MainWindow;
-        public ManualSearchWindow(MainWindow mainWindow,string title, string[] artists, string album, string path, string param)
+        private readonly MainWindow MainWindow;
+        private readonly ReceiverData Data;
+        public ManualSearchWindow(MainWindow mainWindow,ReceiverData data)
         {
             InitializeComponent();
 
             ListBoxPlugin.ItemsSource = mainWindow.LyricsSearcher.ManualSearchList;
             ListBoxPlugin.SelectedIndex = 0;
 
-            TextBoxTitle.Text = title;
-            TextBoxArtists.Text = string.Join(Environment.NewLine, artists);
-            TextBoxAlbum.Text = album;
-            TextBoxPath.Text = path;
-            TextBoxParam.Text = param;
-
+            TextBoxTitle.Text = data.Title;
+            TextBoxArtists.Text = string.Join(Environment.NewLine, data.Artists);
+            TextBoxAlbum.Text = data.Album;
+            TextBoxPath.Text = data.FilePath;
+            TextBoxParam.Text = "";
 
             MainWindow = mainWindow;
+            Data = data;
         }
 
-        private void ButtonSearch_Click(object sender, RoutedEventArgs e)
+        private async void ButtonSearch_Click(object sender, RoutedEventArgs e)
         {
             Task task = MainWindow.ManualSearchLyrics(ListBoxPlugin.SelectedIndex,
                 TextBoxTitle.Text,
                 TextBoxArtists.Text.Split(Environment.NewLine),
                 TextBoxAlbum.Text,
-                TextBoxPath.Text, TextBoxParam.Text, (int)Timeout.Value);
+                TextBoxPath.Text, TextBoxParam.Text, (int)Timeout.Value * 1000,
+                CheckBoxAutoSave.IsChecked == true ? Data : null);
 
-            Close();
+            if (CheckBoxKeep.IsChecked == true)
+            {
+                ButtonSearch.IsEnabled = false;
+                await task;
+                ButtonSearch.IsEnabled = true;
+            }
+            else
+            {
+                Close();
+            }
         }
     }
 }

@@ -43,6 +43,8 @@ namespace Titalyver2
 
             TabItemOthers.Content = new OthersSettings(mainWindow);
 
+            TabItemManual.Content = new ManualSearchSettings(mainWindow);
+
         }
 
         #region Display

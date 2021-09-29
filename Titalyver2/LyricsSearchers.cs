@@ -51,12 +51,17 @@ namespace Titalyver2
         public string[] ManualSearchList { get; private set; }
         public void SetManualSearchList(string list)
         {
-            ManualSearchList = list.Split('\n', StringSplitOptions.TrimEntries);
+            ManualSearchList = list.Split('\n', StringSplitOptions.TrimEntries).Where(l => l.Length > 0).ToArray();
         }
         public async Task<ReturnValue[]> ManualSearch(int plugin_index, string title, string[] artists, string album, string path, string param,int timeout)
         {
             string[] lyrics = await Plugins.GetLyrics(ManualSearchList[plugin_index], title, artists, album, path, param, timeout);
 
+            if (lyrics == null || lyrics.Length == 0)
+            {
+                return new[] { new ReturnValue("ManualSearch:", "Not Found", "", "", "Manual search not found\n"
+                    + $"Plugin={ManualSearchList[plugin_index]}\nTitle={title}\nArtists={string.Join("\n",artists)}\nAlbum={album}\nPath={path}\nParam={param}") };
+            }
             return lyrics.Select(l => new ReturnValue("manual:", ManualSearchList[plugin_index], "", "", l)).ToArray();
 
         }
