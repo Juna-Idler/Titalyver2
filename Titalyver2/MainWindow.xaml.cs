@@ -67,19 +67,20 @@ namespace Titalyver2
             {
                 MMFReceiver mmfr = new(PlaybackEvent);
                 Receiver = mmfr;
+
+
                 ReceiverData data = mmfr.ReadData();
-                if (data == null)
+                if (data == null || data.MetaDataUpdated)
                     return;
                 await SearchLyrics(data);
 
                 MultiLyricsNumber.Text = (CurrentLyrics + 1).ToString() + "/" + Lyrics.Length;
-                {
-                    double delay = (MMF_Base.GetTimeOfDay() - data.TimeOfDay) / 1000.0;
-                    KaraokeDisplay.Time = delay + data.SeekTime;
-                    KaraokeDisplay.SetAutoScrollY(KaraokeDisplay.Time);
-                    if ((data.PlaybackEvent & EnumPlaybackEvent.Play) == EnumPlaybackEvent.Play)
-                        KaraokeDisplay.Start();
-                }
+                double delay = (MMF_Base.GetTimeOfDay() - data.TimeOfDay) / 1000.0;
+                KaraokeDisplay.Time = delay + data.SeekTime;
+                KaraokeDisplay.SetAutoScrollY(KaraokeDisplay.Time);
+                if ((data.PlaybackEvent & EnumPlaybackEvent.Play) == EnumPlaybackEvent.Play)
+                    KaraokeDisplay.Start();
+
             }
 
         }
