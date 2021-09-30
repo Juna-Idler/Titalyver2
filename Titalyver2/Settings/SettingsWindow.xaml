@@ -10,295 +10,296 @@
     <!--Window本体の背景を消さないと何故かごんぶとサイズバーが上に表示されて非常に醜い -->
     <Window.Resources>
     </Window.Resources>
-    <Grid>
-        <Grid.Background>
-            <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
-                <GradientStop Color="{DynamicResource {x:Static SystemColors.ActiveCaptionColorKey}}"/>
-                <GradientStop Color="{DynamicResource {x:Static SystemColors.ControlColorKey}}" Offset="1"/>
-            </LinearGradientBrush>
-        </Grid.Background>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="auto"/>
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="auto"/>
-        </Grid.RowDefinitions>
+    <Border BorderBrush="Black" BorderThickness="1">
         <Grid>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="32"/>
-            </Grid.ColumnDefinitions>
-            <TextBlock Text="Settings" Margin="10,5,0,5" />
-            <Button Grid.Column="1" Background="#FF66" Click="ButtonClose_Click">
-                <Canvas>
-                    <Path Stroke="Black" StrokeThickness="1" Data="M-8,-8 l16,16 M8,-8 l-16,16"/>
-                </Canvas>
+            <Grid.Background>
+                <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                    <GradientStop Color="{DynamicResource {x:Static SystemColors.ActiveCaptionColorKey}}"/>
+                    <GradientStop Color="{DynamicResource {x:Static SystemColors.ControlColorKey}}" Offset="1"/>
+                </LinearGradientBrush>
+            </Grid.Background>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="auto"/>
+            </Grid.RowDefinitions>
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="32"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock Text="Settings" Margin="10,5,0,5" />
+                <Button Grid.Column="1" Background="#FF66" Click="ButtonClose_Click">
+                    <Canvas>
+                        <Path Stroke="Black" StrokeThickness="1" Data="M-8,-8 l16,16 M8,-8 l-16,16"/>
+                    </Canvas>
 
-            </Button>
-        </Grid>
-        <TabControl Grid.Row="1" Margin="4,0,4,0" >
-            <TabItem x:Name="Display" Header="Display">
-                <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" >
-                    <StackPanel Background="{DynamicResource {x:Static SystemColors.ControlBrushKey}}">
-                        <Grid >
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="auto"/>
-                                <ColumnDefinition Width="auto"/>
-                            </Grid.ColumnDefinitions>
-                            <Button x:Name="FontSelect" Click="Button_Click" Content="" Margin="2,2,2,0"/>
-                            <Label Grid.Column="1" Padding="5,8,4,0">Outline</Label>
-                            <local:NumericUpDown x:Name="Outline" Grid.Column="2" ButtonWidth="10" TextAlignment="Right" Width="48" Value="2" ResetValue="2" ButtonPadding="1,0,1,0" ValueChanged="Outline_ValueChanged" FontSize="16" Margin="0,2,2,0" Increment="0.1" />
-
-                        </Grid>
-
-                        <GroupBox Header="Colors">
-                            <GroupBox.Resources>
-                                <Style TargetType="TextBox">
-                                    <Setter Property="Margin" Value="2,2,2,2" />
-                                    <Setter Property="HorizontalContentAlignment" Value="Center"/>
-                                </Style>
-                            </GroupBox.Resources>
-                            <Grid>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="auto"/>
-                                    <ColumnDefinition/>
-                                    <ColumnDefinition/>
-                                    <ColumnDefinition/>
-                                </Grid.ColumnDefinitions>
-                                <Grid.RowDefinitions>
-                                    <RowDefinition/>
-                                    <RowDefinition/>
-                                    <RowDefinition/>
-                                    <RowDefinition/>
-                                </Grid.RowDefinitions>
-
-                                <Label Grid.Row="1" Grid.Column="0">Fill</Label>
-                                <TextBox x:Name="ActiveFill" Grid.Row="1" Grid.Column="1" Text="White"  TextChanged="TextBoxAF_TextChanged"/>
-                                <TextBox x:Name="StandbyFill" Grid.Row="1" Grid.Column="2" Text="White"  TextChanged="TextBoxStF_TextChanged"/>
-                                <TextBox x:Name="SleepFill" Grid.Row="1" Grid.Column="3" Text="White"  TextChanged="TextBoxSlF_TextChanged"/>
-
-                                <Label Grid.Row="2" Grid.Column="0">Stroke</Label>
-                                <TextBox x:Name="ActiveStroke" Grid.Row="2" Grid.Column="1" Text="Red"  Background="red"  TextChanged="TextBoxAS_TextChanged"  Foreground="White"/>
-                                <TextBox x:Name="StandbyStroke" Grid.Row="2" Grid.Column="2" Text="Blue"  Background="blue"  TextChanged="TextBoxStS_TextChanged"  Foreground="White"/>
-                                <TextBox x:Name="SleepStroke" Grid.Row="2" Grid.Column="3" Text="DarkBlue"  Background="DarkBlue"  TextChanged="TextBoxSlS_TextChanged" Foreground="White"/>
-
-                                <Label Grid.Row="3" Grid.Column="0">Back</Label>
-                                <TextBox x:Name="ActiveBack" Grid.Row="3" Grid.Column="1" Text="#7F004000"  Background="#7F004000"  TextChanged="TextBoxAB_TextChanged"  Foreground="White" />
-                                <TextBox x:Name="WindowBack" Grid.Row="3" Grid.Column="2" Grid.ColumnSpan="2" Text="Black"  Background="black"  TextChanged="TextBoxWB_TextChanged"  Foreground="White" />
-
-                            </Grid>
-
-                        </GroupBox>
-                        <GroupBox Header="Alignment">
-                            <GroupBox.Resources>
-                                <Style TargetType="RadioButton" BasedOn="{StaticResource {x:Type ToggleButton}}">
-                                    <Setter Property="Margin" Value="2,2,2,2" />
-                                </Style>
-                                <Style TargetType="local:NumericUpDown">
-                                    <Setter Property="Margin" Value="2,0,2,0"/>
-                                    <Setter Property="ButtonPadding" Value="3,0,3,0"/>
-                                </Style>
-
-                            </GroupBox.Resources>
+                </Button>
+            </Grid>
+            <TabControl Grid.Row="1" Margin="4,0,4,0" >
+                <TabItem x:Name="Display" Header="Display">
+                    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" >
+                        <StackPanel Background="{DynamicResource {x:Static SystemColors.ControlBrushKey}}">
                             <Grid >
                                 <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
                                     <ColumnDefinition Width="auto"/>
-                                    <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="*"/>
-                                </Grid.ColumnDefinitions>
-                                <Grid.RowDefinitions>
-                                    <RowDefinition/>
-                                    <RowDefinition/>
-                                    <RowDefinition/>
-                                </Grid.RowDefinitions>
-
-                                <Label Grid.Row="0">Vertical</Label>
-                                <RadioButton x:Name="VTop" Grid.Row="0" Grid.Column="1" GroupName="Vertical" Checked="RadioButtonTop_Checked">Top</RadioButton>
-                                <RadioButton x:Name="VMiddle" Grid.Row="0" Grid.Column="2" GroupName="Vertical" Checked="RadioButtonMiddle_Checked">Middle</RadioButton>
-                                <RadioButton x:Name="VBottom" Grid.Row="0" Grid.Column="3" GroupName="Vertical" Checked="RadioButtonBottom_Checked">Bottom</RadioButton>
-
-                                <Label Grid.Row="1">Horizontal</Label>
-                                <RadioButton x:Name="HLeft" Grid.Row="1" Grid.Column="1" GroupName="Horizontal" Checked="RadioButtonLeft_Checked">Left</RadioButton>
-                                <RadioButton x:Name="HCenter" Grid.Row="1" Grid.Column="2" GroupName="Horizontal" Checked="RadioButtonCenter_Checked">Center</RadioButton>
-                                <RadioButton x:Name="HRight" Grid.Row="1" Grid.Column="3" GroupName="Horizontal" Checked="RadioButtonRight_Checked">Right</RadioButton>
-
-                                <Label Grid.Row="2">Offset</Label>
-                                <local:NumericUpDown x:Name="OffsetLeft" Grid.Row="2" Grid.Column="1" ValueChanged="OffsetLeft_ValueChanged" Maximum="256" Increment="4" FontSize="14" />
-                                <local:NumericUpDown x:Name="OffsetVertical" Grid.Row="2" Grid.Column="2" ValueChanged="OffsetVertical_ValueChanged" Minimum="-1024" Maximum="1024" Increment="4" FontSize="14" />
-                                <local:NumericUpDown x:Name="OffsetRight" Grid.Row="2" Grid.Column="3" ValueChanged="OffsetRight_ValueChanged" Maximum="256" Increment="4" FontSize="14" />
-
-                            </Grid>
-                        </GroupBox>
-                        <GroupBox Header="Space" >
-                            <GroupBox.Resources>
-                                <Style TargetType="local:NumericUpDown">
-                                    <Setter Property="Margin" Value="2,0,2,0"/>
-                                    <Setter Property="ButtonPadding" Value="3,0,3,0"/>
-                                </Style>
-                                <Style TargetType="Label">
-                                    <Setter Property="Padding" Value="0,0,0,2"/>
-                                </Style>
-                            </GroupBox.Resources>
-                            <Grid>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="*"/>
-                                </Grid.ColumnDefinitions>
-                                <Grid.RowDefinitions>
-                                    <RowDefinition/>
-                                    <RowDefinition/>
-                                </Grid.RowDefinitions>
-                                <Label Grid.Row="0" Grid.Column="0" HorizontalContentAlignment="Center">Line Top</Label>
-                                <local:NumericUpDown x:Name="LineTop" Grid.Row="1" Grid.Column="0" Margin="2,0,2,0" ValueChanged="LineTop_ValueChanged" Minimum="-50" />
-                                <Label Grid.Row="0" Grid.Column="1" HorizontalContentAlignment="Center">Line Bottom</Label>
-                                <local:NumericUpDown x:Name="LineBottom" Grid.Row="1" Grid.Column="1" ValueChanged="LineBottom_ValueChanged" Minimum="-50" />
-
-                                <Label Grid.Row="0" Grid.Column="2" HorizontalContentAlignment="Center">Ruby Bottom</Label>
-                                <local:NumericUpDown x:Name="RubyBottom" Grid.Row="1" Grid.Column="2" ValueChanged="RubyBottom_ValueChanged" Minimum="-100" />
-                                <Label Grid.Row="0" Grid.Column="3" HorizontalContentAlignment="Center">No Ruby Top</Label>
-                                <local:NumericUpDown x:Name="NoRubyTop" Grid.Row="1" Grid.Column="3" ValueChanged="NoRubyTop_ValueChanged" />
-
-                            </Grid>
-                        </GroupBox>
-                    </StackPanel>
-                </ScrollViewer>
-            </TabItem>
-
-            <TabItem x:Name="TabItemLyrics" Header="LyricsSearch" />
-
-            <TabItem Header="Unsync">
-                <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" >
-                    <StackPanel Background="{DynamicResource {x:Static SystemColors.ControlBrushKey}}">
-
-                        <Grid >
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="auto"/>
-                                <ColumnDefinition Width="auto"/>
-                            </Grid.ColumnDefinitions>
-                            <Button x:Name="UnsyncFontSelect" Content="" Margin="2,2,2,0" Click="UnsyncFontSelect_Click"/>
-                            <Label Grid.Column="1" Padding="5,8,4,0">Outline</Label>
-                            <local:NumericUpDown x:Name="UnsyncOutline" Grid.Column="2" ButtonWidth="10" TextAlignment="Right" Width="48" Value="2" ResetValue="2" ButtonPadding="1,0,1,0" ValueChanged="UnsyncOutline_ValueChanged" FontSize="16" Margin="0,2,2,0" Increment="0.1" />
-                        </Grid>
-
-                        <GroupBox Header="Colors">
-                            <GroupBox.Resources>
-                                <Style TargetType="TextBox">
-                                    <Setter Property="Margin" Value="2,2,2,2" />
-                                    <Setter Property="HorizontalContentAlignment" Value="Center"/>
-                                </Style>
-                            </GroupBox.Resources>
-                            <Grid>
-                                <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="auto"/>
-                                    <ColumnDefinition/>
-                                    <ColumnDefinition Width="auto"/>
-                                    <ColumnDefinition/>
                                 </Grid.ColumnDefinitions>
-                                <Grid.RowDefinitions>
-                                    <RowDefinition/>
-                                </Grid.RowDefinitions>
-
-                                <Label Grid.Row="1" Grid.Column="0">Fill</Label>
-                                <TextBox x:Name="UnsyncFill" Grid.Row="1" Grid.Column="1" Text="White"  TextChanged="TextBoxUF_TextChanged"/>
-                                <Label Grid.Row="1" Grid.Column="2">Stroke</Label>
-                                <TextBox x:Name="UnsyncStroke" Grid.Row="1" Grid.Column="3" Text="Black"  TextChanged="TextBoxUS_TextChanged" Background="Black" Foreground="White"/>
+                                <Button x:Name="FontSelect" Click="Button_Click" Content="" Margin="2,2,2,0"/>
+                                <Label Grid.Column="1" Padding="5,8,4,0">Outline</Label>
+                                <local:NumericUpDown x:Name="Outline" Grid.Column="2" ButtonWidth="10" TextAlignment="Right" Width="48" Value="2" ResetValue="2" ButtonPadding="1,0,1,0" ValueChanged="Outline_ValueChanged" FontSize="16" Margin="0,2,2,0" Increment="0.1" />
 
                             </Grid>
 
-                        </GroupBox>
-                        <GroupBox Header="Alignment">
-                            <GroupBox.Resources>
-                                <Style TargetType="RadioButton" BasedOn="{StaticResource {x:Type ToggleButton}}">
-                                    <Setter Property="Margin" Value="2,2,2,2" />
-                                </Style>
-                                <Style TargetType="local:NumericUpDown">
-                                    <Setter Property="Margin" Value="2,0,2,0"/>
-                                    <Setter Property="ButtonPadding" Value="3,0,3,0"/>
-                                </Style>
+                            <GroupBox Header="Colors">
+                                <GroupBox.Resources>
+                                    <Style TargetType="TextBox">
+                                        <Setter Property="Margin" Value="2,2,2,2" />
+                                        <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                                    </Style>
+                                </GroupBox.Resources>
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="auto"/>
+                                        <ColumnDefinition/>
+                                        <ColumnDefinition/>
+                                        <ColumnDefinition/>
+                                    </Grid.ColumnDefinitions>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition/>
+                                        <RowDefinition/>
+                                        <RowDefinition/>
+                                        <RowDefinition/>
+                                    </Grid.RowDefinitions>
 
-                            </GroupBox.Resources>
+                                    <Label Grid.Row="1" Grid.Column="0">Fill</Label>
+                                    <TextBox x:Name="ActiveFill" Grid.Row="1" Grid.Column="1" Text="White"  TextChanged="TextBoxAF_TextChanged"/>
+                                    <TextBox x:Name="StandbyFill" Grid.Row="1" Grid.Column="2" Text="White"  TextChanged="TextBoxStF_TextChanged"/>
+                                    <TextBox x:Name="SleepFill" Grid.Row="1" Grid.Column="3" Text="White"  TextChanged="TextBoxSlF_TextChanged"/>
+
+                                    <Label Grid.Row="2" Grid.Column="0">Stroke</Label>
+                                    <TextBox x:Name="ActiveStroke" Grid.Row="2" Grid.Column="1" Text="Red"  Background="red"  TextChanged="TextBoxAS_TextChanged"  Foreground="White"/>
+                                    <TextBox x:Name="StandbyStroke" Grid.Row="2" Grid.Column="2" Text="Blue"  Background="blue"  TextChanged="TextBoxStS_TextChanged"  Foreground="White"/>
+                                    <TextBox x:Name="SleepStroke" Grid.Row="2" Grid.Column="3" Text="DarkBlue"  Background="DarkBlue"  TextChanged="TextBoxSlS_TextChanged" Foreground="White"/>
+
+                                    <Label Grid.Row="3" Grid.Column="0">Back</Label>
+                                    <TextBox x:Name="ActiveBack" Grid.Row="3" Grid.Column="1" Text="#7F004000"  Background="#7F004000"  TextChanged="TextBoxAB_TextChanged"  Foreground="White" />
+                                    <TextBox x:Name="WindowBack" Grid.Row="3" Grid.Column="2" Grid.ColumnSpan="2" Text="Black"  Background="black"  TextChanged="TextBoxWB_TextChanged"  Foreground="White" />
+
+                                </Grid>
+
+                            </GroupBox>
+                            <GroupBox Header="Alignment">
+                                <GroupBox.Resources>
+                                    <Style TargetType="RadioButton" BasedOn="{StaticResource {x:Type ToggleButton}}">
+                                        <Setter Property="Margin" Value="2,2,2,2" />
+                                    </Style>
+                                    <Style TargetType="local:NumericUpDown">
+                                        <Setter Property="Margin" Value="2,0,2,0"/>
+                                        <Setter Property="ButtonPadding" Value="3,0,3,0"/>
+                                    </Style>
+
+                                </GroupBox.Resources>
+                                <Grid >
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="auto"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition/>
+                                        <RowDefinition/>
+                                        <RowDefinition/>
+                                    </Grid.RowDefinitions>
+
+                                    <Label Grid.Row="0">Vertical</Label>
+                                    <RadioButton x:Name="VTop" Grid.Row="0" Grid.Column="1" GroupName="Vertical" Checked="RadioButtonTop_Checked">Top</RadioButton>
+                                    <RadioButton x:Name="VMiddle" Grid.Row="0" Grid.Column="2" GroupName="Vertical" Checked="RadioButtonMiddle_Checked">Middle</RadioButton>
+                                    <RadioButton x:Name="VBottom" Grid.Row="0" Grid.Column="3" GroupName="Vertical" Checked="RadioButtonBottom_Checked">Bottom</RadioButton>
+
+                                    <Label Grid.Row="1">Horizontal</Label>
+                                    <RadioButton x:Name="HLeft" Grid.Row="1" Grid.Column="1" GroupName="Horizontal" Checked="RadioButtonLeft_Checked">Left</RadioButton>
+                                    <RadioButton x:Name="HCenter" Grid.Row="1" Grid.Column="2" GroupName="Horizontal" Checked="RadioButtonCenter_Checked">Center</RadioButton>
+                                    <RadioButton x:Name="HRight" Grid.Row="1" Grid.Column="3" GroupName="Horizontal" Checked="RadioButtonRight_Checked">Right</RadioButton>
+
+                                    <Label Grid.Row="2">Offset</Label>
+                                    <local:NumericUpDown x:Name="OffsetLeft" Grid.Row="2" Grid.Column="1" ValueChanged="OffsetLeft_ValueChanged" Maximum="256" Increment="4" FontSize="14" />
+                                    <local:NumericUpDown x:Name="OffsetVertical" Grid.Row="2" Grid.Column="2" ValueChanged="OffsetVertical_ValueChanged" Minimum="-1024" Maximum="1024" Increment="4" FontSize="14" />
+                                    <local:NumericUpDown x:Name="OffsetRight" Grid.Row="2" Grid.Column="3" ValueChanged="OffsetRight_ValueChanged" Maximum="256" Increment="4" FontSize="14" />
+
+                                </Grid>
+                            </GroupBox>
+                            <GroupBox Header="Space" >
+                                <GroupBox.Resources>
+                                    <Style TargetType="local:NumericUpDown">
+                                        <Setter Property="Margin" Value="2,0,2,0"/>
+                                        <Setter Property="ButtonPadding" Value="3,0,3,0"/>
+                                    </Style>
+                                    <Style TargetType="Label">
+                                        <Setter Property="Padding" Value="0,0,0,2"/>
+                                    </Style>
+                                </GroupBox.Resources>
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition/>
+                                        <RowDefinition/>
+                                    </Grid.RowDefinitions>
+                                    <Label Grid.Row="0" Grid.Column="0" HorizontalContentAlignment="Center">Line Top</Label>
+                                    <local:NumericUpDown x:Name="LineTop" Grid.Row="1" Grid.Column="0" Margin="2,0,2,0" ValueChanged="LineTop_ValueChanged" Minimum="-50" />
+                                    <Label Grid.Row="0" Grid.Column="1" HorizontalContentAlignment="Center">Line Bottom</Label>
+                                    <local:NumericUpDown x:Name="LineBottom" Grid.Row="1" Grid.Column="1" ValueChanged="LineBottom_ValueChanged" Minimum="-50" />
+
+                                    <Label Grid.Row="0" Grid.Column="2" HorizontalContentAlignment="Center">Ruby Bottom</Label>
+                                    <local:NumericUpDown x:Name="RubyBottom" Grid.Row="1" Grid.Column="2" ValueChanged="RubyBottom_ValueChanged" Minimum="-100" />
+                                    <Label Grid.Row="0" Grid.Column="3" HorizontalContentAlignment="Center">No Ruby Top</Label>
+                                    <local:NumericUpDown x:Name="NoRubyTop" Grid.Row="1" Grid.Column="3" ValueChanged="NoRubyTop_ValueChanged" />
+
+                                </Grid>
+                            </GroupBox>
+                        </StackPanel>
+                    </ScrollViewer>
+                </TabItem>
+
+                <TabItem x:Name="TabItemLyrics" Header="LyricsSearch" />
+
+                <TabItem Header="Unsync">
+                    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" >
+                        <StackPanel Background="{DynamicResource {x:Static SystemColors.ControlBrushKey}}">
+
                             <Grid >
                                 <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
                                     <ColumnDefinition Width="auto"/>
-                                    <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="auto"/>
                                 </Grid.ColumnDefinitions>
-                                <Grid.RowDefinitions>
-                                    <RowDefinition/>
-                                    <RowDefinition/>
-                                </Grid.RowDefinitions>
-
-                                <Label Grid.Row="0">Horizontal</Label>
-                                <RadioButton x:Name="UnsyncHLeft" Grid.Row="0" Grid.Column="1" GroupName="UnsyncHorizontal" Checked="UnsyncHLeft_Checked" >Left</RadioButton>
-                                <RadioButton x:Name="UnsyncHCenter" Grid.Row="0" Grid.Column="2" GroupName="UnsyncHorizontal" Checked="UnsyncHCenter_Checked" >Center</RadioButton>
-                                <RadioButton x:Name="UnsyncHRight" Grid.Row="0" Grid.Column="3" GroupName="UnsyncHorizontal" Checked="UnsyncHRight_Checked" >Right</RadioButton>
-
-                                <Label Grid.Row="1">Offset</Label>
-                                <local:NumericUpDown x:Name="UnsyncOffsetLeft" Grid.Row="1" Grid.Column="1"  Maximum="256" Increment="4" FontSize="14" ValueChanged="UnsyncOffsetLeft_ValueChanged" />
-                                <local:NumericUpDown x:Name="UnsyncOffsetVertical" Grid.Row="1" Grid.Column="2"  Minimum="-1024" Maximum="1024" Increment="4" FontSize="14" ValueChanged="UnsyncOffsetVertical_ValueChanged" />
-                                <local:NumericUpDown x:Name="UnsyncOffsetRight" Grid.Row="1" Grid.Column="3"  Maximum="256" Increment="4" FontSize="14" ValueChanged="UnsyncOffsetRight_ValueChanged" />
-
+                                <Button x:Name="UnsyncFontSelect" Content="" Margin="2,2,2,0" Click="UnsyncFontSelect_Click"/>
+                                <Label Grid.Column="1" Padding="5,8,4,0">Outline</Label>
+                                <local:NumericUpDown x:Name="UnsyncOutline" Grid.Column="2" ButtonWidth="10" TextAlignment="Right" Width="48" Value="2" ResetValue="2" ButtonPadding="1,0,1,0" ValueChanged="UnsyncOutline_ValueChanged" FontSize="16" Margin="0,2,2,0" Increment="0.1" />
                             </Grid>
-                        </GroupBox>
-                        <GroupBox Header="Space" >
-                            <GroupBox.Resources>
-                                <Style TargetType="local:NumericUpDown">
-                                    <Setter Property="Margin" Value="2,0,2,0"/>
-                                    <Setter Property="ButtonPadding" Value="3,0,3,0"/>
-                                </Style>
-                                <Style TargetType="Label">
-                                    <Setter Property="Padding" Value="0,0,0,2"/>
-                                </Style>
-                            </GroupBox.Resources>
-                            <Grid>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="*"/>
-                                </Grid.ColumnDefinitions>
-                                <Grid.RowDefinitions>
-                                    <RowDefinition/>
-                                    <RowDefinition/>
-                                </Grid.RowDefinitions>
-                                <Label Grid.Row="0" Grid.Column="0" HorizontalContentAlignment="Center">Line Top</Label>
-                                <local:NumericUpDown x:Name="UnsyncLineTop" Grid.Row="1" Grid.Column="0" Margin="2,0,2,0" ValueChanged="UnsyncLineTop_ValueChanged" Minimum="-50" />
-                                <Label Grid.Row="0" Grid.Column="1" HorizontalContentAlignment="Center">Line Bottom</Label>
-                                <local:NumericUpDown x:Name="UnsyncLineBottom" Grid.Row="1" Grid.Column="1" ValueChanged="UnsyncLineBottom_ValueChanged" Minimum="-50" />
 
-                                <Label Grid.Row="0" Grid.Column="2" HorizontalContentAlignment="Center">Ruby Bottom</Label>
-                                <local:NumericUpDown x:Name="UnsyncRubyBottom" Grid.Row="1" Grid.Column="2" ValueChanged="UnsyncRubyBottom_ValueChanged" Minimum="-100" />
-                                <Label Grid.Row="0" Grid.Column="3" HorizontalContentAlignment="Center">No Ruby Top</Label>
-                                <local:NumericUpDown x:Name="UnsyncNoRubyTop" Grid.Row="1" Grid.Column="3" ValueChanged="UnsyncNoRubyTop_ValueChanged" />
+                            <GroupBox Header="Colors">
+                                <GroupBox.Resources>
+                                    <Style TargetType="TextBox">
+                                        <Setter Property="Margin" Value="2,2,2,2" />
+                                        <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                                    </Style>
+                                </GroupBox.Resources>
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="auto"/>
+                                        <ColumnDefinition/>
+                                        <ColumnDefinition Width="auto"/>
+                                        <ColumnDefinition/>
+                                    </Grid.ColumnDefinitions>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition/>
+                                    </Grid.RowDefinitions>
 
-                            </Grid>
-                        </GroupBox>
+                                    <Label Grid.Row="1" Grid.Column="0">Fill</Label>
+                                    <TextBox x:Name="UnsyncFill" Grid.Row="1" Grid.Column="1" Text="White"  TextChanged="TextBoxUF_TextChanged"/>
+                                    <Label Grid.Row="1" Grid.Column="2">Stroke</Label>
+                                    <TextBox x:Name="UnsyncStroke" Grid.Row="1" Grid.Column="3" Text="Black"  TextChanged="TextBoxUS_TextChanged" Background="Black" Foreground="White"/>
+
+                                </Grid>
+
+                            </GroupBox>
+                            <GroupBox Header="Alignment">
+                                <GroupBox.Resources>
+                                    <Style TargetType="RadioButton" BasedOn="{StaticResource {x:Type ToggleButton}}">
+                                        <Setter Property="Margin" Value="2,2,2,2" />
+                                    </Style>
+                                    <Style TargetType="local:NumericUpDown">
+                                        <Setter Property="Margin" Value="2,0,2,0"/>
+                                        <Setter Property="ButtonPadding" Value="3,0,3,0"/>
+                                    </Style>
+
+                                </GroupBox.Resources>
+                                <Grid >
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="auto"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition/>
+                                        <RowDefinition/>
+                                    </Grid.RowDefinitions>
+
+                                    <Label Grid.Row="0">Horizontal</Label>
+                                    <RadioButton x:Name="UnsyncHLeft" Grid.Row="0" Grid.Column="1" GroupName="UnsyncHorizontal" Checked="UnsyncHLeft_Checked" >Left</RadioButton>
+                                    <RadioButton x:Name="UnsyncHCenter" Grid.Row="0" Grid.Column="2" GroupName="UnsyncHorizontal" Checked="UnsyncHCenter_Checked" >Center</RadioButton>
+                                    <RadioButton x:Name="UnsyncHRight" Grid.Row="0" Grid.Column="3" GroupName="UnsyncHorizontal" Checked="UnsyncHRight_Checked" >Right</RadioButton>
+
+                                    <Label Grid.Row="1">Offset</Label>
+                                    <local:NumericUpDown x:Name="UnsyncOffsetLeft" Grid.Row="1" Grid.Column="1"  Maximum="256" Increment="4" FontSize="14" ValueChanged="UnsyncOffsetLeft_ValueChanged" />
+                                    <local:NumericUpDown x:Name="UnsyncOffsetVertical" Grid.Row="1" Grid.Column="2"  Minimum="-1024" Maximum="1024" Increment="4" FontSize="14" ValueChanged="UnsyncOffsetVertical_ValueChanged" />
+                                    <local:NumericUpDown x:Name="UnsyncOffsetRight" Grid.Row="1" Grid.Column="3"  Maximum="256" Increment="4" FontSize="14" ValueChanged="UnsyncOffsetRight_ValueChanged" />
+
+                                </Grid>
+                            </GroupBox>
+                            <GroupBox Header="Space" >
+                                <GroupBox.Resources>
+                                    <Style TargetType="local:NumericUpDown">
+                                        <Setter Property="Margin" Value="2,0,2,0"/>
+                                        <Setter Property="ButtonPadding" Value="3,0,3,0"/>
+                                    </Style>
+                                    <Style TargetType="Label">
+                                        <Setter Property="Padding" Value="0,0,0,2"/>
+                                    </Style>
+                                </GroupBox.Resources>
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition/>
+                                        <RowDefinition/>
+                                    </Grid.RowDefinitions>
+                                    <Label Grid.Row="0" Grid.Column="0" HorizontalContentAlignment="Center">Line Top</Label>
+                                    <local:NumericUpDown x:Name="UnsyncLineTop" Grid.Row="1" Grid.Column="0" Margin="2,0,2,0" ValueChanged="UnsyncLineTop_ValueChanged" Minimum="-50" />
+                                    <Label Grid.Row="0" Grid.Column="1" HorizontalContentAlignment="Center">Line Bottom</Label>
+                                    <local:NumericUpDown x:Name="UnsyncLineBottom" Grid.Row="1" Grid.Column="1" ValueChanged="UnsyncLineBottom_ValueChanged" Minimum="-50" />
+
+                                    <Label Grid.Row="0" Grid.Column="2" HorizontalContentAlignment="Center">Ruby Bottom</Label>
+                                    <local:NumericUpDown x:Name="UnsyncRubyBottom" Grid.Row="1" Grid.Column="2" ValueChanged="UnsyncRubyBottom_ValueChanged" Minimum="-100" />
+                                    <Label Grid.Row="0" Grid.Column="3" HorizontalContentAlignment="Center">No Ruby Top</Label>
+                                    <local:NumericUpDown x:Name="UnsyncNoRubyTop" Grid.Row="1" Grid.Column="3" ValueChanged="UnsyncNoRubyTop_ValueChanged" />
+
+                                </Grid>
+                            </GroupBox>
 
 
-                    </StackPanel>
-                </ScrollViewer>
-            </TabItem>
+                        </StackPanel>
+                    </ScrollViewer>
+                </TabItem>
 
-            <TabItem x:Name="TabItemSave" Header="Save" />
-            
-            <TabItem x:Name="TabItemManual" Header="ManualSearch" />
+                <TabItem x:Name="TabItemSave" Header="Save" />
 
-            <TabItem x:Name="TabItemOthers" Header="Others" />
+                <TabItem x:Name="TabItemManual" Header="ManualSearch" />
 
-        </TabControl>
-        <Grid Grid.Row="2" Margin="0,8,0,8" >
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="auto"/>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="auto"/>
-            </Grid.ColumnDefinitions>
-            <Button Grid.Column="0" Content="Save" VerticalAlignment="Center" HorizontalAlignment="Stretch" Width="64" Click="ButtonSave_Click" Margin="10,0,0,0" ToolTip="Save settingfile for next startup" Padding="1,4,1,4"/>
+                <TabItem x:Name="TabItemOthers" Header="Others" />
+
+            </TabControl>
+            <Grid Grid.Row="2" Margin="0,8,0,8" >
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="auto"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="auto"/>
+                </Grid.ColumnDefinitions>
+                <Button Grid.Column="0" Content="Save" VerticalAlignment="Center" HorizontalAlignment="Stretch" Width="64" Click="ButtonSave_Click" Margin="10,0,0,0" ToolTip="Save settingfile for next startup" Padding="1,4,1,4"/>
+            </Grid>
         </Grid>
-    </Grid>
-
+    </Border>
 </Window>

@@ -373,12 +373,11 @@ namespace Titalyver2
 
         private void OpenSaveFolder_Click(object sender, RoutedEventArgs e)
         {
-            if (string.IsNullOrEmpty(LastSaveFile))
-                return;
+//            string directoryname = Path.GetDirectoryName(LastSaveFile);
+//            string filename = Path.GetFileName(LastSaveFile);
+//            string filepath = Path.Combine(directoryname, filename);
 
-            string directoryname = Path.GetDirectoryName(LastSaveFile);
-            string filename = Path.GetFileName(LastSaveFile);
-            string filepath = Path.Combine(directoryname, filename);
+            string filepath = LastSaveFile.Replace('/', '\\');
             _ = System.Diagnostics.Process.Start("EXPLORER.EXE", $"/select,\"{filepath}\"");
         }
 
@@ -424,7 +423,12 @@ namespace Titalyver2
 
         private void OpenFolder_Click(object sender, RoutedEventArgs e)
         {
-            _ = System.Diagnostics.Process.Start("EXPLORER.EXE", $"/select,\"{Lyrics[CurrentLyrics].FilePath}\"");
+//            string directoryname = Path.GetDirectoryName(Lyrics[CurrentLyrics].FilePath);
+//            string filename = Path.GetFileName(Lyrics[CurrentLyrics].FilePath);
+//            string filepath = Path.Combine(directoryname, filename);
+
+            string filepath = Lyrics[CurrentLyrics].FilePath.Replace('/', '\\');
+            _ = System.Diagnostics.Process.Start("EXPLORER.EXE", $"/select,\"{filepath}\"");
         }
 
         private void MenuItemText_Click(object sender, RoutedEventArgs e)
