@@ -87,7 +87,7 @@ namespace Titalyver2
 
         public string[] SavePathList { get; set; } =
         {
-            "%mydocuments%/Lyrics/%artists%/%album%-%title",
+            "%mydocuments%/Lyrics/%artists%/%album%-%title%",
             "%directoryname%/%filename%"
         };
         public int SaveExtension { get; set; } = 0;

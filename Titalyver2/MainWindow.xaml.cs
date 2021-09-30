@@ -43,6 +43,8 @@ namespace Titalyver2
         {
             InitializeComponent();
 
+            _ = WindowPositionStrage.Load(this);
+
             KaraokeDisplay.SetLyrics("");
 
             RestoreSettings();
@@ -81,10 +83,15 @@ namespace Titalyver2
             }
 
         }
+        private void window_Closing(object sender, CancelEventArgs e)
+        {
+            WindowState = WindowState.Normal;
+            _ = WindowPositionStrage.Save(this);
+        }
+
         private void window_Closed(object sender, EventArgs e)
         {
             Receiver.Terminalize();
-
         }
 
 
@@ -411,12 +418,6 @@ namespace Titalyver2
 
 
         private void Maximize_Click(object sender, RoutedEventArgs e)
-        {
-            WindowState = WindowState == WindowState.Maximized ? WindowState.Normal : WindowState.Maximized;
-
-        }
-
-        private void window_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
             WindowState = WindowState == WindowState.Maximized ? WindowState.Normal : WindowState.Maximized;
         }
