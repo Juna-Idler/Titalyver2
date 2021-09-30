@@ -130,11 +130,12 @@ namespace Titalyver2
             {
                 MainWindow.KaraokeDisplay.SetFont(new Typeface(dlg.SelectedFontFamily, dlg.SelectedFontStyle, dlg.SelectedFontWeight, dlg.SelectedFontStretch), dlg.SelectedFontSize);
 
-                Properties.Settings.Default.FontFamily = dlg.SelectedFontFamily.Source;
-                Properties.Settings.Default.FontSize = dlg.SelectedFontSize;
-                Properties.Settings.Default.FontStyle = TypeDescriptor.GetConverter(typeof(FontStyle)).ConvertToString(dlg.SelectedFontStyle);
-                Properties.Settings.Default.FontWeight = TypeDescriptor.GetConverter(typeof(FontWeight)).ConvertToString(dlg.SelectedFontWeight);
-                Properties.Settings.Default.FontStretch = TypeDescriptor.GetConverter(typeof(FontStretch)).ConvertToString(dlg.SelectedFontStretch);
+
+                SettingsStorage.Default.FontFamily = dlg.SelectedFontFamily.Source;
+                SettingsStorage.Default.FontSize = dlg.SelectedFontSize;
+                SettingsStorage.Default.FontStyle = TypeDescriptor.GetConverter(typeof(FontStyle)).ConvertToString(dlg.SelectedFontStyle);
+                SettingsStorage.Default.FontWeight = TypeDescriptor.GetConverter(typeof(FontWeight)).ConvertToString(dlg.SelectedFontWeight);
+                SettingsStorage.Default.FontStretch = TypeDescriptor.GetConverter(typeof(FontStretch)).ConvertToString(dlg.SelectedFontStretch);
 
                 FontSelect.Content = $"{TypefaceString(MainWindow.KaraokeDisplay.Typeface)} {MainWindow.KaraokeDisplay.FontSize}";
             }
@@ -165,7 +166,7 @@ namespace Titalyver2
             if (MainWindow == null) return;
             MainWindow.KaraokeDisplay.ActiveFillColor = ColorTextChanged((TextBox)sender) ?? MainWindow.KaraokeDisplay.ActiveFillColor;
             MainWindow.KaraokeDisplay.ResetLineColors();
-            Properties.Settings.Default.ActiveFill = bc.ConvertToString(MainWindow.KaraokeDisplay.ActiveFillColor);
+            SettingsStorage.Default.ActiveFill = bc.ConvertToString(MainWindow.KaraokeDisplay.ActiveFillColor);
         }
 
         private void TextBoxStF_TextChanged(object sender, TextChangedEventArgs e)
@@ -173,7 +174,7 @@ namespace Titalyver2
             if (MainWindow == null) return;
             MainWindow.KaraokeDisplay.StandbyFillColor = ColorTextChanged((TextBox)sender) ?? MainWindow.KaraokeDisplay.StandbyFillColor;
             MainWindow.KaraokeDisplay.ResetLineColors();
-            Properties.Settings.Default.StandbyFill = bc.ConvertToString(MainWindow.KaraokeDisplay.StandbyFillColor);
+            SettingsStorage.Default.StandbyFill = bc.ConvertToString(MainWindow.KaraokeDisplay.StandbyFillColor);
         }
 
         private void TextBoxSlF_TextChanged(object sender, TextChangedEventArgs e)
@@ -181,7 +182,7 @@ namespace Titalyver2
             if (MainWindow == null) return;
             MainWindow.KaraokeDisplay.SleepFillColor = ColorTextChanged((TextBox)sender) ?? MainWindow.KaraokeDisplay.SleepFillColor;
             MainWindow.KaraokeDisplay.ResetLineColors();
-            Properties.Settings.Default.SleepFill = bc.ConvertToString(MainWindow.KaraokeDisplay.SleepFillColor);
+            SettingsStorage.Default.SleepFill = bc.ConvertToString(MainWindow.KaraokeDisplay.SleepFillColor);
         }
 
         private void TextBoxAS_TextChanged(object sender, TextChangedEventArgs e)
@@ -189,7 +190,7 @@ namespace Titalyver2
             if (MainWindow == null) return;
             MainWindow.KaraokeDisplay.ActiveStrokeColor = ColorTextChanged((TextBox)sender) ?? MainWindow.KaraokeDisplay.ActiveStrokeColor;
             MainWindow.KaraokeDisplay.ResetLineColors();
-            Properties.Settings.Default.ActiveStroke = bc.ConvertToString(MainWindow.KaraokeDisplay.ActiveStrokeColor);
+            SettingsStorage.Default.ActiveStroke = bc.ConvertToString(MainWindow.KaraokeDisplay.ActiveStrokeColor);
         }
 
         private void TextBoxStS_TextChanged(object sender, TextChangedEventArgs e)
@@ -197,7 +198,7 @@ namespace Titalyver2
             if (MainWindow == null) return;
             MainWindow.KaraokeDisplay.StandbyStrokeColor = ColorTextChanged((TextBox)sender) ?? MainWindow.KaraokeDisplay.StandbyStrokeColor;
             MainWindow.KaraokeDisplay.ResetLineColors();
-            Properties.Settings.Default.StandbyStroke = bc.ConvertToString(MainWindow.KaraokeDisplay.StandbyStrokeColor);
+            SettingsStorage.Default.StandbyStroke = bc.ConvertToString(MainWindow.KaraokeDisplay.StandbyStrokeColor);
         }
 
         private void TextBoxSlS_TextChanged(object sender, TextChangedEventArgs e)
@@ -205,7 +206,7 @@ namespace Titalyver2
             if (MainWindow == null) return;
             MainWindow.KaraokeDisplay.SleepStrokeColor = ColorTextChanged((TextBox)sender) ?? MainWindow.KaraokeDisplay.SleepStrokeColor;
             MainWindow.KaraokeDisplay.ResetLineColors();
-            Properties.Settings.Default.SleepStroke = bc.ConvertToString(MainWindow.KaraokeDisplay.SleepStrokeColor);
+            SettingsStorage.Default.SleepStroke = bc.ConvertToString(MainWindow.KaraokeDisplay.SleepStrokeColor);
         }
 
         private void TextBoxAB_TextChanged(object sender, TextChangedEventArgs e)
@@ -213,7 +214,7 @@ namespace Titalyver2
             if (MainWindow == null) return;
             MainWindow.KaraokeDisplay.ActiveBackColor = ColorTextChanged((TextBox)sender) ?? MainWindow.KaraokeDisplay.ActiveBackColor;
             MainWindow.KaraokeDisplay.ResetLineColors();
-            Properties.Settings.Default.ActiveBack = bc.ConvertToString(MainWindow.KaraokeDisplay.ActiveBackColor);
+            SettingsStorage.Default.ActiveBack = bc.ConvertToString(MainWindow.KaraokeDisplay.ActiveBackColor);
 
         }
 
@@ -221,14 +222,14 @@ namespace Titalyver2
         {
             if (MainWindow == null) return;
             MainWindow.Background = ColorTextChanged((TextBox)sender) ?? MainWindow.Background;
-            Properties.Settings.Default.WindowBack = bc.ConvertToString(MainWindow.Background);
+            SettingsStorage.Default.WindowBack = bc.ConvertToString(MainWindow.Background);
         }
 
         private void RadioButtonLeft_Checked(object sender, RoutedEventArgs e)
         {
             if (MainWindow == null) return;
             MainWindow.KaraokeDisplay.TextAlignment = TextAlignment.Left;
-            Properties.Settings.Default.TextAlignment = TypeDescriptor.GetConverter(typeof(TextAlignment)).ConvertToString(TextAlignment.Left);
+            SettingsStorage.Default.TextAlignment = TypeDescriptor.GetConverter(typeof(TextAlignment)).ConvertToString(TextAlignment.Left);
             MainWindow.KaraokeDisplay.UpdateAll();
         }
 
@@ -236,7 +237,7 @@ namespace Titalyver2
         {
             if (MainWindow == null) return;
             MainWindow.KaraokeDisplay.TextAlignment = TextAlignment.Center;
-            Properties.Settings.Default.TextAlignment = TypeDescriptor.GetConverter(typeof(TextAlignment)).ConvertToString(TextAlignment.Center);
+            SettingsStorage.Default.TextAlignment = TypeDescriptor.GetConverter(typeof(TextAlignment)).ConvertToString(TextAlignment.Center);
             MainWindow.KaraokeDisplay.UpdateAll();
         }
 
@@ -244,7 +245,7 @@ namespace Titalyver2
         {
             if (MainWindow == null) return;
             MainWindow.KaraokeDisplay.TextAlignment = TextAlignment.Right;
-            Properties.Settings.Default.TextAlignment = TypeDescriptor.GetConverter(typeof(TextAlignment)).ConvertToString(TextAlignment.Right);
+            SettingsStorage.Default.TextAlignment = TypeDescriptor.GetConverter(typeof(TextAlignment)).ConvertToString(TextAlignment.Right);
             MainWindow.KaraokeDisplay.UpdateAll();
         }
 
@@ -252,21 +253,21 @@ namespace Titalyver2
         {
             if (MainWindow == null) return;
             MainWindow.KaraokeDisplay.KaraokeVerticalAlignment = VerticalAlignment.Top;
-            Properties.Settings.Default.VerticalAlignment = TypeDescriptor.GetConverter(typeof(VerticalAlignment)).ConvertToString(VerticalAlignment.Top);
+            SettingsStorage.Default.VerticalAlignment = TypeDescriptor.GetConverter(typeof(VerticalAlignment)).ConvertToString(VerticalAlignment.Top);
         }
 
         private void RadioButtonMiddle_Checked(object sender, RoutedEventArgs e)
         {
             if (MainWindow == null) return;
             MainWindow.KaraokeDisplay.KaraokeVerticalAlignment = VerticalAlignment.Center;
-            Properties.Settings.Default.VerticalAlignment = TypeDescriptor.GetConverter(typeof(VerticalAlignment)).ConvertToString(VerticalAlignment.Center);
+            SettingsStorage.Default.VerticalAlignment = TypeDescriptor.GetConverter(typeof(VerticalAlignment)).ConvertToString(VerticalAlignment.Center);
         }
 
         private void RadioButtonBottom_Checked(object sender, RoutedEventArgs e)
         {
             if (MainWindow == null) return;
             MainWindow.KaraokeDisplay.KaraokeVerticalAlignment = VerticalAlignment.Bottom;
-            Properties.Settings.Default.VerticalAlignment = TypeDescriptor.GetConverter(typeof(VerticalAlignment)).ConvertToString(VerticalAlignment.Bottom);
+            SettingsStorage.Default.VerticalAlignment = TypeDescriptor.GetConverter(typeof(VerticalAlignment)).ConvertToString(VerticalAlignment.Bottom);
 
         }
 
@@ -276,7 +277,7 @@ namespace Titalyver2
             Thickness t = MainWindow.KaraokeDisplay.LinePadding;
             t.Left = (double)OffsetLeft.Value;
             MainWindow.KaraokeDisplay.LinePadding = t;
-            Properties.Settings.Default.OffsetLeft = t.Left;
+            SettingsStorage.Default.OffsetLeft = t.Left;
         }
 
         private void OffsetRight_ValueChanged(object sender, EventArgs e)
@@ -285,21 +286,21 @@ namespace Titalyver2
             Thickness t = MainWindow.KaraokeDisplay.LinePadding;
             t.Right = (double)OffsetRight.Value;
             MainWindow.KaraokeDisplay.LinePadding = t;
-            Properties.Settings.Default.OffsetRight = t.Right;
+            SettingsStorage.Default.OffsetRight = t.Right;
         }
 
         private void OffsetVertical_ValueChanged(object sender, EventArgs e)
         {
             if (MainWindow == null) return;
             MainWindow.KaraokeDisplay.VerticalOffsetY = (double)OffsetVertical.Value;
-            Properties.Settings.Default.OffsetVertical = MainWindow.KaraokeDisplay.VerticalOffsetY;
+            SettingsStorage.Default.OffsetVertical = MainWindow.KaraokeDisplay.VerticalOffsetY;
         }
 
         private void Outline_ValueChanged(object sender, EventArgs e)
         {
             if (MainWindow == null) return;
             MainWindow.KaraokeDisplay.StrokeThickness = (double)Outline.Value;
-            Properties.Settings.Default.Outline = MainWindow.KaraokeDisplay.StrokeThickness;
+            SettingsStorage.Default.Outline = MainWindow.KaraokeDisplay.StrokeThickness;
         }
 
         private void LineTop_ValueChanged(object sender, EventArgs e)
@@ -308,7 +309,7 @@ namespace Titalyver2
             Thickness t = MainWindow.KaraokeDisplay.LinePadding;
             t.Top = (double)LineTop.Value;
             MainWindow.KaraokeDisplay.LinePadding = t;
-            Properties.Settings.Default.LineTopSpace = t.Top;
+            SettingsStorage.Default.LineTopSpace = t.Top;
             MainWindow.KaraokeDisplay.SetAutoScrollY(MainWindow.KaraokeDisplay.Time);
         }
 
@@ -318,7 +319,7 @@ namespace Titalyver2
             Thickness t = MainWindow.KaraokeDisplay.LinePadding;
             t.Bottom = (double)LineBottom.Value;
             MainWindow.KaraokeDisplay.LinePadding = t;
-            Properties.Settings.Default.LineBottomSpace = t.Bottom;
+            SettingsStorage.Default.LineBottomSpace = t.Bottom;
             MainWindow.KaraokeDisplay.SetAutoScrollY(MainWindow.KaraokeDisplay.Time);
         }
 
@@ -326,7 +327,7 @@ namespace Titalyver2
         {
             if (MainWindow == null) return;
             MainWindow.KaraokeDisplay.RubyBottomSpace = (double)RubyBottom.Value;
-            Properties.Settings.Default.RubyBottomSpace = MainWindow.KaraokeDisplay.RubyBottomSpace;
+            SettingsStorage.Default.RubyBottomSpace = MainWindow.KaraokeDisplay.RubyBottomSpace;
             MainWindow.KaraokeDisplay.SetAutoScrollY(MainWindow.KaraokeDisplay.Time);
         }
 
@@ -334,7 +335,7 @@ namespace Titalyver2
         {
             if (MainWindow == null) return;
             MainWindow.KaraokeDisplay.NoRubyTopSpace = (double)NoRubyTop.Value;
-            Properties.Settings.Default.NoRubySpace = MainWindow.KaraokeDisplay.NoRubyTopSpace;
+            SettingsStorage.Default.NoRubySpace = MainWindow.KaraokeDisplay.NoRubyTopSpace;
             MainWindow.KaraokeDisplay.SetAutoScrollY(MainWindow.KaraokeDisplay.Time);
         }
 
@@ -350,13 +351,7 @@ namespace Titalyver2
         }
         private void ButtonSave_Click(object sender, RoutedEventArgs e)
         {
-            Properties.Settings.Default.Save();
-
-        }
-        private void ButtonFolder_Click(object sender, RoutedEventArgs e)
-        {
-            System.Configuration.Configuration config = System.Configuration.ConfigurationManager.OpenExeConfiguration(System.Configuration.ConfigurationUserLevel.PerUserRoamingAndLocal);
-            _ = System.Diagnostics.Process.Start("EXPLORER.EXE", @"/select," + config.FilePath);
+            SettingsStorage.Default.Save();
 
         }
 
@@ -428,11 +423,11 @@ namespace Titalyver2
             {
                 MainWindow.KaraokeDisplay.SetUnsyncFont(new Typeface(dlg.SelectedFontFamily, dlg.SelectedFontStyle, dlg.SelectedFontWeight, dlg.SelectedFontStretch), dlg.SelectedFontSize);
 
-                Properties.Settings.Default.UnsyncFontFamily = dlg.SelectedFontFamily.Source;
-                Properties.Settings.Default.UnsyncFontSize = dlg.SelectedFontSize;
-                Properties.Settings.Default.UnsyncFontStyle = TypeDescriptor.GetConverter(typeof(FontStyle)).ConvertToString(dlg.SelectedFontStyle);
-                Properties.Settings.Default.UnsyncFontWeight = TypeDescriptor.GetConverter(typeof(FontWeight)).ConvertToString(dlg.SelectedFontWeight);
-                Properties.Settings.Default.UnsyncFontStretch = TypeDescriptor.GetConverter(typeof(FontStretch)).ConvertToString(dlg.SelectedFontStretch);
+                SettingsStorage.Default.UnsyncFontFamily = dlg.SelectedFontFamily.Source;
+                SettingsStorage.Default.UnsyncFontSize = dlg.SelectedFontSize;
+                SettingsStorage.Default.UnsyncFontStyle = TypeDescriptor.GetConverter(typeof(FontStyle)).ConvertToString(dlg.SelectedFontStyle);
+                SettingsStorage.Default.UnsyncFontWeight = TypeDescriptor.GetConverter(typeof(FontWeight)).ConvertToString(dlg.SelectedFontWeight);
+                SettingsStorage.Default.UnsyncFontStretch = TypeDescriptor.GetConverter(typeof(FontStretch)).ConvertToString(dlg.SelectedFontStretch);
 
                 UnsyncFontSelect.Content = $"{TypefaceString(MainWindow.KaraokeDisplay.UnsyncTypeface)} {MainWindow.KaraokeDisplay.UnsyncFontSize}";
             }
@@ -443,7 +438,7 @@ namespace Titalyver2
         {
             if (MainWindow == null) return;
             MainWindow.KaraokeDisplay.SetUnsyncThickness((double)UnsyncOutline.Value);
-            Properties.Settings.Default.UnsyncOutline = MainWindow.KaraokeDisplay.UnsyncStrokeThickness;
+            SettingsStorage.Default.UnsyncOutline = MainWindow.KaraokeDisplay.UnsyncStrokeThickness;
         }
         #endregion Unsync
 
@@ -452,7 +447,7 @@ namespace Titalyver2
             if (MainWindow == null) return;
             MainWindow.KaraokeDisplay.UnsyncFillColor = ColorTextChanged((TextBox)sender) ?? MainWindow.KaraokeDisplay.UnsyncFillColor;
             MainWindow.KaraokeDisplay.ResetUnsyncProp();
-            Properties.Settings.Default.UnsyncFill = bc.ConvertToString(MainWindow.KaraokeDisplay.UnsyncFillColor);
+            SettingsStorage.Default.UnsyncFill = bc.ConvertToString(MainWindow.KaraokeDisplay.UnsyncFillColor);
 
         }
 
@@ -461,14 +456,14 @@ namespace Titalyver2
             if (MainWindow == null) return;
             MainWindow.KaraokeDisplay.UnsyncStrokeColor = ColorTextChanged((TextBox)sender) ?? MainWindow.KaraokeDisplay.UnsyncStrokeColor;
             MainWindow.KaraokeDisplay.ResetUnsyncProp();
-            Properties.Settings.Default.UnsyncStroke = bc.ConvertToString(MainWindow.KaraokeDisplay.UnsyncStrokeColor);
+            SettingsStorage.Default.UnsyncStroke = bc.ConvertToString(MainWindow.KaraokeDisplay.UnsyncStrokeColor);
         }
 
         private void UnsyncHLeft_Checked(object sender, RoutedEventArgs e)
         {
             if (MainWindow == null) return;
             MainWindow.KaraokeDisplay.UnsyncTextAlignment = TextAlignment.Left;
-            Properties.Settings.Default.UnsyncTextAlignment = TypeDescriptor.GetConverter(typeof(TextAlignment)).ConvertToString(TextAlignment.Left);
+            SettingsStorage.Default.UnsyncTextAlignment = TypeDescriptor.GetConverter(typeof(TextAlignment)).ConvertToString(TextAlignment.Left);
             MainWindow.KaraokeDisplay.ResetUnsyncProp();
         }
 
@@ -476,7 +471,7 @@ namespace Titalyver2
         {
             if (MainWindow == null) return;
             MainWindow.KaraokeDisplay.UnsyncTextAlignment = TextAlignment.Center;
-            Properties.Settings.Default.UnsyncTextAlignment = TypeDescriptor.GetConverter(typeof(TextAlignment)).ConvertToString(TextAlignment.Center);
+            SettingsStorage.Default.UnsyncTextAlignment = TypeDescriptor.GetConverter(typeof(TextAlignment)).ConvertToString(TextAlignment.Center);
             MainWindow.KaraokeDisplay.ResetUnsyncProp();
         }
 
@@ -484,7 +479,7 @@ namespace Titalyver2
         {
             if (MainWindow == null) return;
             MainWindow.KaraokeDisplay.UnsyncTextAlignment = TextAlignment.Right;
-            Properties.Settings.Default.UnsyncTextAlignment = TypeDescriptor.GetConverter(typeof(TextAlignment)).ConvertToString(TextAlignment.Right);
+            SettingsStorage.Default.UnsyncTextAlignment = TypeDescriptor.GetConverter(typeof(TextAlignment)).ConvertToString(TextAlignment.Right);
             MainWindow.KaraokeDisplay.ResetUnsyncProp();
         }
 
@@ -494,7 +489,7 @@ namespace Titalyver2
             Thickness t = MainWindow.KaraokeDisplay.UnsyncLinePadding;
             t.Left = (double)UnsyncOffsetLeft.Value;
             MainWindow.KaraokeDisplay.UnsyncLinePadding = t;
-            Properties.Settings.Default.UnsyncOffsetLeft = t.Left;
+            SettingsStorage.Default.UnsyncOffsetLeft = t.Left;
             MainWindow.KaraokeDisplay.ResetUnsyncProp();
         }
 
@@ -502,7 +497,7 @@ namespace Titalyver2
         {
             if (MainWindow == null) return;
             MainWindow.KaraokeDisplay.UnsyncVerticalOffsetY = (double)UnsyncOffsetVertical.Value;
-            Properties.Settings.Default.UnsyncOffsetVertical = MainWindow.KaraokeDisplay.UnsyncVerticalOffsetY;
+            SettingsStorage.Default.UnsyncOffsetVertical = MainWindow.KaraokeDisplay.UnsyncVerticalOffsetY;
             MainWindow.KaraokeDisplay.ResetUnsyncProp();
         }
 
@@ -512,7 +507,7 @@ namespace Titalyver2
             Thickness t = MainWindow.KaraokeDisplay.UnsyncLinePadding;
             t.Right = (double)UnsyncOffsetRight.Value;
             MainWindow.KaraokeDisplay.UnsyncLinePadding = t;
-            Properties.Settings.Default.UnsyncOffsetRight = t.Right;
+            SettingsStorage.Default.UnsyncOffsetRight = t.Right;
             MainWindow.KaraokeDisplay.ResetUnsyncProp();
         }
 
@@ -522,7 +517,7 @@ namespace Titalyver2
             Thickness t = MainWindow.KaraokeDisplay.UnsyncLinePadding;
             t.Top = (double)UnsyncLineTop.Value;
             MainWindow.KaraokeDisplay.UnsyncLinePadding = t;
-            Properties.Settings.Default.UnsyncLineTopSpace = t.Top;
+            SettingsStorage.Default.UnsyncLineTopSpace = t.Top;
             MainWindow.KaraokeDisplay.ResetUnsyncProp();
         }
 
@@ -532,7 +527,7 @@ namespace Titalyver2
             Thickness t = MainWindow.KaraokeDisplay.UnsyncLinePadding;
             t.Bottom = (double)UnsyncLineBottom.Value;
             MainWindow.KaraokeDisplay.UnsyncLinePadding = t;
-            Properties.Settings.Default.UnsyncLineBottomSpace = t.Bottom;
+            SettingsStorage.Default.UnsyncLineBottomSpace = t.Bottom;
             MainWindow.KaraokeDisplay.ResetUnsyncProp();
         }
 
@@ -540,7 +535,7 @@ namespace Titalyver2
         {
             if (MainWindow == null) return;
             MainWindow.KaraokeDisplay.UnsyncRubyBottomSpace = (double)UnsyncRubyBottom.Value;
-            Properties.Settings.Default.UnsyncRubyBottomSpace = MainWindow.KaraokeDisplay.UnsyncRubyBottomSpace;
+            SettingsStorage.Default.UnsyncRubyBottomSpace = MainWindow.KaraokeDisplay.UnsyncRubyBottomSpace;
             MainWindow.KaraokeDisplay.ResetUnsyncProp();
         }
 
@@ -548,7 +543,7 @@ namespace Titalyver2
         {
             if (MainWindow == null) return;
             MainWindow.KaraokeDisplay.UnsyncNoRubyTopSpace = (double)UnsyncNoRubyTop.Value;
-            Properties.Settings.Default.UnsyncNoRubySpace = MainWindow.KaraokeDisplay.UnsyncNoRubyTopSpace;
+            SettingsStorage.Default.UnsyncNoRubySpace = MainWindow.KaraokeDisplay.UnsyncNoRubyTopSpace;
             MainWindow.KaraokeDisplay.ResetUnsyncProp();
         }
 

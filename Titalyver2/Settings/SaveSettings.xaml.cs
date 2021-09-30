@@ -71,7 +71,7 @@ namespace Titalyver2
             if (MainWindow == null) return;
 
             MainWindow.LyricsSaver.SetSaveList(SavePath.Text);
-            Properties.Settings.Default.SavePathList = SavePath.Text;
+            SettingsStorage.Default.SavePathList = MainWindow.LyricsSaver.SaveList;
         }
 
         private void RadioButtonSaveExt_Click(object sender, RoutedEventArgs e)
@@ -94,7 +94,7 @@ namespace Titalyver2
             {
                 MainWindow.LyricsSaver.Extension = LyricsSaver.EnumExtension.Txt;
             }
-            Properties.Settings.Default.SaveExtension = (int)MainWindow.LyricsSaver.Extension;
+            SettingsStorage.Default.SaveExtension = (int)MainWindow.LyricsSaver.Extension;
 
         }
 
@@ -114,14 +114,14 @@ namespace Titalyver2
             {
                 MainWindow.LyricsSaver.Overwrite = LyricsSaver.EnumOverwrite.Dont;
             }
-            Properties.Settings.Default.SaveOverwrite = (int)MainWindow.LyricsSaver.Overwrite;
+            SettingsStorage.Default.SaveOverwrite = (int)MainWindow.LyricsSaver.Overwrite;
         }
 
 
         private void CheckBoxAutoSave_Click(object sender, RoutedEventArgs e)
         {
             MainWindow.AutoSave = CheckBoxAutoSave.IsChecked == true;
-            Properties.Settings.Default.AutoSave = MainWindow.AutoSave;
+            SettingsStorage.Default.AutoSave = MainWindow.AutoSave;
         }
 
         ReplacementInstructions SaverInstruction;

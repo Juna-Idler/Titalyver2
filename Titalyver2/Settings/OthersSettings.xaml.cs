@@ -39,7 +39,7 @@ namespace Titalyver2
             if (MainWindow == null)
                 return;
             MainWindow.SpecifyWheelDelta = CheckBoxSpecify.IsChecked == true;
-            Properties.Settings.Default.SpecifyWheelDelta = MainWindow.SpecifyWheelDelta;
+            SettingsStorage.Default.SpecifyWheelDelta = MainWindow.SpecifyWheelDelta;
         }
 
         private void WheelDelta_ValueChanged(object sender, EventArgs e)
@@ -47,14 +47,14 @@ namespace Titalyver2
             if (MainWindow == null)
                 return;
             MainWindow.WheelDelta = (int)WheelDelta.Value;
-            Properties.Settings.Default.WheelDelta = MainWindow.WheelDelta;
+            SettingsStorage.Default.WheelDelta = MainWindow.WheelDelta;
         }
 
         private void NoLyricsFormat_TextChanged(object sender, TextChangedEventArgs e)
         {
             if (MainWindow == null) return;
             MainWindow.LyricsSearcher.NoLyricsFormatText = NoLyricsFormat.Text;
-            Properties.Settings.Default.NoLyricsFormat = NoLyricsFormat.Text;
+            SettingsStorage.Default.NoLyricsFormat = NoLyricsFormat.Text;
         }
 
     }

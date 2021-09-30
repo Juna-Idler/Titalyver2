@@ -91,7 +91,8 @@ namespace Titalyver2
 
         private void RestoreSettings()
         {
-            Properties.Settings set = Properties.Settings.Default;
+            SettingsStorage set = SettingsStorage.Default = SettingsStorage.Load() ?? new();
+
             FontFamily ff = new(set.FontFamily);
             FontStyle fsy;
             try { fsy = (FontStyle)TypeDescriptor.GetConverter(typeof(FontStyle)).ConvertFromString(set.FontStyle); }
@@ -125,7 +126,7 @@ namespace Titalyver2
             KaraokeDisplay.NoRubyTopSpace = set.NoRubySpace;
 
 
-            LyricsSearcher.SetSearchList(set.LyricsSearchList);
+            LyricsSearcher.SearchList = set.LyricsSearchList;
             LyricsSearcher.NoLyricsFormatText = set.NoLyricsFormat;
 
             KaraokeDisplay.IgnoreKaraokeTag = set.IgnoreKaraoke;
@@ -154,7 +155,7 @@ namespace Titalyver2
             KaraokeDisplay.UnsyncRubyBottomSpace = set.UnsyncRubyBottomSpace;
             KaraokeDisplay.UnsyncNoRubyTopSpace = set.UnsyncNoRubySpace;
 
-            LyricsSaver.SetSaveList(set.SavePathList);
+            LyricsSaver.SaveList = set.SavePathList;
             LyricsSaver.Extension = (LyricsSaver.EnumExtension)set.SaveExtension;
             LyricsSaver.Overwrite = (LyricsSaver.EnumOverwrite)set.SaveOverwrite;
             AutoSave = set.AutoSave;
@@ -162,7 +163,7 @@ namespace Titalyver2
             SpecifyWheelDelta = set.SpecifyWheelDelta;
             WheelDelta = set.WheelDelta;
 
-            LyricsSearcher.SetManualSearchList(set.ManualSearchList);
+            LyricsSearcher.ManualSearchList = set.ManualSearchList;
         }
 
         private async Task SearchLyrics(ReceiverData data)

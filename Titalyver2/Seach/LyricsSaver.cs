@@ -3,12 +3,14 @@ using System.Collections.Generic;
 using System.IO;
 using System.Windows;
 
+using System.Linq;
+
 namespace Titalyver2
 {
     public class LyricsSaver
     {
 
-        public List<string> SaveList { get; private set; } = new();
+        public string[] SaveList { get; set; } = Array.Empty<string>();
 
         public enum EnumExtension { DependSync = 0, DependSync3 = 1, Lrc = 2, Txt = 3 }
         public EnumExtension Extension { get; set; } = EnumExtension.DependSync;
@@ -21,12 +23,7 @@ namespace Titalyver2
 
         public void SetSaveList(string list)
         {
-            SaveList.Clear();
-            using StringReader sr = new(list);
-            for (string line = sr.ReadLine(); line != null; line = sr.ReadLine())
-            {
-                SaveList.Add(line);
-            }
+            SaveList = list.Split("\n", StringSplitOptions.TrimEntries).Where(l => l.Length > 0).ToArray();
         }
 
         public bool Save(string lyrics, LyricsContainer.SyncMode sync, ReceiverData data, out string saved_path)

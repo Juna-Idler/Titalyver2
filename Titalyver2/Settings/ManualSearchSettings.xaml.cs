@@ -36,7 +36,7 @@ namespace Titalyver2
             if (MainWindow == null) return;
 
             MainWindow.LyricsSearcher.SetManualSearchList(ManualSerchList.Text);
-            Properties.Settings.Default.ManualSearchList = ManualSerchList.Text;
+            SettingsStorage.Default.ManualSearchList = MainWindow.LyricsSearcher.ManualSearchList;
         }
     }
 }

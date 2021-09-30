@@ -27,7 +27,7 @@ namespace Titalyver2
         {
             InitializeComponent();
 
-            LyricsSerchList.Text = string.Join("\n", mainWindow.LyricsSearcher.SearchList);
+            LyricsSearchList.Text = string.Join("\n", mainWindow.LyricsSearcher.SearchList);
 
 
             IgnoreKaraoke.IsChecked = mainWindow.KaraokeDisplay.IgnoreKaraokeTag;
@@ -38,19 +38,19 @@ namespace Titalyver2
         }
 
 
-        private void LyricsSerchList_TextChanged(object sender, TextChangedEventArgs e)
+        private void LyricsSearchList_TextChanged(object sender, TextChangedEventArgs e)
         {
             if (MainWindow == null) return;
 
-            MainWindow.LyricsSearcher.SetSearchList(LyricsSerchList.Text);
-            Properties.Settings.Default.LyricsSearchList = LyricsSerchList.Text;
+            MainWindow.LyricsSearcher.SetSearchList(LyricsSearchList.Text);
+            SettingsStorage.Default.LyricsSearchList = MainWindow.LyricsSearcher.SearchList;
         }
 
         private void CheckBox_Click(object sender, RoutedEventArgs e)
         {
             if (MainWindow == null) return;
             MainWindow.KaraokeDisplay.IgnoreKaraokeTag = (bool)IgnoreKaraoke.IsChecked;
-            Properties.Settings.Default.IgnoreKaraoke = MainWindow.KaraokeDisplay.IgnoreKaraokeTag;
+            SettingsStorage.Default.IgnoreKaraoke = MainWindow.KaraokeDisplay.IgnoreKaraokeTag;
         }
 
         ReplacementInstructions SearcherInstruction;
@@ -64,7 +64,7 @@ namespace Titalyver2
 
             SearcherInstruction = new(ins =>
             {
-                LyricsSerchList.SelectedText = ins;
+                LyricsSearchList.SelectedText = ins;
             });
             SearcherInstruction.Owner = Window.GetWindow(this);
             SearcherInstruction.Closed += (s, e) => { SearcherInstruction = null; };
@@ -76,7 +76,7 @@ namespace Titalyver2
             if (MainWindow == null) return;
 
             MainWindow.LyricsSearcher.MillisecondsTimeout = (int)(PluginTimeout.Value * 1000);
-            Properties.Settings.Default.PluginTimeout = MainWindow.LyricsSearcher.MillisecondsTimeout;
+            SettingsStorage.Default.PluginTimeout = MainWindow.LyricsSearcher.MillisecondsTimeout;
         }
 
         Settings.TimeoutReport ReportWindow;

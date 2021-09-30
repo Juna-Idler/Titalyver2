@@ -36,22 +36,17 @@ namespace Titalyver2
             }
         }
 
-        public List<string> SearchList { get; private set; } = new();
+        public string[] SearchList { get; set; } = Array.Empty<string>();
 
         public void SetSearchList(string list)
         {
-            SearchList.Clear();
-            using StringReader sr = new(list);
-            for (string line = sr.ReadLine(); line != null; line = sr.ReadLine())
-            {
-                SearchList.Add(line);
-            }
+            SearchList = list.Split("\n", StringSplitOptions.TrimEntries).Where(l => l.Length > 0).ToArray();
         }
 
-        public string[] ManualSearchList { get; private set; }
+        public string[] ManualSearchList { get; set; } = Array.Empty<string>();
         public void SetManualSearchList(string list)
         {
-            ManualSearchList = list.Split('\n', StringSplitOptions.TrimEntries).Where(l => l.Length > 0).ToArray();
+            ManualSearchList = list.Split("\n", StringSplitOptions.TrimEntries).Where(l => l.Length > 0).ToArray();
         }
         public async Task<ReturnValue[]> ManualSearch(int plugin_index, string title, string[] artists, string album, string path, string param,int timeout)
         {
