@@ -229,7 +229,6 @@ namespace Titalyver2
                 CompositionTarget.Rendering += CompositionTarget_Rendering;
             TimeOffset = Time = time;
             Stopwatch.Restart();
-            CompositionTarget.Rendering += CompositionTarget_Rendering;
         }
         public void Stop()
         {
