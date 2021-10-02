@@ -214,6 +214,11 @@ namespace Titalyver2
             MakeKaraokeLines();
         }
 
+        public bool UnsyncAutoScroll { get; set; } = false;
+        public double UnsyncIntro { get; set; } = 30;
+        public double UnsyncOutro { get; set; } = 30;
+        public double UnsyncDuration { get; set; }
+
 
 
         public void Start()
@@ -582,6 +587,8 @@ namespace Titalyver2
                         }
                     }
                     break;
+                case LyricsContainer.SyncMode.Unsync:
+                    break;
             }
             return 0;
         }
@@ -591,8 +598,21 @@ namespace Titalyver2
             switch (SyncMode)
             {
                 case LyricsContainer.SyncMode.Unsync:
-                    Canvas.SetTop(List, ManualScrollY + UnsyncVerticalOffsetY);
-                    return;
+                    {
+                        double scroll = 0;
+                        if (UnsyncAutoScroll && UnsyncDuration > 0)
+                        {
+                            if (time < UnsyncIntro)
+                                scroll = 0;
+                            else if (time > UnsyncDuration - UnsyncOutro)
+                                scroll = -(List.ActualHeight - ActualHeight + UnsyncVerticalOffsetY);
+                            else
+                                scroll = -(time - UnsyncIntro) / (UnsyncDuration - UnsyncIntro - UnsyncOutro)
+                                    * (List.ActualHeight - ActualHeight + UnsyncVerticalOffsetY);
+                        }
+                        Canvas.SetTop(List, scroll + ManualScrollY + UnsyncVerticalOffsetY);
+                        return;
+                    }
                 case LyricsContainer.SyncMode.Line:
                     foreach (LineSyncLine sl in List.Children)
                     {

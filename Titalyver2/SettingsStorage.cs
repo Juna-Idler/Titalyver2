@@ -59,6 +59,10 @@ namespace Titalyver2
         public double UnsyncRubyBottomSpace { get; set; } = 0;
         public double UnsyncNoRubySpace { get; set; } = 0;
 
+        public bool UnsyncAutoScroll { get; set; } = false;
+        public double UnsyncIntro { get; set; } = 30;
+        public double UnsyncOutro { get; set; } = 15;
+
 
         public string[] LyricsSearchList { get; set; } =
         {
