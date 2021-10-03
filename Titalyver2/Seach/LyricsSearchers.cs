@@ -13,6 +13,7 @@ namespace Titalyver2
 {
     public class LyricsSearchers
     {
+        public const string NoLyricsCommand = "No Lyrics";
 
         public LyricsSearchers()
         {
@@ -200,7 +201,7 @@ namespace Titalyver2
                         {
                             string text = Replace(NoLyricsFormatText, filepath,
                                                   data.Title, data.Artists, ",", data.Album, data.MetaData);
-                            return new[] { new ReturnValue(command, parameter, replacedParameter, "", text) };
+                            return new[] { new ReturnValue(NoLyricsCommand, parameter, replacedParameter, "", text) };
                         }
                     }
                     else if (command == "set_empty")
@@ -282,7 +283,7 @@ namespace Titalyver2
             {
                 string text = Replace(NoLyricsFormatText, filepath,
                           data.Title, data.Artists, ",", data.Album, data.MetaData);
-                return new[] { new ReturnValue("No Lyrics", "", "", "", text) };
+                return new[] { new ReturnValue(NoLyricsCommand, "", "", "", text) };
             }
         }
 

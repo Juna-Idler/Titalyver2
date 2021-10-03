@@ -167,6 +167,8 @@ namespace Titalyver2
             KaraokeDisplay.UnsyncIntro = set.UnsyncIntro;
             KaraokeDisplay.UnsyncOutro = set.UnsyncOutro;
 
+            KaraokeDisplay.UnsyncRuby = set.UnsyncRuby;
+
             LyricsSaver.SaveList = set.SavePathList;
             LyricsSaver.Extension = (LyricsSaver.EnumExtension)set.SaveExtension;
             LyricsSaver.Overwrite = (LyricsSaver.EnumOverwrite)set.SaveOverwrite;
@@ -197,7 +199,7 @@ namespace Titalyver2
                 MultiLyricsSwitchPanel.Visibility = Visibility.Hidden;
             }
             KaraokeDisplay.SetLyrics(Lyrics[0].Text);
-            if (KaraokeDisplay.Lyrics.Sync == LyricsContainer.SyncMode.Unsync && Lyrics[0].Command != "No Lyrics")
+            if (KaraokeDisplay.Lyrics.Sync == LyricsContainer.SyncMode.Unsync && Lyrics[0].Command != LyricsSearchers.NoLyricsCommand)
             {
                 KaraokeDisplay.UnsyncDuration = data.Duration;
             }
@@ -231,7 +233,7 @@ namespace Titalyver2
             }
 
             KaraokeDisplay.SetLyrics(Lyrics[0].Text);
-            if (KaraokeDisplay.Lyrics.Sync == LyricsContainer.SyncMode.Unsync && Lyrics[0].Command != "No Lyrics")
+            if (KaraokeDisplay.Lyrics.Sync == LyricsContainer.SyncMode.Unsync && Lyrics[0].Command != LyricsSearchers.NoLyricsCommand)
             {
                 KaraokeDisplay.UnsyncDuration = data.Duration;
             }

@@ -63,6 +63,7 @@ namespace Titalyver2
         public double UnsyncIntro { get; set; } = 30;
         public double UnsyncOutro { get; set; } = 15;
 
+        public KaraokeDisplay.EnumUnsyncRuby UnsyncRuby { get; set; } = KaraokeDisplay.EnumUnsyncRuby.Enable;
 
         public string[] LyricsSearchList { get; set; } =
         {

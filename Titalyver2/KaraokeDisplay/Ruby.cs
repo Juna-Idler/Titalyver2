@@ -111,6 +111,8 @@ namespace Titalyver2
 
             Units = result.ToArray();
         }
+        public string BaseText => string.Join("", Units.Select(u => u.BaseText));
+        public string PhoneticText => string.Join("", Units.Select(u => u.HasRuby ? u.RubyText : u.BaseText));
 
         public struct Unit
         {

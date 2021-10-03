@@ -219,6 +219,8 @@ namespace Titalyver2
         public double UnsyncOutro { get; set; } = 30;
         public double UnsyncDuration { get; set; }
 
+        public enum EnumUnsyncRuby { Raw, Enable, Ignore, Phonetic }
+        public EnumUnsyncRuby UnsyncRuby { get; set; } = EnumUnsyncRuby.Enable;
 
 
         public void Start()
@@ -430,11 +432,25 @@ namespace Titalyver2
                         using System.IO.StringReader sr = new(LyricsText);
                         for (string line = sr.ReadLine(); line != null; line = sr.ReadLine())
                         {
-                            RubyString rs = new(line, Lyrics.AtTagContainer.RubyParent, Lyrics.AtTagContainer.RubyBegin, Lyrics.AtTagContainer.RubyEnd, Lyrics.AtTagContainer.Ruby);
+                            RubyString rs;
+                            if (UnsyncRuby == EnumUnsyncRuby.Raw)
+                            {
+                                rs = new(line, null, null, null);
+                            }
+                            else
+                            {
+                                if (line.IndexOf('@') == 0)
+                                    continue;
+                                rs = new(line, Lyrics.AtTagContainer.RubyParent, Lyrics.AtTagContainer.RubyBegin, Lyrics.AtTagContainer.RubyEnd, Lyrics.AtTagContainer.Ruby);
+                                if (UnsyncRuby == EnumUnsyncRuby.Ignore)
+                                    rs = new(rs.BaseText, null, null, null);
+                                else if (UnsyncRuby == EnumUnsyncRuby.Phonetic)
+                                    rs = new(rs.PhoneticText, null, null, null);
+                            }
                             UnsyncLine ul = new(UnsyncTypeface, UnsyncFontSize,
-                                                UnsyncFillColor, UnsyncStrokeColor, UnsyncStrokeThickness,
-                                                UnsyncLinePadding, UnsyncRubyBottomSpace, UnsyncNoRubyTopSpace,
-                                                rs, ActualWidth, UnsyncTextAlignment);
+                                    UnsyncFillColor, UnsyncStrokeColor, UnsyncStrokeThickness,
+                                    UnsyncLinePadding, UnsyncRubyBottomSpace, UnsyncNoRubyTopSpace,
+                                    rs, ActualWidth, UnsyncTextAlignment);
                             _ = List.Children.Add(ul);
                         }
                     }

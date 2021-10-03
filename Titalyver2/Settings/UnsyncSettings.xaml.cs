@@ -57,6 +57,22 @@ namespace Titalyver2
             UnsyncIntro.Value = (decimal)mainWindow.KaraokeDisplay.UnsyncIntro;
             UnsyncOutro.Value = (decimal)mainWindow.KaraokeDisplay.UnsyncOutro;
 
+            switch (mainWindow.KaraokeDisplay.UnsyncRuby)
+            {
+                case KaraokeDisplay.EnumUnsyncRuby.Raw:
+                    Radio_RubyRaw.IsChecked = true;
+                    break;
+                case KaraokeDisplay.EnumUnsyncRuby.Enable:
+                    Radio_RubyEnable.IsChecked = true;
+                    break;
+                case KaraokeDisplay.EnumUnsyncRuby.Ignore:
+                    Radio_RubyIgnore.IsChecked = true;
+                    break;
+                case KaraokeDisplay.EnumUnsyncRuby.Phonetic:
+                    Radio_RubyPhonetic.IsChecked = true;
+                    break;
+            }
+
             MainWindow = mainWindow;
         }
 
@@ -230,6 +246,26 @@ namespace Titalyver2
             if (MainWindow == null) return;
             MainWindow.KaraokeDisplay.UnsyncOutro = (double)UnsyncOutro.Value;
             SettingsStorage.Default.UnsyncOutro = MainWindow.KaraokeDisplay.UnsyncOutro;
+        }
+
+        private void Radio_Ruby_Click(object sender, RoutedEventArgs e)
+        {
+            if (MainWindow == null) return;
+            if (Radio_RubyRaw.IsChecked == true)
+            { MainWindow.KaraokeDisplay.UnsyncRuby = KaraokeDisplay.EnumUnsyncRuby.Raw; }
+            else if (Radio_RubyEnable.IsChecked == true)
+            { MainWindow.KaraokeDisplay.UnsyncRuby = KaraokeDisplay.EnumUnsyncRuby.Enable; }
+            else if (Radio_RubyIgnore.IsChecked == true)
+            { MainWindow.KaraokeDisplay.UnsyncRuby = KaraokeDisplay.EnumUnsyncRuby.Ignore; }
+            else if (Radio_RubyPhonetic.IsChecked == true)
+            { MainWindow.KaraokeDisplay.UnsyncRuby = KaraokeDisplay.EnumUnsyncRuby.Phonetic; }
+
+            SettingsStorage.Default.UnsyncRuby = MainWindow.KaraokeDisplay.UnsyncRuby;
+
+            if (MainWindow.KaraokeDisplay.Lyrics.Sync == LyricsContainer.SyncMode.Unsync)
+            {
+                MainWindow.KaraokeDisplay.SetLyrics(MainWindow.KaraokeDisplay.LyricsText);
+            }
         }
     }
 }
