@@ -46,7 +46,7 @@ namespace Titalyver2
                 TextBoxArtists.Text.Split(Environment.NewLine),
                 TextBoxAlbum.Text,
                 TextBoxPath.Text, TextBoxParam.Text, (int)Timeout.Value * 1000,
-                CheckBoxAutoSave.IsChecked == true ? Data : null);
+                Data,CheckBoxAutoSave.IsChecked == true);
 
             if (CheckBoxKeep.IsChecked == true)
             {

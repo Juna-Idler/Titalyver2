@@ -212,7 +212,7 @@ namespace Titalyver2
             }
         }
         public async Task ManualSearchLyrics(int plugin_index, string title, string[] artists, string album, string path, string param, int timeout,
-                                             ReceiverData data = null)
+                                             ReceiverData data,bool autosave = false)
         {
             KaraokeDisplay.SetLyrics("Searching...");
             Lyrics = null;
@@ -233,9 +233,9 @@ namespace Titalyver2
             KaraokeDisplay.SetLyrics(Lyrics[0].Text);
             if (KaraokeDisplay.Lyrics.Sync == LyricsContainer.SyncMode.Unsync)
             {
-                KaraokeDisplay.UnsyncDuration = data == null ? 0 : data.Duration;
+                KaraokeDisplay.UnsyncDuration = data.Duration;
             }
-            if (data != null)
+            if (autosave)
             {
                 if (LyricsSaver.Save(Lyrics[0].Text, KaraokeDisplay.Lyrics.Sync,
                                      data, out string saved_path))
