@@ -197,7 +197,7 @@ namespace Titalyver2
                 MultiLyricsSwitchPanel.Visibility = Visibility.Hidden;
             }
             KaraokeDisplay.SetLyrics(Lyrics[0].Text);
-            if (KaraokeDisplay.Lyrics.Sync == LyricsContainer.SyncMode.Unsync)
+            if (KaraokeDisplay.Lyrics.Sync == LyricsContainer.SyncMode.Unsync && Lyrics[0].Command != "No Lyrics")
             {
                 KaraokeDisplay.UnsyncDuration = data.Duration;
             }
@@ -231,7 +231,7 @@ namespace Titalyver2
             }
 
             KaraokeDisplay.SetLyrics(Lyrics[0].Text);
-            if (KaraokeDisplay.Lyrics.Sync == LyricsContainer.SyncMode.Unsync)
+            if (KaraokeDisplay.Lyrics.Sync == LyricsContainer.SyncMode.Unsync && Lyrics[0].Command != "No Lyrics")
             {
                 KaraokeDisplay.UnsyncDuration = data.Duration;
             }
