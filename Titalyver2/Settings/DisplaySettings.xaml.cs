@@ -75,6 +75,8 @@ namespace Titalyver2
             LineBottom.Value = (decimal)t.Bottom;
             RubyBottom.Value = (decimal)mainWindow.KaraokeDisplay.RubyBottomSpace;
             NoRubyTop.Value = (decimal)mainWindow.KaraokeDisplay.NoRubyTopSpace;
+
+            MainWindow = mainWindow;
         }
 
         private string TypefaceString(Typeface typeface)
