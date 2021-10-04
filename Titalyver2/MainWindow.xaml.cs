@@ -203,6 +203,11 @@ namespace Titalyver2
             {
                 KaraokeDisplay.UnsyncDuration = data.Duration;
             }
+            else
+            {
+                KaraokeDisplay.UnsyncDuration = 0;
+            }
+
 
             if (AutoSave && Lyrics[0].Command == "plugin")
             {
