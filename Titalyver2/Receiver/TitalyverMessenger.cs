@@ -310,7 +310,7 @@ namespace Titalyver2
             if (!base.Initialize())
                 return;
             OnPlaybackEventChanged += playbackEventHandler;
-            EventWaitHandle = new EventWaitHandle(false, EventResetMode.AutoReset, WriteEvent_Name);
+//            EventWaitHandle = new EventWaitHandle(false, EventResetMode.AutoReset, WriteEvent_Name);
             RegisteredWaitHandle = ThreadPool.RegisterWaitForSingleObject(EventWaitHandle, WaitOrTimerCallback, null, -1, false);
         }
         ~MMFReceiver()
