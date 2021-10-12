@@ -2,7 +2,7 @@
 
 TimeTagedLyricsViewer version 2
 
-
+##概要
 - lrcファイル、いわゆるタイムタグ付き歌詞ファイルを音楽に合わせて表示します。
 - カラオケタグ(.kra)も扱えます。
 - 独自仕様のルビ（振り仮名）表示に対応しています。
@@ -12,11 +12,17 @@ TimeTagedLyricsViewer version 2
 - .NET 5.0で作ってます
 - 操作方法等はwikiの方に https://github.com/Juna-Idler/Titalyver2/wiki
 
+## インストール
+自分でビルドするか、https://github.com/Juna-Idler/Titalyver2/releases から新しいのを持ってきて、
+好きなところにexeを置けばいい。そこに設定ファイルも生えます。
+
 ## デモ動画
 - https://youtu.be/vsW0YLNFHT4 iTunes（21/7/20）
 - https://youtu.be/q31rUxmlPFU MusicBee（21/7/6）
+- https://youtu.be/doSEohgboDw Spotify (21/10/12)
 
 
+### どうでもいいけど
 2ってあんまりつけたくなかったんだけど、ほかに変なものを付けるよりはまだましということで2
 
 ### wpfで文字をGeometry描画でやったらどうなるのか？
@@ -25,4 +31,7 @@ TimeTagedLyricsViewer version 2
 > 文字数等にもよるけど開発環境で平均CPU30％ぐらい
 > 描画を行単位から文字単位に分割すればもうちょっとはマシになるかもしれない。枠の重なりに弱くなるけど
 
-とりあえずそこそこ動く状態まできたので、ちょっとだけREADMEを書き込む。
+毎フレーム動かすUnsyncAutoScrollも結構重かった。
+
+
+とりあえず満足いくところまできたので、もうちょっとだけREADMEを書き込む。
